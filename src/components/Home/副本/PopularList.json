@@ -1,0 +1,48 @@
+{
+  "msg": "请求成功",
+  "data": {
+  	"list": [
+      {
+        "listImg": "https://img10.360buyimg.com/mobilecms/s105x105_jfs/t3064/339/4619546217/98877/1f751baa/584e76f5N15cae21b.jpg!q90",
+        "leastSignPrice": "399",
+        "fullName": "iphoneX 全新国行 64G 亮黑"
+      },
+      {
+        "listImg": "https://img10.360buyimg.com/mobilecms/s105x105_jfs/t2659/360/3506065485/265878/e2507787/579077a7Nca03f6e2.jpg!q90",
+        "leastSignPrice": "399",
+        "fullName": "iphoneX 全新国行 64G 亮黑"
+      },
+      {
+        "listImg": "https://img11.360buyimg.com/mobilecms/s350x128_jfs/t3283/127/5620457997/265358/15355e09/5876204aN4a62fc6f.png!q90!cc_350x128.webp",
+        "leastSignPrice": "399",
+        "fullName": "iphoneX 全新国行 64G 亮黑"
+      },
+      {
+        "listImg": "https://img11.360buyimg.com/mobilecms/s350x128_jfs/t13060/259/2123183690/46087/59072b4a/5a4f8cd5Nb987c798.jpg!q90!cc_350x128.webp",
+        "leastSignPrice": "399",
+        "fullName": "iphoneX 全新国行 64G 亮黑"
+      },
+      {
+        "listImg": "https://img10.360buyimg.com/mobilecms/s105x105_jfs/t3064/339/4619546217/98877/1f751baa/584e76f5N15cae21b.jpg!q90",
+        "leastSignPrice": "399",
+        "fullName": "iphoneX 全新国行 64G 亮黑"
+      },
+      {
+        "listImg": "https://img10.360buyimg.com/mobilecms/s105x105_jfs/t2659/360/3506065485/265878/e2507787/579077a7Nca03f6e2.jpg!q90",
+        "leastSignPrice": "399",
+        "fullName": "iphoneX 全新国行 64G 亮黑"
+      },
+      {
+        "listImg": "https://img11.360buyimg.com/mobilecms/s350x128_jfs/t3283/127/5620457997/265358/15355e09/5876204aN4a62fc6f.png!q90!cc_350x128.webp",
+        "leastSignPrice": "399",
+        "fullName": "iphoneX 全新国行 64G 亮黑"
+      },
+      {
+        "listImg": "https://img11.360buyimg.com/mobilecms/s350x128_jfs/t13060/259/2123183690/46087/59072b4a/5a4f8cd5Nb987c798.jpg!q90!cc_350x128.webp",
+        "leastSignPrice": "399",
+        "fullName": "iphoneX 全新国行 64G 亮黑"
+      }
+    ]
+  },
+  "code": "00"
+}

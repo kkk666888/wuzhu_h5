@@ -1,0 +1,319 @@
+.reletConfirmOrder{
+  .check-span{
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    background-repeat: no-repeat;
+    background-size: 100%;
+    position: relative;
+    top: 4px;
+  }
+  .uncheck-span{
+    background-image: url('./img/uncheck.png')
+  }
+  .checked-span{
+    background-image: url('./img/checked.png')
+  }
+  .itemPlanPopup{
+    background-color: #fff;
+
+    /deep/ .vux-popup-header{
+      background-color: white;
+      .vux-popup-header-left{
+        width: 80px;
+        padding-left: 20px;
+        background-image: url('./img/left.png');
+        background-repeat: no-repeat;
+        background-size: 12px 16px;
+        background-position: 20px 50%;
+      }
+      .vux-popup-header-title{
+        margin-left: -70px;
+        color: #000;
+      }
+    }
+    
+    .itemPlanDiv{
+      text-align: center;
+      font-size: 12px;
+      color: #333;
+      padding: 0 14px;
+      .item-body{
+        max-height: 300px;
+        overflow-y: auto;
+      }
+      .item{
+        padding: 14px 0;
+        &:last-child{
+          border-bottom: none;
+        }
+        .item-row{
+          .plan-col-periods{
+            flex:0 0 50px;
+          }
+          .plan-col-tenancy{
+            flex:1;
+          }
+          .plan-col-days{
+            flex:0 0 50px;
+          }
+          .plan-col-fee{
+            flex:0 0 80px;
+          }
+          .plan-col-img{
+            flex:0 0 20px;
+          }
+        }
+
+        .item-detail{
+          position: relative;
+          background-color: #f5f5f5;
+          text-align: left;
+          padding: 12px 18px;
+          color: #888;
+          margin-top: 20px;
+          font-size: 12px;
+          &::after{
+            position:absolute;
+            content:" ";
+            width: 16px;
+            height: 16px;
+            background-color: #f5f5f5;
+            right: 26px;
+            top: -5px;
+            transform: rotate(45deg);
+          }
+          .item-row{
+            margin-bottom: 4px;
+            &:last-child{
+              margin-bottom: 0;
+            }
+          }
+        }
+      }
+      
+      .img-span{
+        width: 16px;
+        height: 16px;
+        position: relative;
+        top:2px;
+      }
+    }
+  }
+  .item-row{
+    display: flex;
+    align-items: center;
+    .item-col{
+      flex:1;
+    }
+    .item-col-50{
+      flex:0 0 50px;
+    }
+    .item-col-100{
+      flex:0 0 100px;
+    }
+  }
+  .text-right{
+    text-align: right;
+  }
+  .header{
+    display: flex;
+    padding: 20px 15px 14px 15px;
+    background-color: #fff;
+    .left{
+      flex:0 0 80px;
+      .img{
+        width: 100%;
+      }
+    }
+    .right{
+      flex:1;
+      padding: 0 10px;
+      .name{
+        color: #1A2A3E;
+        font-size: 14px;
+        height: 44px;
+        overflow: hidden;
+      }
+      .mark{
+        font-size: 12px;
+        color: #888;
+      }
+      .property{
+        span{
+          display: inline-block;
+          padding: 0 13px;
+          height: 22px;
+          line-height: 22px;
+          background-color: #F5F5F5;
+          border-radius: 4px;
+          font-size: 12px;
+          color: #111;
+          margin: 0 5px 4px 0;
+        }
+      }
+    }
+  }
+  .rent{
+    padding: 12px 15px;
+    color: #888;
+    font-size: 14px;
+    margin-top: 10px;
+    background-color: white;
+    .item-row{
+      margin-bottom: 4px;
+      &:last-child{
+        margin-bottom: 0;
+      }
+    }
+    .rent-items{
+      margin: 10px 0;
+      background-color: #F5F5F5;
+      border-radius: 4px;
+      .rent-item-activity{
+        background-color: #FEF7B3;
+      }
+      .item-row{
+        padding: 10px;
+      }
+    }
+  }
+  .tern-span{
+    color: #111;
+  }
+  .tern-money{
+    font-size: 12px;
+  }
+  .img-span{
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    background-size: 100%;
+    background-repeat: no-repeat;
+  }
+  .img-down{
+    background-image: url('./img/down.png');
+  }
+  .img-up{
+    background-image: url('./img/up.png');
+  }
+  .img-question{
+    background-image: url('./img/questionMark.png');
+    position: relative;
+    top:3px;
+  }
+  .img-checked{
+    background-image: url('./img/checked.png');
+    position: relative;
+    top:2px;
+  }
+  .img-shen{
+    position: relative;
+    top:5px;
+    display: inline-block;
+    margin-left: 15px;
+    width: 15px;
+    height: 18px;
+    background-size: 100%;
+    background-image: url('./img/shen.png');
+    background-repeat: no-repeat;
+  }
+
+  .payType{
+    background-color: #fff;
+    margin-top: 10px;
+    padding: 16px 15px;
+    .header2{
+      font-size: 16px;
+      color: #111;
+    }
+    .payItem{
+      margin-top: 12px;
+      span{
+        display: inline-block;
+        height: 30px;
+        line-height: 30px;
+        padding: 0 28px;
+        border:1px solid #ddd;
+        margin-right: 10px;
+        color: #111111;
+        font-size: 12px;
+        border-radius: 4px;
+      }
+      span.active{
+        background-color: #FEF7B3;
+        border:1px solid #FFDA29;
+      }
+    }
+  }
+  .payMoney{
+    margin-top: 10px;
+    background-color: #fff;
+    padding: 20px 15px;
+    font-size: 14px;
+    .item-row{
+      margin-bottom: 4px;
+      &:last-child{
+        margin-bottom: 0;
+      }
+    }
+    .money-label{
+      color: #111;
+    }
+    .fnt-16{
+      font-size: 16px;
+    }
+    .money-value{
+      color: #FF4754;
+      text-align: right;
+    }
+    .money-value-2{
+      color: #888;
+      text-align: right;
+    }
+    .view-detail{
+      color: #5C99F4;
+      text-align: right;
+    }
+    .item-detail{
+      font-size: 14px;
+      padding: 12px;
+      background-color: #F5F5F5;
+      color: #888;
+      border-radius: 4px;
+    }
+  }
+  .protocol{
+    margin-top: 10px;
+    font-size: 14px;
+    padding: 10px 18px 20px 18px;
+    .item-row{
+      align-items: start;
+    }
+    .flex-checked{
+      flex:0 0 24px;
+    }
+    .protocol-item{
+      color: #299AEB;
+    }
+  }
+  .goPay{
+    height: 44px;
+    line-height: 44px;
+    font-size: 18px;
+    color: #000;
+    background-color: #FFDA29;
+    border-radius: 6px;
+    text-align: center;
+    margin: 0 15px 50px 15px;
+  }
+  .layout-div{
+    position: fixed;
+    top:0;
+    left:0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    transition: opacity 400ms;
+  }
+}

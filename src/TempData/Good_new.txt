@@ -1,0 +1,117 @@
+{
+	"msg": "成功",
+	"data": {
+		"applySerialNo": "00120180424154157409107837",
+		"totalTerm": "5",
+		"totalDays": "130",
+		"firstTermAmt": 3208.0,
+		"monthlyPayDay": "22",
+		"map": {
+			"1": [{
+				"feeNo": null,
+				"term": 1,
+				"feeTypeCode": null,
+				"feeName": null,
+				"payAmt": 2800.0,
+				"termStartDay": "2018-04-24 16:00:00",
+				"payDay": "2018-04-23 16:00:00",
+				"termDays": 28
+			}, {
+				"feeNo": null,
+				"term": 1,
+				"feeTypeCode": "FJFW",
+				"feeName": "附加服务(固定金额,首期)",
+				"payAmt": 368.0,
+				"termStartDay": "2018-04-24 16:00:00",
+				"payDay": "2018-04-23 16:00:00",
+				"termDays": 28
+			}, {
+				"feeNo": null,
+				"term": 1,
+				"feeTypeCode": "FJFW",
+				"feeName": "附加服务(按天,按期)",
+				"payAmt": 40.0,
+				"termStartDay": "2018-04-24 16:00:00",
+				"payDay": "2018-04-23 16:00:00",
+				"termDays": 28
+			}],
+			"2": [{
+				"feeNo": null,
+				"term": 2,
+				"feeTypeCode": null,
+				"feeName": null,
+				"payAmt": 480.0,
+				"termStartDay": "2018-05-22 16:00:00",
+				"payDay": "2018-05-21 16:00:00",
+				"termDays": 30
+			}, {
+				"feeNo": null,
+				"term": 2,
+				"feeTypeCode": "FJFW",
+				"feeName": "附加服务(按天,按期)",
+				"payAmt": 60.0,
+				"termStartDay": "2018-05-22 16:00:00",
+				"payDay": "2018-05-21 16:00:00",
+				"termDays": 30
+			}],
+			"3": [{
+				"feeNo": null,
+				"term": 3,
+				"feeTypeCode": null,
+				"feeName": null,
+				"payAmt": 310.0,
+				"termStartDay": "2018-06-22 16:00:00",
+				"payDay": "2018-06-21 16:00:00",
+				"termDays": 31
+			}, {
+				"feeNo": null,
+				"term": 3,
+				"feeTypeCode": "FJFW",
+				"feeName": "附加服务(按天,按期)",
+				"payAmt": 60.0,
+				"termStartDay": "2018-06-22 16:00:00",
+				"payDay": "2018-06-21 16:00:00",
+				"termDays": 31
+			}],
+			"4": [{
+				"feeNo": null,
+				"term": 4,
+				"feeTypeCode": null,
+				"feeName": null,
+				"payAmt": 300.0,
+				"termStartDay": "2018-07-22 16:00:00",
+				"payDay": "2018-07-21 16:00:00",
+				"termDays": 30
+			}, {
+				"feeNo": null,
+				"term": 4,
+				"feeTypeCode": "FJFW",
+				"feeName": "附加服务(按天,按期)",
+				"payAmt": 60.0,
+				"termStartDay": "2018-07-22 16:00:00",
+				"payDay": "2018-07-21 16:00:00",
+				"termDays": 30
+			}],
+			"5": [{
+				"feeNo": null,
+				"term": 5,
+				"feeTypeCode": null,
+				"feeName": null,
+				"payAmt": 110.0,
+				"termStartDay": "2018-08-22 16:00:00",
+				"payDay": "2018-08-21 16:00:00",
+				"termDays": 11
+			}, {
+				"feeNo": null,
+				"term": 5,
+				"feeTypeCode": "FJFW",
+				"feeName": "附加服务(按天,按期)",
+				"payAmt": 20.0,
+				"termStartDay": "2018-08-22 16:00:00",
+				"payDay": "2018-08-21 16:00:00",
+				"termDays": 11
+			}]
+		}
+	},
+	"code": "00"
+}

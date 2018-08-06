@@ -1,0 +1,53 @@
+{
+  "msg": "请求成功",
+  "data": {
+  	"list": [
+      {
+        "listImg": "https://img11.360buyimg.com/n7/jfs/t7297/154/3413903491/65679/45ae4902/59e42830N9da56c41.jpg",
+        "leastSignPrice": "399",
+        "fullName": "iphoneX 全新国行 64G 亮黑"
+      },
+      {
+        "listImg": "https://img11.360buyimg.com/n7/jfs/t10729/149/1744838942/273871/5b00d30c/59e5bd89Ndc046ccd.jpg",
+        "leastSignPrice": "399",
+        "fullName": "iphoneX 全新国行 64G 亮黑"
+      },
+      {
+        "listImg": "https://img11.360buyimg.com/n7/jfs/t11941/116/1721681767/185067/e33a4c89/5a06a216Nc1d9bdae.jpg",
+        "leastSignPrice": "399",
+        "fullName": "iphoneX 全新国行 64G 亮黑"
+      },
+      {
+        "listImg": "https://img11.360buyimg.com/n7/jfs/t7297/154/3413903491/65679/45ae4902/59e42830N9da56c41.jpg",
+        "leastSignPrice": "399",
+        "fullName": "iphoneX 全新国行 64G 亮黑"
+      },
+      {
+        "listImg": "https://img11.360buyimg.com/n7/jfs/t10729/149/1744838942/273871/5b00d30c/59e5bd89Ndc046ccd.jpg",
+        "leastSignPrice": "399",
+        "fullName": "iphoneX 全新国行 64G 亮黑"
+      },
+      {
+        "listImg": "https://img11.360buyimg.com/n7/jfs/t11941/116/1721681767/185067/e33a4c89/5a06a216Nc1d9bdae.jpg",
+        "leastSignPrice": "399",
+        "fullName": "iphoneX 全新国行 64G 亮黑"
+      },
+      {
+        "listImg": "https://img11.360buyimg.com/n7/jfs/t7297/154/3413903491/65679/45ae4902/59e42830N9da56c41.jpg",
+        "leastSignPrice": "399",
+        "fullName": "iphoneX 全新国行 64G 亮黑"
+      },
+      {
+        "listImg": "https://img11.360buyimg.com/n7/jfs/t10729/149/1744838942/273871/5b00d30c/59e5bd89Ndc046ccd.jpg",
+        "leastSignPrice": "399",
+        "fullName": "iphoneX 全新国行 64G 亮黑"
+      },
+      {
+        "listImg": "https://img11.360buyimg.com/n7/jfs/t11941/116/1721681767/185067/e33a4c89/5a06a216Nc1d9bdae.jpg",
+        "leastSignPrice": "399",
+        "fullName": "iphoneX 全新国行 64G 亮黑"
+      }
+    ]
+  },
+  "code": "00"
+}

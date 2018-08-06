@@ -1,0 +1,523 @@
+{
+  "GoodList": [
+    {
+      "category_code":"RS18594440691",
+      "short_name": "iphoneX",
+      "full_name": "苹果（Apple） 苹果 Apple iPhone X",
+      "list_img": "https://img14.360buyimg.com/evalpic/s240x240_jfs/t11350/3/801820749/81787/e52825bc/59f81bfcNd6ab9593.jpg",
+      "detail_img_list": "https://m.360buyimg.com/n12/jfs/t11350/3/801820749/81787/e52825bc/59f81bfcNd6ab9593.jpg!q70.jpg,https://m.360buyimg.com/n12/jfs/t10510/356/1387319554/133169/61150d04/59e04ec1N18114bb6.jpg!q70.jpg,https://m.360buyimg.com/n12/jfs/t7711/77/3420026303/81791/97c4da1a/59f81bf9N87215efc.jpg!q70.jpg,https://m.360buyimg.com/n12/s750x750_jfs/t9787/44/1366178630/69243/8e02dfff/59e04ec5Nccd0e3f7.jpg!q70.jpg,https://m.360buyimg.com/n12/s750x750_jfs/t10975/346/1393263763/101094/ab51894/59e04ec8Nc31bac75.jpg!q70.jpg,https://m.360buyimg.com/n12/s750x750_jfs/t11239/125/773084250/26341/c419d729/59f81c0aN6bc01d3c.jpg!q70.jpg",
+      "detail_img": "https://m.360buyimg.com/n12/jfs/t11350/3/801820749/81787/e52825bc/59f81bfcNd6ab9593.jpg!q70.jpg",
+      "config_detail": "4G手机 iPhone10 深空灰色 全网通 256G 标配",
+      "return_good_days": "5天",
+      "buyout_ratio":"0.6",
+      "depreciation_ratio": "0.3",
+      "is_recovery": true,
+      "is_relet": true,
+      "least_sign_price": 8088,
+      "least_rent_day": 599,
+      "category_spec_code": "RS1859444069",
+      "spec_name": "iphone",
+      "spec_content": "4G手机 iPhone10 深空灰色 全网通 256G 标配",
+      "recommend_no": 5,
+      "commodity_no": "1",
+      "sign_price": 3670,
+      "premium": 2000,
+      "performance_bond":2000,
+      "is_limited": false,
+      "stock_num": 500,
+      "product_no": "RS1859",
+      "prd_series_no": "4440691",
+      "total_days": 360,
+      "avg_rent_amt": 30,
+      "rent_pay_style": "0,1",   /* 支付方式:0:分期，1:一次性支付。0,1表示分期、一次性支付都支持 */
+      "categoryList":[
+        {
+          "category_spec_code":"011",
+          "spec_name": "网络",
+          "spec_content": "全网通",
+          "recommend_no": 1
+        },
+        {
+          "category_spec_code":"012",
+          "spec_name": "网络",
+          "spec_content": "移动版",
+          "recommend_no": 2
+        },
+        {
+          "category_spec_code":"013",
+          "spec_name": "网络",
+          "spec_content": "联通版",
+          "recommend_no": 3
+        },
+        {
+          "category_spec_code":"014",
+          "spec_name": "网络",
+          "spec_content": "电信版",
+          "recommend_no": 4
+        },
+        {
+          "category_spec_code":"021",
+          "spec_name": "颜色",
+          "spec_content": "银色",
+          "recommend_no": 1
+        },
+        {
+          "category_spec_code":"022",
+          "spec_name": "颜色",
+          "spec_content": "深灰色",
+          "recommend_no": 2,
+        },
+        {
+          "category_spec_code":"023",
+          "spec_name": "颜色",
+          "spec_content": "玫瑰金",
+          "recommend_no": 3
+        },
+        {
+          "category_spec_code":"024",
+          "spec_name": "颜色",
+          "spec_content": "黑色",
+          "recommend_no": 4
+        },
+        {
+          "category_spec_code":"025",
+          "spec_name": "颜色",
+          "spec_content": "亮黑色",
+          "recommend_no": 5
+        },
+        {
+          "category_spec_code":"026",
+          "spec_name": "颜色",
+          "spec_content": "土豪金",
+          "recommend_no": 6
+        },
+        {
+          "category_spec_code":"027",
+          "spec_name": "颜色",
+          "spec_content": "白色",
+          "recommend_no": 7
+        },
+        {
+          "category_spec_code":"028",
+          "spec_name": "颜色",
+          "spec_content": "星空蓝",
+          "recommend_no": 8
+        },
+        {
+          "category_spec_code":"031",
+          "spec_name": "内存",
+          "spec_content": "64G",
+          "recommend_no": 1
+        },
+        {
+          "category_spec_code":"032",
+          "spec_name": "内存",
+          "spec_content": "128G",
+          "recommend_no": 2
+        },
+        {
+          "category_spec_code":"033",
+          "spec_name": "内存",
+          "spec_content": "256G",
+          "recommend_no": 3
+        }
+      ],
+      "goodsList":[
+        {
+          "commodity_no": 360,
+          "sign_price":8088,
+          "premium":388,
+          "performance_bond":500,
+          "is_limited": true,
+          "detail_img_list":"https://m.360buyimg.com/n12/jfs/t11350/3/801820749/81787/e52825bc/59f81bfcNd6ab9593.jpg!q70.jpg,https://m.360buyimg.com/n12/jfs/t10510/356/1387319554/133169/61150d04/59e04ec1N18114bb6.jpg!q70.jpg,https://m.360buyimg.com/n12/jfs/t7711/77/3420026303/81791/97c4da1a/59f81bf9N87215efc.jpg!q70.jpg,https://m.360buyimg.com/n12/s750x750_jfs/t9787/44/1366178630/69243/8e02dfff/59e04ec5Nccd0e3f7.jpg!q70.jpg,https://m.360buyimg.com/n12/s750x750_jfs/t10975/346/1393263763/101094/ab51894/59e04ec8Nc31bac75.jpg!q70.jpg,https://m.360buyimg.com/n12/s750x750_jfs/t11239/125/773084250/26341/c419d729/59f81c0aN6bc01d3c.jpg!q70.jpg",
+          "detail_img":"https://m.360buyimg.com/n12/jfs/t11350/3/801820749/81787/e52825bc/59f81bfcNd6ab9593.jpg!q70.jpg",
+          "config_detail":"4G手机 iPhone10 深空灰色 全网通 256G 标配",
+          "stock_num": "200",
+          "category_spec_list":[
+            {
+              "category_spec_code": "011"
+            },
+            {
+              "category_spec_code": "021"
+            },
+            {
+              "category_spec_code": "031"
+            }
+          ],
+          "financialProductsList":[
+            {
+              "product_no":"JR1234567890",   /*产品编号*/
+              "prd_series_no":"JR1234567",     /*产品系列编号*/
+              "total_days":360,              /*总天数*/
+              "avg_rent_amt":12,
+              "rent_pay_style":"0,1",
+              "AdditionalServicesList":[
+                {
+                  "fee_type_code":"fy1234567",
+                  "ass_serv_no":"ass123456789",
+                  "serv_name":"开发费",
+                  "serv_fee":100,
+                  "access_style":"支付宝",
+                  "is_cancelled":false,
+                  "is_optional":false,
+                  "serv_desc":"用于支付给开发人员的费用",
+                }
+              ],  /*附加服务列表*/
+              "feeList":[
+                {
+                  "fee_no":"FY12344",
+                  "fee_name": "快递费",
+                  "fee_desc": "用于邮寄手机给你"
+                }
+              ]                   /*费用列表*/
+            },
+            {
+              "product_no":"JR1234567890",   /*产品编号*/
+              "prd_series_no":"JR1234567",     /*产品系列编号*/
+              "total_days":360,              /*总天数*/
+              "avg_rent_amt":62,
+              "rent_pay_style":"0",
+              "AdditionalServicesList":[
+                {
+                  "fee_type_code":"fy1234567",
+                  "ass_serv_no":"ass123456789",
+                  "serv_name":"开发费",
+                  "serv_fee":100,
+                  "access_style":"支付宝",
+                  "is_cancelled":false,
+                  "is_optional":false,
+                  "serv_desc":"用于支付给开发人员的费用",
+                }
+              ],  /*附加服务列表*/
+              "feeList":[
+                {
+                  "fee_no":"FY12344",
+                  "fee_name": "快递费",
+                  "fee_desc": "用于邮寄手机给你"
+                }
+              ]                   /*费用列表*/
+            },
+            {
+              "product_no":"JR1234567890",   /*产品编号*/
+              "prd_series_no":"JR1234567",     /*产品系列编号*/
+              "total_days":720,              /*总天数*/
+              "avg_rent_amt":32,
+              "rent_pay_style":"0,1",
+              "AdditionalServicesList":[
+                {
+                  "fee_type_code":"fy1234567",
+                  "ass_serv_no":"ass123456789",
+                  "serv_name":"开发费",
+                  "serv_fee":100,
+                  "access_style":"支付宝",
+                  "is_cancelled":false,
+                  "is_optional":false,
+                  "serv_desc":"用于支付给开发人员的费用",
+                }
+              ],  /*附加服务列表*/
+              "feeList":[
+                {
+                  "fee_no":"FY12344",
+                  "fee_name": "快递费",
+                  "fee_desc": "用于邮寄手机给你"
+                }
+              ]                   /*费用列表*/
+            },
+            {
+              "product_no":"JR1234567890",   /*产品编号*/
+              "prd_series_no":"JR1234567",     /*产品系列编号*/
+              "total_days":360,              /*总天数*/
+              "avg_rent_amt":12,
+              "rent_pay_style":"0,1",
+              "AdditionalServicesList":[
+                {
+                  "fee_type_code":"fy1234567",
+                  "ass_serv_no":"ass123456789",
+                  "serv_name":"开发费",
+                  "serv_fee":100,
+                  "access_style":"支付宝",
+                  "is_cancelled":false,
+                  "is_optional":false,
+                  "serv_desc":"用于支付给开发人员的费用",
+                }
+              ],  /*附加服务列表*/
+              "feeList":[
+                {
+                  "fee_no":"FY12344",
+                  "fee_name": "快递费",
+                  "fee_desc": "用于邮寄手机给你"
+                }
+              ]                   /*费用列表*/
+            },
+            {
+              "product_no":"JR1234567890",   /*产品编号*/
+              "prd_series_no":"JR1234567",     /*产品系列编号*/
+              "total_days":360,              /*总天数*/
+              "avg_rent_amt":12,
+              "rent_pay_style":"0,1"
+            }
+          ]
+        },
+        {
+          "commodity_no": 360,
+          "sign_price":8088,
+          "premium":388,
+          "performance_bond":500,
+          "is_limited": true,
+          "detail_img_list":"https://m.360buyimg.com/n12/jfs/t11350/3/801820749/81787/e52825bc/59f81bfcNd6ab9593.jpg!q70.jpg,https://m.360buyimg.com/n12/jfs/t10510/356/1387319554/133169/61150d04/59e04ec1N18114bb6.jpg!q70.jpg,https://m.360buyimg.com/n12/jfs/t7711/77/3420026303/81791/97c4da1a/59f81bf9N87215efc.jpg!q70.jpg,https://m.360buyimg.com/n12/s750x750_jfs/t9787/44/1366178630/69243/8e02dfff/59e04ec5Nccd0e3f7.jpg!q70.jpg,https://m.360buyimg.com/n12/s750x750_jfs/t10975/346/1393263763/101094/ab51894/59e04ec8Nc31bac75.jpg!q70.jpg,https://m.360buyimg.com/n12/s750x750_jfs/t11239/125/773084250/26341/c419d729/59f81c0aN6bc01d3c.jpg!q70.jpg",
+          "detail_img":"https://m.360buyimg.com/n12/jfs/t11350/3/801820749/81787/e52825bc/59f81bfcNd6ab9593.jpg!q70.jpg",
+          "config_detail":"4G手机 iPhone10 深空灰色 全网通 256G 标配",
+          "stock_num": "200",
+          "category_spec_list":[
+            {
+              "category_spec_code": "011"
+            },
+            {
+              "category_spec_code": "021"
+            },
+            {
+              "category_spec_code": "031"
+            }
+          ],
+          "financialProductsList":[
+            {
+              "product_no":"JR1234567890",   /*产品编号*/
+              "prd_series_no":"JR1234567",     /*产品系列编号*/
+              "total_days":360,              /*总天数*/
+              "avg_rent_amt":12,
+              "rent_pay_style":"0,1",
+              "AdditionalServicesList":[
+                {
+                  "fee_type_code":"fy1234567",
+                  "ass_serv_no":"ass123456789",
+                  "serv_name":"开发费",
+                  "serv_fee":100,
+                  "access_style":"支付宝",
+                  "is_cancelled":false,
+                  "is_optional":false,
+                  "serv_desc":"用于支付给开发人员的费用",
+                }
+              ],  /*附加服务列表*/
+              "feeList":[
+                {
+                  "fee_no":"FY12344",
+                  "fee_name": "快递费",
+                  "fee_desc": "用于邮寄手机给你"
+                }
+              ]                   /*费用列表*/
+            },
+            {
+              "product_no":"JR1234567890",   /*产品编号*/
+              "prd_series_no":"JR1234567",     /*产品系列编号*/
+              "total_days":360,              /*总天数*/
+              "avg_rent_amt":62,
+              "rent_pay_style":"0",
+              "AdditionalServicesList":[
+                {
+                  "fee_type_code":"fy1234567",
+                  "ass_serv_no":"ass123456789",
+                  "serv_name":"开发费",
+                  "serv_fee":100,
+                  "access_style":"支付宝",
+                  "is_cancelled":false,
+                  "is_optional":false,
+                  "serv_desc":"用于支付给开发人员的费用",
+                }
+              ],
+              "feeList":[
+                {
+                  "fee_no":"FY12344",
+                  "fee_name": "快递费",
+                  "fee_desc": "用于邮寄手机给你"
+                }
+              ]                               /*费用列表*/
+            },
+            {
+              "product_no":"JR1234567890",   /*产品编号*/
+              "prd_series_no":"JR1234567",     /*产品系列编号*/
+              "total_days":720,              /*总天数*/
+              "avg_rent_amt":32,
+              "rent_pay_style":"0,1",
+              "AdditionalServicesList":[
+                {
+                  "fee_type_code":"fy1234567",
+                  "ass_serv_no":"ass123456789",
+                  "serv_name":"开发费",
+                  "serv_fee":100,
+                  "access_style":"支付宝",
+                  "is_cancelled":false,
+                  "is_optional":false,
+                  "serv_desc":"用于支付给开发人员的费用",
+                }
+              ],
+              "feeList":[
+                {
+                  "fee_no":"FY12344",
+                  "fee_name": "快递费",
+                  "fee_desc": "用于邮寄手机给你"
+                }
+              ]                               /*费用列表*/
+            },
+            {
+              "product_no":"JR1234567890",   /*产品编号*/
+              "prd_series_no":"JR1234567",     /*产品系列编号*/
+              "total_days":360,              /*总天数*/
+              "avg_rent_amt":12,
+              "rent_pay_style":"0,1",
+              "AdditionalServicesList":[
+                {
+                  "fee_type_code":"fy1234567",
+                  "ass_serv_no":"ass123456789",
+                  "serv_name":"开发费",
+                  "serv_fee":100,
+                  "access_style":"支付宝",
+                  "is_cancelled":false,
+                  "is_optional":false,
+                  "serv_desc":"用于支付给开发人员的费用",
+                }
+              ],
+              "feeList":[
+                {
+                  "fee_no":"FY12344",
+                  "fee_name": "快递费",
+                  "fee_desc": "用于邮寄手机给你"
+                }
+              ]                               /*费用列表*/
+            },
+            {
+              "product_no":"JR1234567890",   /*产品编号*/
+              "prd_series_no":"JR1234567",     /*产品系列编号*/
+              "total_days":360,              /*总天数*/
+              "avg_rent_amt":12,
+              "rent_pay_style":"0,1",
+              "AdditionalServicesList":[
+                {
+                  "fee_type_code":"fy1234567",
+                  "ass_serv_no":"ass123456789",
+                  "serv_name":"开发费",
+                  "serv_fee":100,
+                  "access_style":"支付宝",
+                  "is_cancelled":false,
+                  "is_optional":false,
+                  "serv_desc":"用于支付给开发人员的费用",
+                }
+              ],
+              "feeList":[
+                {
+                  "fee_no":"FY12344",
+                  "fee_name": "快递费",
+                  "fee_desc": "用于邮寄手机给你"
+                }
+              ]                               /*费用列表*/
+            }
+          ]
+        },
+        {
+          "commodity_no": 360,
+          "sign_price":8088,
+          "premium":388,
+          "performance_bond":500,
+          "is_limited": true,
+          "detail_img_list":"https://m.360buyimg.com/n12/jfs/t11350/3/801820749/81787/e52825bc/59f81bfcNd6ab9593.jpg!q70.jpg,https://m.360buyimg.com/n12/jfs/t10510/356/1387319554/133169/61150d04/59e04ec1N18114bb6.jpg!q70.jpg,https://m.360buyimg.com/n12/jfs/t7711/77/3420026303/81791/97c4da1a/59f81bf9N87215efc.jpg!q70.jpg,https://m.360buyimg.com/n12/s750x750_jfs/t9787/44/1366178630/69243/8e02dfff/59e04ec5Nccd0e3f7.jpg!q70.jpg,https://m.360buyimg.com/n12/s750x750_jfs/t10975/346/1393263763/101094/ab51894/59e04ec8Nc31bac75.jpg!q70.jpg,https://m.360buyimg.com/n12/s750x750_jfs/t11239/125/773084250/26341/c419d729/59f81c0aN6bc01d3c.jpg!q70.jpg",
+          "detail_img":"https://m.360buyimg.com/n12/jfs/t11350/3/801820749/81787/e52825bc/59f81bfcNd6ab9593.jpg!q70.jpg",
+          "config_detail":"4G手机 iPhone10 深空灰色 全网通 256G 标配",
+          "stock_num": "200",
+          "category_spec_list":[
+            {
+              "category_spec_code": "011"
+            },
+            {
+              "category_spec_code": "021"
+            },
+            {
+              "category_spec_code": "031"
+            }
+          ]
+        },
+        {
+          "commodity_no": 360,
+          "sign_price":8088,
+          "premium":388,
+          "performance_bond":500,
+          "is_limited": true,
+          "detail_img_list":"https://m.360buyimg.com/n12/jfs/t11350/3/801820749/81787/e52825bc/59f81bfcNd6ab9593.jpg!q70.jpg,https://m.360buyimg.com/n12/jfs/t10510/356/1387319554/133169/61150d04/59e04ec1N18114bb6.jpg!q70.jpg,https://m.360buyimg.com/n12/jfs/t7711/77/3420026303/81791/97c4da1a/59f81bf9N87215efc.jpg!q70.jpg,https://m.360buyimg.com/n12/s750x750_jfs/t9787/44/1366178630/69243/8e02dfff/59e04ec5Nccd0e3f7.jpg!q70.jpg,https://m.360buyimg.com/n12/s750x750_jfs/t10975/346/1393263763/101094/ab51894/59e04ec8Nc31bac75.jpg!q70.jpg,https://m.360buyimg.com/n12/s750x750_jfs/t11239/125/773084250/26341/c419d729/59f81c0aN6bc01d3c.jpg!q70.jpg",
+          "detail_img":"https://m.360buyimg.com/n12/jfs/t11350/3/801820749/81787/e52825bc/59f81bfcNd6ab9593.jpg!q70.jpg",
+          "config_detail":"4G手机 iPhone10 深空灰色 全网通 256G 标配",
+          "stock_num": "200",
+          "category_spec_list":[
+            {
+              "category_spec_code": "012"
+            },
+            {
+              "category_spec_code": "021"
+            },
+            {
+              "category_spec_code": "031"
+            }
+          ],
+          "AdditionalServicesList":[
+            {
+              "fee_type_code":"fy1234567",
+              "ass_serv_no":"ass123456789",
+              "serv_name":"开发费",
+              "serv_fee":100,
+              "access_style":"支付宝",
+              "is_cancelled":false,
+              "is_optional":false,
+              "serv_desc":"用于支付给开发人员的费用",
+            }
+          ],  /*附加服务列表*/
+          "feeList":[
+            {
+              "fee_no":"FY12344",
+              "fee_name": "快递费",
+              "fee_desc": "用于邮寄手机给你"
+            }
+          ]                               /*费用列表*/
+        },
+        {
+          "commodity_no": 360,
+          "sign_price":8088,
+          "premium":388,
+          "performance_bond":500,
+          "is_limited": true,
+          "detail_img_list":"https://m.360buyimg.com/n12/jfs/t11350/3/801820749/81787/e52825bc/59f81bfcNd6ab9593.jpg!q70.jpg,https://m.360buyimg.com/n12/jfs/t10510/356/1387319554/133169/61150d04/59e04ec1N18114bb6.jpg!q70.jpg,https://m.360buyimg.com/n12/jfs/t7711/77/3420026303/81791/97c4da1a/59f81bf9N87215efc.jpg!q70.jpg,https://m.360buyimg.com/n12/s750x750_jfs/t9787/44/1366178630/69243/8e02dfff/59e04ec5Nccd0e3f7.jpg!q70.jpg,https://m.360buyimg.com/n12/s750x750_jfs/t10975/346/1393263763/101094/ab51894/59e04ec8Nc31bac75.jpg!q70.jpg,https://m.360buyimg.com/n12/s750x750_jfs/t11239/125/773084250/26341/c419d729/59f81c0aN6bc01d3c.jpg!q70.jpg",
+          "detail_img":"https://m.360buyimg.com/n12/jfs/t11350/3/801820749/81787/e52825bc/59f81bfcNd6ab9593.jpg!q70.jpg",
+          "config_detail":"4G手机 iPhone10 深空灰色 全网通 256G 标配",
+          "stock_num": "200",
+          "category_spec_list":[
+            {
+              "category_spec_code": "011"
+            },
+            {
+              "category_spec_code": "023"
+            },
+            {
+              "category_spec_code": "038"
+            }
+          ],
+          "AdditionalServicesList":[
+            {
+              "fee_type_code":"fy1234567",
+              "ass_serv_no":"ass123456789",
+              "serv_name":"开发费",
+              "serv_fee":100,
+              "access_style":"支付宝",
+              "is_cancelled":false,
+              "is_optional":false,
+              "serv_desc":"用于支付给开发人员的费用",
+            }
+          ],  /*附加服务列表*/
+          "feeList":[
+            {
+              "fee_no":"FY12344",
+              "fee_name": "快递费",
+              "fee_desc": "用于邮寄手机给你"
+            }
+          ]                               /*费用列表*/
+        }
+      ]
+
+    }
+  ]
+}

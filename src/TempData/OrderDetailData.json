@@ -1,0 +1,118 @@
+{
+  "shortName": "IphoneX",
+  "specContentList": "S217/256G/黑色",
+  "listImg": "",
+  "signPrice": 9999,
+  "premium": 200,
+  "feeAmt": 39,
+  "payDepositAmt": 5999,
+  "orderCreditAmt": 10000,
+  "payDepositAmt": 5999,
+  "orderNo": "RS1122334455667788",
+  "createDate": "2018.04.09 15:12",
+  "status": 0,
+  "actualRentPayStyle": 0,
+  "firstPaymentAmount": 2000,
+  "overdualAount": 4000,
+  "totalDays": 365,
+  "totalTerm": 12,
+  "expireDate": "2019.04.09 15:12",
+  "pdfFileList": [
+    {
+      "templateName": "《用户租赁以及服务协议》",
+      "url": "string"
+    },
+    {
+      "templateName": "《个人信息查询和使用授权书》",
+      "url": "string"
+    },
+    {
+      "templateName": "《个人信用报告查询授权书》",
+      "url": "string"
+    }
+  ],
+  "repaymentPlanList": [
+    {
+      "term": "1",
+      "feeTypeCode": "123",
+      "feeName": "租金",
+      "payAmt": 1000,
+      "termStartDate": "2018-04-08 15:20",
+      "payDate": "2018-04-08  09:05:00",
+      "termDays": 31,
+      "paymentStatus": "正常",
+      "delayPayDate": "2018-05-08 09:05:00.83"
+    },
+    {
+      "term": "2",
+      "feeTypeCode": "123",
+      "feeName": "租金",
+      "payAmt": 1000,
+      "termStartDate": "2018-05-08 15:20",
+      "payDate": "2018-05-08  09:05:00",
+      "termDays": 31,
+      "paymentStatus": "正常",
+      "delayPayDate": "2018-06-08 09:05:00.83"
+    },
+    {
+      "term": "3",
+      "feeTypeCode": "123",
+      "feeName": "租金",
+      "payAmt": 1000,
+      "termStartDate": "2018-06-08 15:20",
+      "payDate": "2018-06-08  09:05:00",
+      "termDays": 31,
+      "paymentStatus": "正常",
+      "delayPayDate": "2018-07-08 09:05:00.83"
+    },
+    {
+      "term": "4",
+      "feeTypeCode": "123",
+      "feeName": "租金",
+      "payAmt": 1000,
+      "termStartDate": "2018-07-08 15:20",
+      "payDate": "2018-07-08  09:05:00",
+      "termDays": 31,
+      "paymentStatus": "正常",
+      "delayPayDate": "2018-08-08 09:05:00.83"
+    }
+  ],
+  "serviceFeeList": [
+    {
+      "avgFeeAmt": 123,
+      "feeAccessModel": 1.1,
+      "feeAmt": 0,
+      "feeDesc": "该部分用于保障，押金OK",
+      "feeName": "押金",
+      "feeNo": "123452",
+      "feeTotalAmt": 5000,
+      "feeType": "123",
+      "orderNo": "RS1122334455667788"
+    },
+    {
+      "avgFeeAmt": 125,
+      "feeAccessModel": 1.2,
+      "feeAmt": 0,
+      "feeDesc": "该部分用于保障，押金OK",
+      "feeName": "信用免押",
+      "feeNo": "1234524",
+      "feeTotalAmt": 0,
+      "feeType": "123",
+      "orderNo": "RS1122334455667788"
+    },
+    {
+      "avgFeeAmt": 126,
+      "feeAccessModel": 1.4,
+      "feeAmt": 0,
+      "feeDesc": "该部分用于保障，押金OK",
+      "feeName": "产品溢价",
+      "feeNo": "12345244",
+      "feeTotalAmt": 1000,
+      "feeType": "123",
+      "orderNo": "RS1122334455667788"
+    }
+  ],
+  "receiverName": "小明",
+  "receiverTel": "18617163096",
+  "consigneeAddr": "深圳市福田区深南大道2003号"
+}

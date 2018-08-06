@@ -1,0 +1,348 @@
+/**
+* f: font
+* d: dark
+* l: light
+* b: border
+* i: input
+*/
+@orange: #ffda29;
+@bg-orange: #fef7b3;
+@orange-tint: #fef7b3;
+@red: #f04655;
+@blue: #5b62cd;
+@l-blue: #a0a4c9;
+@f-d-black: #3c3c5e;
+@f-d-gray: #82859a;
+@f-l-gray: #a0aabd;
+@b-l-gray: #eeeeee;
+@b-d-gray: #d2d2d2;
+@gray-8: #888888;
+@bg: #f5f5f5; /* 背景色 */
+@i-bg-gray: #fcfcfc; /*文本框的背景颜色*/
+@i-br-gray: #eaeaea; /*文本边框的颜色*/
+
+.border-1px-all(@color: #D2D2D2) {
+  position: relative;
+  &:after {
+    content: ' ';
+    position: absolute;
+    left: 0;
+    top: 0;
+    border: 1px solid @color;
+    border-radius: 3px;
+    color: @color;
+    -webkit-transform-origin: 0 0;
+    transform-origin: 0 0;
+  }
+  @media (-webkit-min-device-pixel-ratio: 2), (min-device-pixel-ratio: 2) {
+    &:after {
+      content: ' ';
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 200%;
+      height: 200%;
+      border: 1px solid @color;
+      border-radius: 6px;
+      color: @color;
+      -webkit-transform-origin: 0 0;
+      transform-origin: 0 0;
+      -webkit-transform: scale(0.5);
+      transform: scale(0.5);
+    }
+  }
+}
+
+/*
+* 上边框1px
+*/
+.border-1px(@color: #D2D2D2) {
+  position: relative;
+  &:after {
+    content: ' ';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    height: 1px;
+    border-bottom: 1px solid @color;
+    color: @color;
+    -webkit-transform-origin: 0 0;
+    transform-origin: 0 0;
+  }
+  @media (-webkit-min-device-pixel-ratio: 2), (min-device-pixel-ratio: 2) {
+    &:after {
+      content: ' ';
+      position: absolute;
+      left: 0;
+      bottom: -1px;
+      right: 0;
+      height: 1px;
+      border-bottom: 1px solid @color;
+      color: @color;
+      -webkit-transform-origin: 0 0;
+      transform-origin: 0 0;
+      -webkit-transform: scaleY(0.5);
+      transform: scaleY(0.5);
+    }
+  }
+}
+.border-r-1px(@color: #D2D2D2) {
+  position: relative;
+  &:after {
+    content: ' ';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    width: 1px;
+    border-right: 1px solid @color;
+    color: @color;
+    transform-origin: 0 100%;
+  }
+  @media (-webkit-min-device-pixel-ratio: 2), (min-device-pixel-ratio: 2) {
+    &:after {
+      content: ' ';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      width: 1px;
+      border-right: 1px solid @color;
+      color: @color;
+      transform-origin: 0 100%;
+      transform: scaleX(0.5);
+    }
+  }
+}
+/*
+* 下边框1px
+*/
+.border-1px-top(@color: #D2D2D2) {
+  position: relative;
+  &:after {
+    content: ' ';
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    height: 1px;
+    border-top: 1px solid @color;
+    color: @color;
+    -webkit-transform-origin: 0 0;
+    transform-origin: 0 0;
+  }
+  @media (-webkit-min-device-pixel-ratio: 2), (min-device-pixel-ratio: 2) {
+    &:after {
+      content: ' ';
+      position: absolute;
+      left: 0;
+      top: 0;
+      right: 0;
+      height: 1px;
+      border-top: 1px solid @color;
+      color: @color;
+      -webkit-transform-origin: 0 0;
+      transform-origin: 0 0;
+      -webkit-transform: scaleY(0.5);
+      transform: scaleY(0.5);
+    }
+  }
+}
+/*
+* 普通的div一个像素
+*/
+.height-1px(@color: #D2D2D2) {
+  height: 1px;
+  background: @color;
+  &:after {
+    height: 1px;
+    color: @color;
+    background: @color;
+    -webkit-transform-origin: 0 0;
+    transform-origin: 0 0;
+  }
+  @media (-webkit-min-device-pixel-ratio: 2), (min-device-pixel-ratio: 2) {
+    &:after {
+      height: 0.5px;
+      background: @color;
+    }
+  }
+  @media (-webkit-min-device-pixel-ratio: 3), (min-device-pixel-ratio: 3) {
+    &:after {
+      height: 0.333333px;
+      background: @color;
+    }
+  }
+}
+.border-none() {
+  &:after {
+    display: none;
+  }
+}
+/*
+* right-arrow 右侧箭头
+*/
+.fs-right-arrow {
+  content: ' ';
+  display: inline-block;
+  height: 6px;
+  width: 6px;
+  border-width: 2px 2px 0 0;
+  border-color: #c8c8cd;
+  border-style: solid;
+  -webkit-transform: matrix(0.71, 0.71, -0.71, 0.71, 0, 0);
+  transform: matrix(0.71, 0.71, -0.71, 0.71, 0, 0);
+  position: absolute;
+  top: 50%;
+  margin-top: -4px;
+  right: 13px;
+}
+.fs-gray {
+  background: #f8f8f8 !important;
+  color: #ccc !important;
+}
+/*
+* 修复安卓 position: fixed; 的bug
+*/
+@media screen and (max-height: 400px) {
+  .fs-fixed-hidden {
+    display: none;
+  }
+}
+
+/*
+* banner, button 等渐变色
+*/
+.bgimg-base-t-b(@orange: #F04655,@l-red: #F04655) {
+  background-image: -webkit-linear-gradient(top, @orange, @l-red);
+  background-image: -o-linear-gradient(top, @orange, @l-red);
+  background-image: -moz-linear-gradient(top, @orange, @l-red);
+  background-image: linear-gradient(to top, @orange, @l-red);
+}
+.bg(@url) {
+  background-image: url('.@{url}@1x.png');
+  background-repeat: no-repeat;
+  background-size: contain;
+  @media (-webkit-min-device-pixel-ratio: 3), (min-device-pixel-ratio: 3) {
+    background-image: url('.@{url}@1.5x.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+}
+// 针对后期UI切图的命名
+.bg1(@url) {
+  background-image: url('.@{url}.png');
+  background-repeat: no-repeat;
+  background-size: contain;
+  @media (-webkit-min-device-pixel-ratio: 2), (min-device-pixel-ratio: 2) {
+    background-image: url('.@{url}@2x.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+}
+// 针对后期UI切图的命名
+.bg3(@url) {
+  background-image: url('.@{url}@3x.png');
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+// 商品列表tag 1px border
+.border-r1(@col) {
+  position: relative;
+  border:none;
+  &:after{
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    border: 1px solid @col;
+    border-radius: 30px;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 200%;
+    height: 200%;
+    -webkit-transform: scale(0.5);
+    transform: scale(0.5);
+    -webkit-transform-origin: left top;
+    transform-origin: left top;
+  }
+  @media (-webkit-min-device-pixel-ratio: 2), (min-device-pixel-ratio: 2) {
+    &:after{
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      border: 1px solid @col;
+      border-radius: 30px;
+      -webkit-box-sizing: border-box;
+      box-sizing: border-box;
+      width: 200%;
+      height: 200%;
+      -webkit-transform: scale(0.5);
+      transform: scale(0.5);
+      -webkit-transform-origin: left top;
+      transform-origin: left top;
+    }
+  }
+  @media (-webkit-min-device-pixel-ratio: 3), (min-device-pixel-ratio: 3) {
+    &:after{
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      border: 1px solid @col;
+      border-radius: 30px;
+      -webkit-box-sizing: border-box;
+      box-sizing: border-box;
+      width: 300%;
+      height: 300%;
+      -webkit-transform: scale(0.333);
+      transform: scale(0.333);
+      -webkit-transform-origin: left top;
+      transform-origin: left top;
+    }
+  }
+}
+//  多加了个jpg 的 给InitLogin页面
+.bg_jpg(@url) {
+  background-image: url('.@{url}@1x.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  @media (-webkit-min-device-pixel-ratio: 2), (min-device-pixel-ratio: 2) {
+    background-image: url('.@{url}@2x.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+  @media (-webkit-min-device-pixel-ratio: 3), (min-device-pixel-ratio: 3) {
+    background-image: url('.@{url}@3x.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+}
+
+// input::-webkit-input-placeholder{
+//   color: transparent !important;
+// }
+// input:-moz-placeholder {
+//   color: transparent !important;
+// } /* Firefox 18- */
+// input::-moz-placeholder {
+//   color: transparent !important;
+// } /* Firefox 19+ */
+// input:-ms-input-placeholder {
+//   color: transparent !important;
+// } /* oldIE ;) */
+
+input:focus::-webkit-input-placeholder {
+  color: transparent;
+}
+input:focus:-moz-placeholder {
+  color: transparent;
+} /* Firefox 18- */
+input:focus::-moz-placeholder {
+  color: transparent;
+} /* Firefox 19+ */
+input:focus:-ms-input-placeholder {
+  color: transparent;
+} /* oldIE ;) */

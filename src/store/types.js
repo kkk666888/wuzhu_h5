@@ -1,0 +1,4 @@
+export const ORDER_STATE = 'ORDER_STATE'
+export const SELECTED_INDEX = 'SELECTED_INDEX'
+export const ID_INFO_BTN_STATE = 'ID_INFO_BTN_STATE'
+export const CATEGORY_STATE = 'CATEGORY_STATE'
