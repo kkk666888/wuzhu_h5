@@ -5,9 +5,9 @@
     </div>
     <div class="login_input">
       <group class="group_input">
-        <x-input class="input_login" placeholder="请输入手机号" v-model="phoneNum" title="手机号" type="tel" @on-blur="inputPhoneChange"></x-input>
+        <x-input class="input_login needsclick" placeholder="请输入手机号" v-model="phoneNum" title="手机号" type="tel" @on-blur="inputPhoneChange"></x-input>
         <!-- placeholder-align="right" -->
-        <x-input class="input_login xinput_verify" placeholder="请输入验证码" v-model="authCode" title="验证码" type="tel" @on-blur="inputCodeChange">
+        <x-input class="input_login xinput_verify needsclick" placeholder="请输入验证码" v-model="authCode" title="验证码" type="tel" @on-blur="inputCodeChange">
           <span ref="getCodeCtrl" :class="['get-code', flag ? 'active' : '']" slot="right" v-on:click="flag && getVerificationCode()">获取验证码</span>
         </x-input>
       </group>
@@ -39,7 +39,7 @@
 <script type="text/ecmascript-6">
 import { XInput, Group, XButton } from 'vux';
 import feeDescAlert from './../FeeItemSubView/FeeDescAlert';
-import { RegainOpenid, GetLocation, isWeiXin } from './../../util/utils';
+import { RegainOpenid, GetLocation, isWeiXin, isWzapp, isPhoneAvailable } from './../../util/utils';
 import { ReportData } from './../../util/ReportData';
 import userRegistrationAgreement from './../Potocol/UserRegistrationAgreement';
 export default {
@@ -83,8 +83,10 @@ export default {
     phoneNum: function(val, oldval) {
       let that = this;
       if (String(val).length > 10) {
-        if (that.isPhoneAvailable(val)) {
+        if (isPhoneAvailable(val)) {
           that.flag = true;
+        } else {
+          that.flag = false;
         }
       } else {
         that.flag = false;
@@ -97,12 +99,6 @@ export default {
       pagecnname: '物主平台用户注册协议',
       pagename: 'agreement'
     });
-    // configWX(this, {
-    //   // jssdk 配置
-    //   key: 'InitLoginWX',
-    //   url: window.location.href.split('#')[0],
-    //   jsApiList: ['getLocation']
-    // });
   },
   mounted: function() {
     let that = this;
@@ -137,7 +133,7 @@ export default {
             that.userLocation.longitude = res.longitude; // 经度，浮点数，范围为180 ~ -180
           })
           .catch(error => {
-            console.log('H5 getLocation API 错误代码:', error.code, ' 错误信息:', error.message);
+            console.log(error);
             if (!isWeiXin()) {
             } else {
               // eslint-disable-next-line
@@ -152,24 +148,10 @@ export default {
               });
             }
           });
-
-        // 微信获取位置接口
-        // wx.getLocation({ // eslint-disable-line
-        //   type: 'wgs84',
-        //   success: function(res) {
-        //     // { latitude: 22.52291, longitude: 114.05454, errMsg: "getLocation:ok" }
-        //     that.userLocation.latitude = res.latitude // 纬度，浮点数，范围为90 ~ -90
-        //     that.userLocation.longitude = res.longitude // 经度，浮点数，范围为180 ~ -180
-        //   },
-        //   cancel: function() {
-        //     // 用户取消情况
-        //   }
-        // })
       }
     },
     // 注册协议 按钮 和 弹出框确认 按钮
     registProtocol() {
-      console.log('>> registProtocol');
       let that = this;
       that.showScrollBox = !that.showScrollBox;
       if (that.showScrollBox) {
@@ -184,7 +166,7 @@ export default {
         return false;
       }
       that.$store.commit('ID_INFO_BTN_STATE', { IDInfoBtnState: 'next' });
-      if (!that.isPhoneAvailable(that.phoneNum)) {
+      if (!isPhoneAvailable(that.phoneNum)) {
         that.$vux.alert.show({
           content: '请输入正确的手机号'
         });
@@ -204,14 +186,6 @@ export default {
       }
       that.btnActive = false; // 按钮不可以点击, 请求结束后再激活
       that.reqLogin();
-    },
-    // 判断 phoneNum
-    isPhoneAvailable(param) {
-      // let regex = /^[1][3,5,6,7,8,9][0-9]{9}$/
-      // 支持13、15、16、17（除170、171）、18、19的号段
-      let regex = /^(13[0-9]{9}|14[5,7][0-9]{8}|15[0-9]{9}|16[0-9]{9}|17[2-9][0-9]{8}|18[0-9]{9}|19[0-9]{9})$/;
-      // console.log('isPhoneAvailable ' + regex.test(param))
-      return regex.test(param);
     },
     fsCountDown() {
       let that = this;
@@ -233,10 +207,9 @@ export default {
     },
     getVerificationCode() {
       let that = this;
-      console.log('>> getVerificationCode');
       // 获取 经纬度 信息
       that.getLocation();
-      if (that.isPhoneAvailable(that.phoneNum)) {
+      if (isPhoneAvailable(that.phoneNum)) {
         // 倒计时
         that.fsCountDown();
         that.flag = false;
@@ -274,8 +247,12 @@ export default {
     reqLogin() {
       let that = this;
       // smsCode 验证码 seqNo 短信序列号 mobile 手机
-      let urlParam =
-        '?smsCode=' + that.authCode + '&seqNo=' + that.seqNo + '&mobile=' + that.phoneNum;
+      let urlParam = '?smsCode=' + that.authCode + '&seqNo=' + that.seqNo + '&mobile=' + that.phoneNum;
+      let platform = that.$store.state.platformCode;
+      console.log('login platform === ' + platform);
+      if (isWzapp()) {
+        that.$store.commit('updateOthersOpenID', { othersOpenID: 'app' + that.phoneNum });
+      }
       let _logDO = {
         logNo: '',
         memebershipNo: '',
@@ -283,22 +260,23 @@ export default {
         loginChannel: '',
         loginIp: '',
         deviceName: '', // 登录设备名称
-        deviceId: '', // 登录设备 ID
+        deviceId: that.$store.state.deviceId, // 登录设备 ID
         gpsLongitude: that.userLocation.longitude, // 经度
         gpsLatitude: that.userLocation.latitude, // 纬度
         gpsAddress: '', // 经纬度 地址
         gpsProvince: '', // 经纬度 省份
         gpsCity: '', // 经纬度 城市
-        gpsCounty: '' // 经纬度 区县
+        gpsCounty: '', // 经纬度 区县
+        platformCode: platform, // 客户端平台
+        loginData: that.$store.state.deviceInfo // 登录信息，目前主要是设备信息 2018-9-20
       };
       that.$http
         .post('/wuzhu/user/login' + urlParam, {
           channelNo: that.$store.state.channelNo, // 渠道号
           bizNode: 123, // 业务号 --
           recommCode: that.$store.state.recommeCode, // 邀请码 --
-          openId: that.$store.state.othersOpenID, // 微信的openId
-          // openId: 'string', // 曾萍的openId
-          // openId: 'o9ijZ0YpQjAjg7iPYXNsUzQRpy0g',  // dragon的openId
+          openId: that.$store.state.othersOpenID, // 第三方的openId
+          // openId: 'o70v-0qujxSEcBfbqSCIExLEkwJY', // hcg的openId
           strMembershipLoginLogDO: JSON.stringify(_logDO)
         })
         .then(res => {
@@ -318,12 +296,12 @@ export default {
             }
             that.$reporter.dataReport(that.brisk);
             // 跳转下一步`
-            that.$router.push({ name: that.nextPage });
+            that.$router.replace({ name: that.nextPage });
           } else if (res.code === '804') {
             // 804 openid 为空
             that.$vux.confirm.show({
-              // content: res.msg,
-              content: '微信授权出现问题，点击确认重新授权',
+              content: res.msg,
+              // content: '微信授权出现问题，点击确认重新授权',
               onConfirm() {
                 RegainOpenid(); // 重新授权获取 code 值
               }
@@ -338,13 +316,12 @@ export default {
         })
         .catch(err => {
           that.btnActive = true; // 按钮可以点击
-          console.log(err);
+          console.error(err);
         });
     }
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
-      console.log(vm);
       vm.nextPage = from.name;
       localStorage.setItem('origin', from.name);
     });

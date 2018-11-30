@@ -142,6 +142,14 @@
       <div class="payMoney">
         <div class="item-row">
           <div class="item-col">
+            <div class="money-label">物主卡抵扣</div>
+          </div>
+          <div class="item-col">
+            <div class="money-value-2">￥{{planMoneyModel.cashOffsetAmt|moneyFormat}}</div>
+          </div>
+        </div>
+        <div class="item-row">
+          <div class="item-col">
             <div class="money-label">账户抵扣</div>
           </div>
           <div class="item-col">

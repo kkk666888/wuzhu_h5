@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import store from '../store/store';
+import { isAlipayLife } from './../util/utils';
 
 Vue.use(Router);
 
@@ -16,6 +17,17 @@ const router = new Router({
       },
       beforeEnter: (to, from, next) => {
         setTitle('登录');
+        next();
+      }
+    },
+    {
+      path: '/CheckMobile',
+      name: 'CheckMobile',
+      component: resolve => {
+        require.ensure([], () => resolve(require('@/components/CheckMobile/CheckMobile.vue')), 'CheckMobile');
+      },
+      beforeEnter: (to, from, next) => {
+        setTitle('手机号验证');
         next();
       }
     },
@@ -50,7 +62,7 @@ const router = new Router({
         require.ensure([], () => resolve(require('@/components/OrderSet/IDverify.vue')), 'IDverify');
       },
       beforeEnter: (to, from, next) => {
-        setTitle('身份信息验证');
+        setTitle('身份认证');
         next();
       }
     },
@@ -61,7 +73,7 @@ const router = new Router({
         require.ensure([], () => resolve(require('@/components/OrderSet/LivenessVerify.vue')), 'LivenessVerify');
       },
       beforeEnter: (to, from, next) => {
-        setTitle('身份信息');
+        setTitle('活体检测');
         next();
       }
     },
@@ -109,7 +121,7 @@ const router = new Router({
         );
       },
       beforeEnter: (to, from, next) => {
-        setTitle('订单预约');
+        setTitle('订单提交成功');
         next();
       }
     },
@@ -157,7 +169,7 @@ const router = new Router({
         require.ensure([], () => resolve(require('@/components/Pay/WXPaying.vue')), 'WXPaying');
       },
       beforeEnter: (to, from, next) => {
-        setTitle('支付');
+        setTitle('首期支付');
         next();
       }
     },
@@ -179,7 +191,7 @@ const router = new Router({
         require.ensure([], () => resolve(require('@/components/Pay/WXPaySuccess.vue')), 'WXPaySuccess');
       },
       beforeEnter: (to, from, next) => {
-        setTitle('收银台');
+        setTitle('支付结果');
         next();
       }
     },
@@ -190,7 +202,7 @@ const router = new Router({
         require.ensure([], () => resolve(require('@/components/Pay/WXPayOverpaying.vue')), 'WXPayOverpaying');
       },
       beforeEnter: (to, from, next) => {
-        setTitle('支付');
+        setTitle('账单支付');
         next();
       }
     },
@@ -207,32 +219,13 @@ const router = new Router({
       }
     },
     {
-      path: '/GoodsReturn/InitiateGoodsReturn',
-      name: 'InitiateGoodsReturn',
+      path: '/GoodsReturn/GoodsReturn',
+      name: 'GoodsReturn',
       component: resolve => {
-        require.ensure(
-          [],
-          () => resolve(require('@/components/GoodsReturn/InitiateGoodsReturn.vue')),
-          'InitiateGoodsReturn'
-        );
+        require.ensure([], () => resolve(require('@/components/GoodsReturn/GoodsReturn.vue')), 'GoodsReturn');
       },
       beforeEnter: (to, from, next) => {
-        setTitle('发起归还');
-        next();
-      }
-    },
-    {
-      path: '/GoodsReturn/WriteLogisticsInfo',
-      name: 'WriteLogisticsInfo',
-      component: resolve => {
-        require.ensure(
-          [],
-          () => resolve(require('@/components/GoodsReturn/WriteLogisticsInfo.vue')),
-          'WriteLogisticsInfo'
-        );
-      },
-      beforeEnter: (to, from, next) => {
-        setTitle('填写物流信息');
+        setTitle('归还');
         next();
       }
     },
@@ -339,7 +332,7 @@ const router = new Router({
         );
       },
       beforeEnter: (to, from, next) => {
-        setTitle('商品详情');
+        setTitle('详情图预览');
         next();
       }
     },
@@ -350,7 +343,7 @@ const router = new Router({
         require.ensure([], () => resolve(require('@/components/OrderList/OrderListPage.vue')), 'OrderListPage');
       },
       beforeEnter: (to, from, next) => {
-        setTitle('租赁订单');
+        setTitle('订单列表');
         next();
       }
     },
@@ -361,26 +354,30 @@ const router = new Router({
         require.ensure([], () => resolve(require('@/components/About/About.vue')), 'About');
       },
       beforeEnter: (to, from, next) => {
-        setTitle('物主');
+        setTitle('关于');
         next();
       }
     },
-    {
-      path: '/OrderDetail/OrderDetailPage',
-      name: 'OrderDetailPage',
-      component: resolve => {
-        require.ensure([], () => resolve(require('@/components/OrderDetail/OrderDetailPage.vue')), 'OrderDetailPage');
-      },
-      beforeEnter: (to, from, next) => {
-        setTitle('订单详情');
-        next();
-      }
-    },
+    // {
+    //   path: '/OrderDetail/OrderDetailPage',
+    //   name: 'OrderDetailPage',
+    //   component: resolve => {
+    //     require.ensure([], () => resolve(require('@/components/OrderDetail/OrderDetailPage.vue')), 'OrderDetailPage');
+    //   },
+    //   beforeEnter: (to, from, next) => {
+    //     setTitle('订单详情');
+    //     next();
+    //   }
+    // },
     {
       path: '/OrderDetail/OrderDetailEmptyPage',
       name: 'OrderDetailEmptyPage',
       component: resolve => {
-        require.ensure([], () => resolve(require('@/components/OrderDetail/OrderDetailEmptyPage.vue')), 'OrderDetailEmptyPage');
+        require.ensure(
+          [],
+          () => resolve(require('@/components/OrderDetail/OrderDetailEmptyPage.vue')),
+          'OrderDetailEmptyPage'
+        );
       },
       beforeEnter: (to, from, next) => {
         setTitle('订单详情中间页面');
@@ -409,7 +406,7 @@ const router = new Router({
         require.ensure([], () => resolve(require('@/components/Credit/Credit.vue')), 'Credit');
       },
       beforeEnter: (to, from, next) => {
-        setTitle('信用授权');
+        setTitle('信用认证');
         next();
       }
     },
@@ -439,24 +436,28 @@ const router = new Router({
     {
       path: '/relet/confirmOrder/:orderNo',
       name: 'reletConfirmOrder',
-      component: (resolve) => {
-        require.ensure([], () => resolve(require('@/components/reletConfirmOrder/reletConfirmOrder.vue')), 'reletConfirmOrder')
+      component: resolve => {
+        require.ensure(
+          [],
+          () => resolve(require('@/components/reletConfirmOrder/reletConfirmOrder.vue')),
+          'reletConfirmOrder'
+        );
       },
       beforeEnter: (to, from, next) => {
-        setTitle('续租-确认订单')
-        next()
+        setTitle('续租-确认订单');
+        next();
       }
     },
     // 买断
     {
       path: '/Buyout/Buyout',
       name: 'Buyout',
-      component: (resolve) => {
-        require.ensure([], () => resolve(require('@/components/Buyout/Buyout.vue')), 'Buyout')
+      component: resolve => {
+        require.ensure([], () => resolve(require('@/components/Buyout/Buyout.vue')), 'Buyout');
       },
       beforeEnter: (to, from, next) => {
-        setTitle('买断')
-        next()
+        setTitle('买断');
+        next();
       }
     }
   ]
@@ -466,19 +467,28 @@ const router = new Router({
  * 根据路由设置当前title
  * */
 router.beforeEach(function(to, from, next) {
-  clearSortStore(to.name, from.name)
+  clearSortStore(to.name, from.name);
   let url = window.location.href;
   url = url.substring(0, url.length - 2);
   let reg = /accessToken/;
   let state = reg.test(url);
-  let startJdCredit = sessionStorage.getItem('startJdCredit')
+  // let startJdCredit = sessionStorage.getItem('startJdCredit');
   // 2018-7-26 modify by hanfeng
   // 过滤掉从京东APP或京东金融App直接跳转到首页，如果是小白授权则不能过滤。另外修改xiaobaoPageName存储到sessionStorage
-  if (state && (store.state.channelNo !== '003' || startJdCredit === 'true')) {
+  // 2018-10-12 modify by hanfeng
+  // 如果是小白信用授权后跳转，则进入xiaobaiPageName对应的页面
+  let pageName = sessionStorage.getItem('xiaobaiPageName');
+  sessionStorage.setItem('xiaobaiPageName', '');
+  if (state && pageName) {
     let accessToken = url.split('accessToken=')[1];
+    if (accessToken) {
+      accessToken = accessToken.split('#')[0];
+    } else {
+      accessToken = '';
+    }
     store.commit('JDaccessTokenMemory', { JDaccessToken: accessToken });
     localStorage.setItem('JDaccessToken', accessToken);
-    let pageName = sessionStorage.getItem('xiaobaoPageName');
+
     window.location.href = pageName;
   } else {
     store.commit('updateLoadingStatus', { isLoading: true });
@@ -486,31 +496,60 @@ router.beforeEach(function(to, from, next) {
   }
 });
 
-// function clearSelection() {
-//   var clearSlct = 'getSelection' in window ? function() {
-//     window.getSelection().removeAllRanges()
-//   } : function() {
-//     document.selection.empty()
-//   }
-//   clearSlct()
-// }
+router.afterEach(function(to, from) {
+  // 支付宝生活号苹果手机导航栏不会改变，调用下列方法设置导航栏
+  if (isAlipayLife()) {
+    try {
+      // eslint-disable-next-line
+      ap.setNavigationBar(document.title);
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
-router.afterEach(function(to) {
   document.body.scrollTop = document.documentElement.scrollTop = 0;
   let ele = document.getElementById('app');
   if (ele) {
     ele.scrollTop = 0;
   }
   store.commit('updateLoadingStatus', { isLoading: false });
+  // console.log(window._paq);
+  // console.log(document.title);
+  // console.log(to);
+  // console.log('*************************')
+  // console.log('location.href = ' + location.href);
+  // console.log('from path = ' + from.path);
+  // console.log('to.path = ' + to.path);
+  // console.log(location.href);
+  // 追踪一个新页面
+  let tmpStr = location.href.split('#');
+  let tmpParamArr = tmpStr[1] && tmpStr[1].split('?');
+  let tmpParam = ''
+  // console.log('tmpParamArr = ' + tmpParamArr);
+  // console.log('tmpParam = ' + tmpParam);
+  if (tmpParamArr && tmpParamArr.length > 1) {
+    tmpParam = '?' + tmpParamArr[1];
+  }
+  // let path = tmpStr[0] + '#' + tmpStr[1].replace(from.path, to.path);
+  let path = tmpStr[0] + '#' + to.path + tmpParam;
+  // console.log('test tmpStr = ' + tmpStr + ', path = ' + path);
+  // console.log('*************************')
+  let _paq = window._paq;
+  if (_paq) {
+    _paq.push(['setCustomUrl', path]);
+    _paq.push(['setDocumentTitle', document.title])
+    // 以下一行代码将一次浏览传输到Piwik：
+    _paq.push(['trackPageView']);
+  }
 });
+
 function setTitle(t) {
   document.title = t;
 }
 function clearSortStore(to) {
-  console.log(to)
   if (to !== 'GoodsCategory' && to !== 'GoodsDetailPage') {
-    store.commit('setTypeObj', {typeObj: {}})
-    store.commit('typeNoMemory', {typeNo: ''})
+    store.commit('setTypeObj', { typeObj: {} });
+    store.commit('typeNoMemory', { typeNo: '' });
   }
 }
 

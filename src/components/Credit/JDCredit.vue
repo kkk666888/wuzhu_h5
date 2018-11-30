@@ -35,7 +35,7 @@
         pageName: '',
         checkStatus: false, // 是否显示取消授权BTN
         accountStatus: this.$store.state.accountStatus,
-        JDaccessToken: localStorage.getItem('JDaccessToken') || null
+        JDaccessToken: localStorage.getItem('JDaccessToken') || ''
       }
     },
     methods: {
@@ -67,8 +67,8 @@
         that.$http.get('/wuzhu/reservationController/unbindJDXBCredit', params).then(res => {
           this.$store.commit('updateLoadingStatus', {isLoading: false})
           if (res.code === '00') {
-            window.localStorage.setItem('JDaccessToken', null)
-            that.JDaccessToken = null
+            window.localStorage.setItem('JDaccessToken', '')
+            that.JDaccessToken = ''
             that.showNoToken = true
             Vue.$vux.alert.show({
               content: `${res.msg}`,

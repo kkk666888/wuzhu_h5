@@ -25,12 +25,14 @@ const state = {
       sortList: [], // 列表
       sortCheckItems: '', // 已生效
       cursSortCheckItems: '', // 当前
+      sortText: '推荐排序',
       isSelected: false // 是否选择过
     },
     filter: {
       filterList: [], // 列表
       filterCheckItems: {value: '', name: '全部'}, // 已生效
       curFilterItems: {value: '', name: '全部'}, // 当前
+      filterText: '筛选',
       isSelected: false // 是否选择过
     }
   }

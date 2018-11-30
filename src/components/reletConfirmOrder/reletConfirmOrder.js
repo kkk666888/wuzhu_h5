@@ -79,7 +79,7 @@ export default {
     loadData() {
       let orderNo = this.$route.params.orderNo
       let url = '/wuzhu/renew/renewCommodity?orderNo=' + orderNo
-      this.$vux.loading.show({ text: 'Loading' })
+      // this.$vux.loading.show({ text: 'Loading' })
       this.$http.get(url).then((res) => {
         this.$vux.loading.hide()
         if (res.code === '00' && res.data) {
@@ -141,13 +141,33 @@ export default {
     },
     // 处理每期费用试算数据,返回新实体
     handerRentPeriodsFeeData(data, payType) {
+      console.log('handerRentPeriodsFeeData data=' + JSON.stringify(data.planMoneyVOList) + ',payType=' + payType)
       let item = {}
-      item.totalTerms = data.totalTerms
+      item.totalTerms = 0
+      item.cashOffsetAmt = '' // 物主卡抵扣
       item.subAccount = '' // 账户抵扣
       item._actualPay = '' // 实际支付金额
-      item._pay = '' // 支付金额
+      item._pay = '' // 订单总金额
       item.terms = []
       let model = {}
+      for (let i in data.planMoneyVOList) {
+        let planMoney = data.planMoneyVOList[i]
+        if ((planMoney.oneTimePay && payType === '1') || (!planMoney.oneTimePay && payType === '0')) {
+          // 一次性支付
+          if (planMoney.oneTimePay && payType === '1') {
+            item.totalTerms = 1
+          } else {
+            // 分期支付
+            item.totalTerms = data.totalTerms
+          }
+          item.cashOffsetAmt = planMoney.cashOffsetAmt
+          item.subAccount = planMoney.cashAmt
+          item._actualPay = planMoney.needAmt
+          item._pay = planMoney.totalAmt
+          break
+        }
+      }
+      console.log('item=' + JSON.stringify(item))
       if (payType === '0') {
         model = data.mapStage
       } else {
@@ -171,19 +191,21 @@ export default {
           item.terms.push(stageItem)
         }
       }
-      let subAccount = parseFloat(data.subAccount)
-      if (item.terms && item.terms.length > 0) {
-        let term = item.terms[0]
-        item._pay = term._pay
-        item._actualPay = parseFloat(term._pay)
-        if (subAccount > item._pay) {
-          subAccount = item._pay
-        }
-        if (subAccount && parseFloat(subAccount) > 0) {
-          item._actualPay = parseFloat(item._actualPay) - parseFloat(subAccount)
-        }
-      }
-      item.subAccount = subAccount
+      // let cashOffsetAmt = parseFloat(data.cashOffsetAmt)
+      // item.cashOffsetAmt = cashOffsetAmt
+      // let subAccount = parseFloat(data.subAccount)
+      // if (item.terms && item.terms.length > 0) {
+      //   let term = item.terms[0]
+      //   item._pay = term._pay
+      //   item._actualPay = parseFloat(term._pay)
+      //   if (subAccount > item._pay) {
+      //     subAccount = item._pay
+      //   }
+      //   if (subAccount && parseFloat(subAccount) > 0) {
+      //     item._actualPay = parseFloat(item._actualPay) - parseFloat(subAccount)
+      //   }
+      // }
+      // item.subAccount = subAccount
       return item
     },
     // 获取费用信息,包括费用试算
@@ -205,7 +227,7 @@ export default {
           }
         })
       }
-      this.$vux.loading.show({ text: 'Loading' })
+      // this.$vux.loading.show({ text: 'Loading' })
       this.$http.post(url, param).then((res) => {
         this.$vux.loading.hide()
         if (res.code === '00' && res.data) {
@@ -245,13 +267,13 @@ export default {
     },
     // 查看协议
     protocolClick(type) {
-      let currentPath = window.location.href.split('/dist')[0] + '/dist'
+      let currentPath = window.location.href.split('/dist')[0]
       switch (type) {
         case 1:
-          this.potocolUrl = currentPath + '/static/protocolHtml/用户租赁及服务协议（金达主体）.htm'
+          this.potocolUrl = currentPath + '/doc/wx/user_lease_agreement.htm'
           break;
         case 2:
-          this.potocolUrl = currentPath + '/static/protocolHtml/用户租赁及服务协议之补充协议（金达主体）.htm'
+          this.potocolUrl = currentPath + '/doc/wx/user_lease_supplementary_agreement.htm'
           break;
       }
       this.potocolShow = true
@@ -274,6 +296,7 @@ export default {
         this.$store.commit('payStyleMemory', { payStyle: '5' })
         this.$store.commit('updateOrderNo', { orderNo: this.orderInfo.baseOrder.orderNo })
         this.$store.commit('updatePayAmount', { payAmount: parseFloat(this.planMoneyModel._actualPay) })
+        this.$store.commit('updateCashOffsetAmt', { cashOffsetAmt: parseFloat(this.planMoneyModel.cashOffsetAmt) }) // 物主卡抵扣金额
         this.$store.commit('updateDeductionAmount', { deductionAmount: parseFloat(this.planMoneyModel.subAccount) }) // 账户抵扣金额
         this.$store.commit('updateRouteSource', { routeSource: 'reletConfirmOrder' })
         // let term = this.planMoneyModel.terms[0]
@@ -290,7 +313,7 @@ export default {
             }
           })
         }
-        this.$router.push({name: 'WXPayCashing', params: param})
+        this.$router.replace({name: 'WXPayCashing', params: param})
       } else {
         this.showInfo('数据错误，请刷新页面重试')
       }

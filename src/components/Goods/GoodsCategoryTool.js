@@ -132,6 +132,7 @@ export class ParseData {
     if (DetailImgList !== undefined && DetailImgList instanceof Array) {
       for (var i = 0; i < DetailImgList.length; i++) {
         bannerList.push({
+          // 用于点击图片跳转的网页url，目前用不到
           url: 'https://www.baidu.com',
           img: DetailImgList[i]
         });
@@ -156,7 +157,7 @@ export class ParseData {
   getRentImageList() {
     // 租赁说明的图文详情
     let detailImgUrlsStr = this.commodities && this.commodities['detailImgUrls'];
-    let detailImgUrls = detailImgUrlsStr.split(',');
+    let detailImgUrls = detailImgUrlsStr ? detailImgUrlsStr.split(',') : '';
     if (detailImgUrls !== undefined && detailImgUrls instanceof Array) {
       return detailImgUrls;
     } else {
@@ -281,7 +282,8 @@ export class ParseData {
               termDayArray.push({
                 productNo: product.productNo,
                 totalDays: product.totalDays,
-                Status: CategoryStatus.Normal
+                Status: CategoryStatus.Normal,
+                termShortDes: product.termShortDes
               })
               if (maxDay < product.totalDays) {
                 maxDay = product.totalDays

@@ -65,239 +65,230 @@
 </template>
 
 <script>
-    export default {
-      name: 'FeeTrialTableNew',
-      data() {
-          return {
-            selectedTermItem: {},
-            maskTransition: 'vux-mask',
-            dialogTransition: 'vux-dialog'
-          }
-      },
-      created() {
-        console.log('当前屏幕的大小是')
-      },
-      mounted() {
-        let height = document.body.clientHeight
-        let setHeight = (height - 130 - 151) + 'px'
-        let contentPlane = this.$refs.contentPlane
-        contentPlane.style['max-height'] = setHeight
-      },
-      props: {
-        feeTrialList: null,
-        goodReturnDate: null,
-        curDate: null,
-        showJDCoinTitle: false
-      },
-      computed: {
-        getOrderDateStr() {
-          return this.curDate
-        },
-        getGoodsDateStr() {
-          return this.goodReturnDate
-        }
-      },
-      methods: {
-        // 账单的头部
-        billTitleShowTitle: function(termItem) {
-          let tempStr = termItem.term + '/' + this.feeTrialList.length
-          return tempStr
-        },
-        // 判断某一期是否当前是处于被选中的状态
-        isSelected(termItem) {
-          if (termItem.term === this.selectedTermItem.term) {
-            return true
-          } else {
-            return false
-          }
-        },
-        arrowClasssOject: function(termItem) {
-          console.log(termItem.selected + '******************8')
-          let choose = this.isSelected(termItem)
-          return {
-            'icon iconfont icon-xia': !choose,
-            'icon iconfont icon-shang': choose
-          }
-        },
-        onClickTermItem: function(termItem) {
-          let choose = this.isSelected(termItem)
-          // 如果当前是处于被选中的状态，那么久关闭
-          if (choose) {
-            this.selectedTermItem = {}
-          } else {
-            this.selectedTermItem = termItem
-          }
-        },
-        getRentTermStr: function(termItem) {
-          return termItem.termStartDate + '-' + termItem.payDate
-        },
-        hide() {
-          this.$emit('hideClick')
-        }
-      }
+export default {
+  name: 'FeeTrialTableNew',
+  data() {
+    return {
+      selectedTermItem: {},
+      maskTransition: 'vux-mask',
+      dialogTransition: 'vux-dialog'
+    };
+  },
+  created() {},
+  mounted() {
+    let height = document.body.clientHeight;
+    let setHeight = height - 130 - 151 + 'px';
+    let contentPlane = this.$refs.contentPlane;
+    contentPlane.style['max-height'] = setHeight;
+  },
+  props: {
+    feeTrialList: null,
+    goodReturnDate: null,
+    curDate: null,
+    showJDCoinTitle: false
+  },
+  computed: {
+    getOrderDateStr() {
+      return this.curDate;
+    },
+    getGoodsDateStr() {
+      return this.goodReturnDate;
     }
+  },
+  methods: {
+    // 账单的头部
+    billTitleShowTitle: function(termItem) {
+      let tempStr = termItem.term + '/' + this.feeTrialList.length;
+      return tempStr;
+    },
+    // 判断某一期是否当前是处于被选中的状态
+    isSelected(termItem) {
+      if (termItem.term === this.selectedTermItem.term) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    arrowClasssOject: function(termItem) {
+      let choose = this.isSelected(termItem);
+      return {
+        'icon iconfont icon-xia': !choose,
+        'icon iconfont icon-shang': choose
+      };
+    },
+    onClickTermItem: function(termItem) {
+      let choose = this.isSelected(termItem);
+      // 如果当前是处于被选中的状态，那么久关闭
+      if (choose) {
+        this.selectedTermItem = {};
+      } else {
+        this.selectedTermItem = termItem;
+      }
+    },
+    getRentTermStr: function(termItem) {
+      return termItem.termStartDate + '-' + termItem.payDate;
+    },
+    hide() {
+      this.$emit('hideClick');
+    }
+  }
+};
 </script>
 
 <style lang="less">
-  @import "./../../common/less/index";
-  .feeTrialTableNew{
-    font-family: "PingFang SC";
-    .sl-dialog{
-      .sl-mask{
-        position: fixed;
-        z-index: 1000;
+@import './../../common/less/index';
+.feeTrialTableNew {
+  font-family: 'PingFang SC';
+  .sl-dialog {
+    .sl-mask {
+      position: fixed;
+      z-index: 1000;
+      top: 0;
+      right: 0;
+      left: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+    }
+    .sl-dialog-content {
+      position: fixed;
+      z-index: 5000;
+      width: 100%;
+      bottom: 0;
+      left: 50%;
+      -webkit-transform: translate(-50%);
+      transform: translate(-50%);
+      background-color: #ffffff;
+      text-align: center;
+      border-radius: 3px;
+      overflow: hidden;
+      .titleHeader {
         top: 0;
-        right: 0;
-        left: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.6);
-      }
-      .sl-dialog-content{
-        position: fixed;
-        z-index: 5000;
-        width: 100%;
-        bottom: 0;
-        left: 50%;
-        -webkit-transform: translate(-50%);
-        transform: translate(-50%);
-        background-color: #FFFFFF;
         text-align: center;
-        border-radius: 3px;
-        overflow: hidden;
-        /*height: 60%;*/
-        .titleHeader{
-          /*position: absolute;*/
-          top: 0;
-          text-align: center;
-          height: 44px;
-          width: 100%;
-          line-height: 44px;
-          vertical-align: middle;
-          font-size: 14px;
-          .border-1px();
+        height: 44px;
+        width: 100%;
+        line-height: 44px;
+        vertical-align: middle;
+        font-size: 14px;
+        .border-1px();
 
-          .floatArrow {
-            float: left;
-            padding: 0px 22px;
+        .floatArrow {
+          float: left;
+          padding: 0px 22px;
+        }
+      }
+      .plan {
+        position: relative;
+        .planHeader {
+          margin-top: 12px;
+          .headerTitle {
+            margin-left: 18px;
+            margin-right: 18px;
+            color: #bbbbbb;
+            font-size: 12px;
+          }
+          .date-plan {
+            display: flex;
+            justify-content: space-between;
+            margin-left: 18px;
+            margin-right: 18px;
+            margin-top: 14px;
+            padding-bottom: 14px;
+            .border-1px();
+            .order-date {
+              color: #757575;
+              font-size: 14px;
+            }
+            .assumption-date {
+              color: #262626;
+              font-size: 14px;
+            }
           }
         }
-        .plan{
-          position: relative;
-          .planHeader{
-            margin-top: 12px;
-            /*margin-bottom: 14px;*/
-            .headerTitle{
-              margin-left: 18px;
-              margin-right: 18px;
-              color: #BBBBBB;
-              font-size: 12px;
-            }
-            .date-plan{
-              display: flex;
-              justify-content: space-between;
-              margin-left: 18px;
-              margin-right: 18px;
-              margin-top: 14px;
-              padding-bottom: 14px;
+        .contentPlane {
+          .contenPlane-title {
+            margin: 0 18px;
+            height: 44px;
+            line-height: 44px;
+            .border-1px();
+          }
+          .contenPlane-detail {
+            max-height: 340px;
+            overflow-y: scroll;
+            .section {
+              margin: 0 18px;
               .border-1px();
-              .order-date{
-                color:#757575;
-                font-size: 14px;
+              min-height: 44px;
+              line-height: 44px;
+              /*公用的表格布局*/
+              .flexBox {
+                display: flex;
+                justify-content: space-between;
+                color: #333333;
+                font-size: 12px;
+                .term-num-row {
+                  width: 10%;
+                }
+                .term-period-row {
+                  width: 55%;
+                }
+                .term-days-row {
+                  width: 10%;
+                }
+                .term-fee-row {
+                  width: 25%;
+                }
               }
-              .assumption-date{
-                color:#262626;
-                font-size: 14px;
+              .feeTrial-feePlane {
+                margin-top: 7px;
+                background: rgba(245, 245, 245, 1);
+                padding: 12px 18px;
+                // 公用的部分的Cell部分
+                .feeTrialTable_Content_Cell {
+                  height: 24px;
+                  line-height: 24px;
+                  position: relative;
+                  display: flex;
+                  justify-content: space-between;
+                  .feeTrialTable_Content_Cell_Title {
+                    font-size: 12px;
+                    color: #000000;
+                    letter-spacing: 0;
+                    line-height: 24px;
+                  }
+                  .feeTrialTable_Content_Cell_Value {
+                    font-size: 12px;
+                    color: #000000;
+                    letter-spacing: 0;
+                    text-align: right;
+                    line-height: 24px;
+                  }
+                }
               }
             }
           }
-          .contentPlane{
-            /*height: 400px;*/
-            .contenPlane-title {
-              margin: 0 18px;
-              height: 44px;
-              line-height: 44px;
-              .border-1px()
+          /*公用的表格布局*/
+          .flexBox {
+            display: flex;
+            justify-content: space-between;
+            color: #333333;
+            font-size: 12px;
+            min-height: 44px;
+            .term-num-row {
+              width: 10%;
             }
-            .contenPlane-detail{
-              max-height: 340px;
-              overflow-y:scroll;
-              .section {
-                margin: 0 18px;
-                .border-1px();
-                min-height: 44px;
-                line-height: 44px;
-                /*公用的表格布局*/
-                .flexBox{
-                  display: flex;
-                  justify-content: space-between;
-                  color: #333333;
-                  font-size: 12px;
-                  .term-num-row{
-                    width: 10%;
-                  }
-                  .term-period-row{
-                    width: 55%;
-                  }
-                  .term-days-row{
-                    width: 10%;
-                  }
-                  .term-fee-row{
-                    width: 25%;
-                  }
-                }
-                .feeTrial-feePlane{
-                  margin-top: 7px;
-                  background:rgba(245,245,245,1);
-                  padding: 12px 18px;
-                  // 公用的部分的Cell部分
-                  .feeTrialTable_Content_Cell {
-                    /*margin-left: 5px;*/
-                    /*margin-right: 10px;*/
-                    height: 24px;
-                    line-height: 24px;
-                    position: relative;
-                    display: flex;
-                    justify-content: space-between;
-                    .feeTrialTable_Content_Cell_Title {
-                      font-size: 12px;
-                      color: #000000;
-                      letter-spacing: 0;
-                      line-height: 24px;
-                    }
-                    .feeTrialTable_Content_Cell_Value {
-                      font-size: 12px;
-                      color: #000000;
-                      letter-spacing: 0;
-                      text-align: right;
-                      line-height: 24px;
-                    }
-                  }
-                }
-              }
+            .term-period-row {
+              width: 55%;
             }
-            /*公用的表格布局*/
-            .flexBox{
-              display: flex;
-              justify-content: space-between;
-              color: #333333;
-              font-size: 12px;
-              min-height: 44px;
-              .term-num-row{
-                width: 10%;
-              }
-              .term-period-row{
-                width: 55%;
-              }
-              .term-days-row{
-                width: 10%;
-              }
-              .term-fee-row{
-                width: 25%;
-              }
+            .term-days-row {
+              width: 10%;
+            }
+            .term-fee-row {
+              width: 25%;
             }
           }
         }
       }
     }
   }
+}
 </style>

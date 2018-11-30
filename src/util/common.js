@@ -15,7 +15,7 @@ export default {
     htmlContent += '<span style="color:#333">' + item.shortName + '、' + spec + '</span>'
     htmlContent += '<div style="margin-top: 10px;">续租时仅能续租原商品，不支持换货，续租时维持原押金，无需重新支付押金。押金将在租赁订单完结时进行结算。</div></div>'
     let url = '/wuzhu/renew/renewCommodity?orderNo=' + item.orderNo
-    vm.$vux.loading.show({ text: 'Loading' })
+    // vm.$vux.loading.show({ text: 'Loading' })
     vm.$http.get(url).then((res) => {
       vm.$vux.loading.hide()
       if (res.code === '00' && res.data) {

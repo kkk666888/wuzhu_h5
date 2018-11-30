@@ -1,16 +1,16 @@
 <template>
-	<div class="LivenessVerify">
+  <div class="LivenessVerify">
     <section>
       <div class="fs-liveness">
         <!-- <div class="liveness-img"></div> -->
         <div class="liveness-header">
-            根据要求拍摄视频，在视频中您需要：
+          根据要求拍摄视频，在视频中您需要：
         </div>
         <div class="liveness-img-box">
           <img :src="livenessData.imgSrc">
         </div>
         <div class="liveness-txt">
-            {{livenessData.description}}
+          {{livenessData.description}}
         </div>
         <input v-if="clearInput" :disabled="!isClick" ref="uploadVideo" id="uploadVideo" name="uploadVideo" class="upload-input" type="file" accept="video/*" capture="camcorder">
       </div>
@@ -19,30 +19,30 @@
       <div class="fs-attention">
         <div class="attention-txt">注意事项</div>
         <div class="attention-items">
-            <div class="item">
-                <div class="imgDiv">
-                    <img class="img-1" :src="icons.time" />
-                </div>
-                <div class="label">时长&lt;{{livenessData.fileTime}}秒</div>
+          <div class="item">
+            <div class="imgDiv">
+              <img class="img-1" :src="icons.time" />
             </div>
-            <div class="item">
-                <div class="imgDiv">
-                    <img class="img-2" :src="icons.scanning" />
-                </div>
-                <div class="label">正脸拍摄</div>
+            <div class="label">时长&lt;{{livenessData.fileTime}}秒</div>
+          </div>
+          <div class="item">
+            <div class="imgDiv">
+              <img class="img-2" :src="icons.scanning" />
             </div>
-            <div class="item">
-                <div class="imgDiv">
-                    <img class="img-3" :src="icons.HD" />
-                </div>
-                <div class="label">人像清晰</div>
+            <div class="label">正脸拍摄</div>
+          </div>
+          <div class="item">
+            <div class="imgDiv">
+              <img class="img-3" :src="icons.HD" />
             </div>
-            <div class="item">
-                <div class="imgDiv">
-                    <img class="img-4" :src="icons.light" />
-                </div>
-                <div class="label">光线均匀</div>
+            <div class="label">人像清晰</div>
+          </div>
+          <div class="item">
+            <div class="imgDiv">
+              <img class="img-4" :src="icons.light" />
             </div>
+            <div class="label">光线均匀</div>
+          </div>
         </div>
       </div>
     </section>
@@ -55,7 +55,7 @@
         <x-button :class="isClick?'button-toOrder':'button-toOrder fs-gray'" text="开始录制" :gradients="['#f1cd37', '#f1cd37']"></x-button>
       </div>
     </section>
-	</div>
+  </div>
 </template>
 
 <script>
@@ -137,7 +137,6 @@ export default {
     that.skipLiving(); // 跳过活体 -- 测试环境
     that.$refs.uploadVideo.addEventListener('change', that.checkFile.bind(that), false);
     that.intCtrl = setInterval(function() {
-      // console.log(that.$refs.uploadVideo.files)
       if (that.$refs.uploadVideo.files.length > 0) {
         // input file 有文件
         setTimeout(function() {
@@ -166,7 +165,7 @@ export default {
       }
     },
     goNext() {
-      this.$router.push({ name: 'OrderSubmitPage' });
+      this.$router.replace({ name: 'OrderSubmitPage' });
     },
     onSuccess(res) {
       let that = this;
@@ -179,7 +178,7 @@ export default {
           text: '检测成功',
           isShowMask: true,
           onHide() {
-            that.$router.push({ name: 'OrderSubmitPage' });
+            that.$router.replace({ name: 'OrderSubmitPage' });
           }
         });
       } else {
@@ -208,14 +207,12 @@ export default {
         that.$vux.alert.show({
           content: '网络异常，请检查您的网络' // <br>' + res.message // '您提供的视频不满足拍摄要求，请按拍摄要求再次尝试'
         });
-        // that.isBeyondeLimit()
       }
     },
     // 在 setInterval 中触发的
     checkFileInterval() {
       let that = this;
       const file = that.$refs.uploadVideo.files[0];
-      // console.log('lastModifiedDate:' + file.lastModifiedDate)
       // 使用 v-if 达到清空 input file 作用(lenght 置为0); 避免循环请求后台
       that.clearInput = false;
       that.$nextTick(() => {
@@ -240,7 +237,6 @@ export default {
     },
     checkFile(e) {
       let that = this;
-      console.log('>>> checkFile');
       // 清除 循环
       clearInterval(that.intCtrl);
       // input change 事件有效
@@ -249,7 +245,6 @@ export default {
       const files = e.target.files;
       if (files.length > 0) {
         const file = files[0];
-        // console.log('checkFile lastModifiedDate:' + file.lastModifiedDate)
         if (file.size > that.livenessData.fileSize) {
           that.onError({ code: 'fs3301', msg: `视频过大，请减少拍摄时长` });
           return false;
@@ -273,16 +268,13 @@ export default {
     inputUpload(formData) {
       let that = this;
       that.$store.commit('updateLoadingStatus', { isLoading: true });
-      console.log('checkLiveness start:' + new Date());
       that.$http
         .post('/wuzhu/liveness/checkLiveness', formData, {}, 600000)
         .then(res => {
-          console.log('checkLiveness end:' + new Date());
           that.$store.commit('updateLoadingStatus', { isLoading: false });
           that.onSuccess(res);
         })
         .catch(err => {
-          console.log('checkLiveness err:' + new Date());
           that.$store.commit('updateLoadingStatus', { isLoading: false });
           that.onError(err);
           console.log(err);
@@ -326,23 +318,15 @@ export default {
       }
     },
     isBeyondeLimit() {
-      console.log('>> isBeyondeLimit');
       let that = this;
       let param = {
         openId: that.$store.state.othersOpenID, // 微信的openId
         channelNo: that.$store.state.channelNo,
-        applySerialNo: that.$store.state.applySerialNo,
-        applyStepNo: '', // 弃用
-        customerId: '', // 弃用
-        loginMobile: '', // 弃用
-        name: that.$store.state.ocrMsg.name, // 弃用
-        certid: that.$store.state.ocrMsg.number // 弃用
+        applySerialNo: that.$store.state.applySerialNo
       };
-      // console.log('isBeyondeLimit start:' + new Date());
       that.$http
         .get('/wuzhu/liveness/isBeyondeLimit', param)
         .then(res => {
-          // console.log('isBeyondeLimit end:' + new Date());
           if (res.code === '00') {
             that.getLivenessEnum(); // 改变 fsAction 的值
             that.isClick = true;
@@ -351,13 +335,12 @@ export default {
             that.$vux.alert.show({
               content: res.msg,
               onHide() {
-                that.$router.push({ name: 'HomePage' });
+                that.$router.replace({ name: 'HomePage' });
               }
             });
           }
         })
         .catch(err => {
-          // console.log('isBeyondeLimit err:' + new Date());
           that.isClick = true;
           console.log(err);
         });
@@ -365,10 +348,8 @@ export default {
     // 京东渠道，Android手机，通过file.lastModifiedDate判断是否是实时拍摄的视频，15秒内的视为有效视频
     checkRealFile(lastModifiedDate) {
       if (lastModifiedDate && this.$store.state.channelNo === '003' && this.$store.state.osinfo === 'Android') {
-        console.log('checkRealFile nowDate = ' + new Date() + ', lastModifiedDate = ' + lastModifiedDate);
         let nowTime = new Date().getTime();
         let fileTime = lastModifiedDate.getTime();
-        console.log('checkRealFile nowTime = ' + nowTime + ', fileTime = ' + fileTime);
         if (fileTime && fileTime <= nowTime && fileTime + 15000 >= nowTime) {
           return true;
         } else {

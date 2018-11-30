@@ -51,6 +51,10 @@
       </section>
       <section class="mt18 bg-white">
         <div class="item f16 l-h22">
+          <span class="item-left">物主卡抵扣</span>
+          <span class="item-right gray">￥{{commodityInfo.cashOffsetAmt | moneyFormat}}</span>
+        </div>
+        <div class="item mt10 f16 l-h22">
           <span class="item-left">账户抵扣</span>
           <span class="item-right gray">￥{{commodityInfo.cashDeductionAmt | moneyFormat}}</span>
         </div>
@@ -149,6 +153,7 @@
         // this.$store.commit('updateOrderNo', {orderNo: this.orderNo})
         this.$store.commit('payStyleMemory', { payStyle: '4' })
         this.$store.commit('updatePayAmount', { payAmount: this.commodityInfo.actualPayAmt })
+        this.$store.commit('updateCashOffsetAmt', {cashOffsetAmt: this.commodityInfo.cashOffsetAmt})
         this.$store.commit('updateDeductionAmount', {deductionAmount: this.commodityInfo.cashDeductionAmt})
         this.$store.commit('updateRouteSource', {routeSource: 'Buyout'})
         this.$router.push({name: 'WXPayCashing'})

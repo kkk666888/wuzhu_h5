@@ -3,7 +3,7 @@
     <!--商品详情的头部信息-->
     <div class="goodsDetial">
       <div class="goodsImgDiv">
-        <img class="goodsImage" :src="goodListImage" />
+        <img class="goodsImage" :src="goodListImage" :onerror="logo" />
       </div>
       <div class="goodsInfoPlane">
         <div class="fullName">{{ fullName }}</div>
@@ -16,16 +16,19 @@
   </div>
 </template>
 <script>
+import img from '../../../static/images/loading.png';
 export default {
   name: 'GoodsDetailHeader',
   data() {
-    return {};
+    return {
+      logo: `this.src="${img}"`
+    };
   },
   component: {},
   props: {
     goodListImage: {
       type: String,
-      default: '/static/images/loading.png'
+      default: ''
     },
     fullName: '',
     marketPrice: '',

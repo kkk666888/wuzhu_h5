@@ -35,14 +35,12 @@
             <div v-if="item.isAlreadyRelet && item.isAlreadyRelet === 'Y'" class="releted-mark"></div>
           </div>
           <div class="items-footer" :class="{'no-margin': !item.hasBtn}">
-            <!-- <span class="first-pay">首付金额：{{ item.downPayment }}元</span> -->
             <div class="btn-wrapper">
               <button v-if="item.showBTN&&(item.showBTN.indexOf('1')!='-1')" class="btn-gray" @click.stop="GoToPage(1, item)">取消订单</button>
               <button v-if="item.showBTN&&(item.showBTN.indexOf('2')!='-1')" class="btn-yellow" @click.stop="GoToPage(2, item)">支付</button>
               <button v-if="item.showBTN&&(item.showBTN.indexOf('3')!='-1')" class="btn-yellow" @click.stop="GoToPage(3, item)">查看物流</button>
               <button v-if="item.showBTN&&(item.showBTN.indexOf('4')!='-1')" class="btn-black" @click.stop="GoToPage(4, item)">维修</button>
               <button v-if="item.showBTN&&(item.showBTN.indexOf('5')!='-1')" class="btn-black" @click.stop="GoToPage(5, item)">归还</button>
-              <!--<button v-if="item.isRelet&&item.isRelet==='Y'" class="btn-yellow" @click.stop="GoToPage(6, item)">续租</button>-->
               <button v-if="item.showBTN&&(item.showBTN.indexOf('6')!='-1')" class="btn-yellow" @click.stop="GoToPage(6, item)">续租</button>
               <button v-if="item.showBTN&&(item.showBTN.indexOf('7')!='-1')" class="btn-yellow" @click.stop="GoToPage(7, item)">买断</button>
               <button v-if="item.showBTN&&(item.showBTN.indexOf('8')!='-1')" class="btn-yellow" @click.stop="GoToPage(8, item)">提前买断</button>
@@ -59,8 +57,9 @@
 <script type="text/ecmascript-6">
 import { Tab, TabItem, Actionsheet } from 'vux';
 import { GetDirection } from './../../util/utils';
+import { mapMutations } from 'vuex';
 export default {
-  name: 'OrderListPage',
+  name: 'OrderListPage', // 订单列表
   data() {
     return {
       touchs: {
@@ -130,6 +129,7 @@ export default {
     this.$refs.ListContent.removeEventListener('touchend', this.fsTouchend);
   },
   methods: {
+    ...mapMutations(['updateLoadingStatus']),
     fsTouchstart(e) {
       this.touchs.startx = e.touches[0].pageX;
       this.touchs.starty = e.touches[0].pageY;
@@ -139,7 +139,7 @@ export default {
       that.touchs.endx = e.changedTouches[0].pageX;
       that.touchs.endy = e.changedTouches[0].pageY;
       let direction = GetDirection(that.touchs);
-      console.log('>>> direction', direction);
+      // console.log('>>> direction', direction);
       // 返回值: 0, 1 上 2 下 3 左 4 右
       if (direction.code === 3) {
         // that.index-- 左
@@ -168,67 +168,33 @@ export default {
         // 老的代码逻辑
         switch (parseInt(item.bizStatus)) {
           case 1: // 待确认
-            // 待确认-审批中的订单不能取消
-            // if (item.status === '1002') {
-            //   item.showBTN = '';
-            // } else {
-            //   item.showBTN = '1';
-            // }
             that.underway.push(item); // 进行中
             break;
           case 2: // 待支付
-            // item.showBTN = '1 2'; // 不能取消 + 有支付按钮 -- 可以取消
             that.underway.push(item); // 进行中
             break;
           case 3: // 已支付
-            // item.showBTN = ''; // 没有支付 + 不能取消
             that.underway.push(item); // 进行中
             break;
           case 4: // 取消订单
-            // item.showBTN = '';
             that.canceled.push(item); // 已取消
             break;
           case 5: // 待发货
           case 6: // 待发货
           case 8: // 退货中
           case 9: // 回收中
-            // item.showBTN = '';
             that.underway.push(item); // 进行中
             break;
           case 7: // 租赁中
-            // item.showBTN = '';
-            // if (item.buyOutType === '2') {
-            //   // 提前买断
-            //   item.showBTN = '8';
-            // }
-            // if (item.buyOutType === '3') {
-            //   // 正常买断
-            //   item.showBTN = '7';
-            // }
-            // if (item.status === '7007') {
-            //   // 租赁中-已结清，待完结
-            //   if (item.isGiveBack === 'Y' && item.isGiveBackProcess === 'N') {
-            //     item.showBTN += ' 5';
-            //   }
-            // } else {
-            //   item.showBTN += ' 2';
-            // }
             that.underway.push(item); // 进行中
             break;
           case 10: // 买断中
-            // 强制买断
-            // item.showBTN = '';
-            // if (item.buyOutType === '0' || item.buyOutType === '1' || item.buyOutType === '5') {
-            //   item.showBTN = '2';
-            // }
             that.underway.push(item); // 进行中
             break;
           case 99: // 完结
-            // item.showBTN = '';
             that.completed.push(item); // 已完成
             break;
           default:
-            // item.showBTN = '1 2';
             that.underway.push(item); // 进行中
         }
         // 新的按钮展示逻辑
@@ -241,55 +207,48 @@ export default {
     },
     // 根据返回的item数据返回对应的按钮需要展示的链表
     getButtonsListStrWithItem(orderButtons) {
-      let buttonListStr = ''
+      let buttonListStr = '';
       if (orderButtons !== undefined && orderButtons instanceof Array) {
         for (let i = 0; i < orderButtons.length; i++) {
-          let button = orderButtons[i]
+          let button = orderButtons[i];
           switch (button.buttonName) {
-            case '取消订单':
-            {
+            case '取消订单': {
               if (button['isShow'] === 'Y') {
                 buttonListStr = buttonListStr + '1 ';
               }
               break;
             }
-            case '支付':
-            {
+            case '支付': {
               if (button['isShow'] === 'Y') {
                 buttonListStr = buttonListStr + '2 ';
               }
               break;
             }
-            case '查看物流':
-            {
+            case '查看物流': {
               if (button['isShow'] === 'Y') {
                 buttonListStr = buttonListStr + '3 ';
               }
               break;
             }
-            case '维修':
-            {
+            case '维修': {
               if (button['isShow'] === 'Y') {
                 buttonListStr = buttonListStr + '4 ';
               }
               break;
             }
-            case '归还':
-            {
+            case '归还': {
               if (button['isShow'] === 'Y') {
                 buttonListStr = buttonListStr + '5 ';
               }
               break;
             }
-            case '买断':
-            {
+            case '买断': {
               if (button['isShow'] === 'Y') {
                 buttonListStr = buttonListStr + '7 ';
               }
               break;
             }
-            case '续租':
-            {
+            case '续租': {
               if (button['isShow'] === 'Y') {
                 buttonListStr = buttonListStr + '6 ';
               }
@@ -300,22 +259,19 @@ export default {
           }
         }
       }
-      return buttonListStr
+      return buttonListStr;
     },
     getOrderList() {
       let that = this;
-      // TODO 包装用的到Token方便测试
-      // let testheader = {
-      //   Token: 'Token_017dbb912f7843b3b034cd66e29c59d2'
-      // }
+      this.updateLoadingStatus({ isLoading: true });
       that.$http
         .get('/wuzhu/order/getMyOrders', {
           // .get('/src/components/OrderList/副本/OrderListPage.json', {
-          // customerId: '201806271139131',
           bizStatus: '',
           status: ''
         })
         .then(res => {
+          this.updateLoadingStatus({ isLoading: false });
           if (res.code === '00' && res.data) {
             that.dataPacket(res.data); // 数据分组
             if (that.index === 0) {
@@ -334,12 +290,13 @@ export default {
           }
         })
         .catch(err => {
+          this.updateLoadingStatus({ isLoading: false });
+
           console.log(err);
         });
     },
     onItemClick(index) {
       let that = this;
-      console.log(index);
       that.index = index;
       that.$store.commit('ORDER_STATE', { orderState: index });
       if (index === 0) {
@@ -374,19 +331,19 @@ export default {
         that.$store.commit('updateOrderNo', { orderNo: item.orderNo });
         that.$router.push({ name: 'LogisticsDetail' });
       } else if (order === 4) {
-        console.log('>> 维修');
-        that.$router.push({name: 'Service'})
+        // console.log('>> 维修');
+        that.$router.push({ name: 'Service' });
       } else if (order === 5) {
-        console.log('>> 归还');
-        that.$router.push({ name: 'InitiateGoodsReturn', params: item });
+        // console.log('>> 归还');
+        that.$router.push({ name: 'GoodsReturn', params: item });
       } else if (order === 6) {
         that.common.launchRelet(that, item);
       } else if (order === 7) {
-        console.log('>> 买断');
+        // console.log('>> 买断');
         that.$store.commit('updateOrderNo', { orderNo: item.orderNo });
         that.$router.push({ name: 'Buyout', params: item });
       } else if (order === 8) {
-        console.log('>> 提前买断');
+        // console.log('>> 提前买断');
         that.$store.commit('updateOrderNo', { orderNo: item.orderNo });
         that.$router.push({ name: 'Buyout', params: item });
       }
@@ -457,10 +414,6 @@ export default {
   font-family: PingFangSC-Regular;
   padding-top: 18px;
   min-height: 400px;
-  .vux-tab {
-    .fs-tab-item.vux-tab-selected {
-    }
-  }
   .list-wrapper {
     background: #ffffff;
     margin-bottom: 18px;
@@ -474,14 +427,13 @@ export default {
       .border-1px();
       .items-icon {
         display: inline-block;
-        float: left;
         width: 3px;
         height: 12px;
         vertical-align: middle;
       }
       .order-num {
         float: left;
-        display: inline-block;
+        // display: inline-block;
       }
       .f-gray {
         display: inline-block;
@@ -491,7 +443,6 @@ export default {
         height: 100%;
       }
       .num {
-        float: left;
         font-size: 14px;
         color: #000000;
         letter-spacing: 0;
