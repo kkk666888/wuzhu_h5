@@ -108,7 +108,7 @@
               </div>
 
               <div class="order-flexBox">
-                <div class="order-flexBox-left">信用免押</div>
+                <div class="order-flexBox-left">押金减免</div>
                 <div class="order-flexBox-right line-limit-length">￥{{ billInfo.orderCreditAmt }}</div>
               </div>
 
@@ -370,7 +370,7 @@
       <!--占位的DIV间隔底部84px-->
     </section>
     <!--按钮部分 fixed布局-->
-    <div class="menuPlane" v-show="showBillDetailEnable">
+    <div class="menuPlane" v-show="showBtnsListEnable">
       <div class="buttonPlaneWarp">
         <div class="buttonPlane">
           <div class="buttonwarp" v-if="canShowButton('取消订单')">
@@ -1389,6 +1389,9 @@ export default {
       that.orderNo = tempParam.orderNo;
       that.$store.commit('updateOrderNo', { orderNo: that.orderNo });
     }
+    // for test
+    // this.orderNo = '00320181204M031332522531';
+
     if (that.orderNo !== '') {
       this.getHttpOrderDetail(that.orderNo);
     } else {
@@ -1530,18 +1533,24 @@ export default {
     // 是否需要展示Tab下面的所有页面
     // 是否显示账单详细信息的面板
     showBillDetailEnable: function() {
-      let btns = this.orderButtons.filter(item => {
-        return item.isShow === 'Y';
-      });
       // 订单完成是一样展示租赁信息
       // if ((this.orderDetail.status === orderStatus.Completed) || (this.orderDetail.status === orderStatus.Canneled) || (this.detailStatus === '1002')) {
       if (this.orderDetail.status === orderStatus.Canneled || this.detailStatus === '1002') {
         return false;
-      } else if (btns.length <= 0) {
-        return false;
       } else {
         return true;
       }
+    },
+    // 是否显示按钮列表
+    showBtnsListEnable() {
+      let btns = this.orderButtons.filter(item => {
+        return item.isShow === 'Y';
+      });
+      // console.log('btns',btns);
+      if (btns.length <= 0) {
+        return false;
+      }
+      return true;
     },
     // 确认预约 首期账单  还款计划的展示
     canShowSureOrderView: function() {

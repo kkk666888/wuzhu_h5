@@ -5,10 +5,10 @@
     </div> -->
     <div class="login_input">
       <group class="group_input">
-        <x-input class="input_login" v-if="!phoneReadOnly" placeholder="请输入手机号" v-model="phoneNum" title="手机号" type="tel" @on-blur="inputPhoneChange"></x-input>
+        <x-input class="input_login" :max="20" v-if="!phoneReadOnly" placeholder="请输入手机号" v-model="phoneNum" title="手机号" type="tel" @on-blur="inputPhoneChange"></x-input>
         <x-input class="input_login" v-else readonly :show-clear="false" v-model="phoneNum" title="手机号" type="tel"></x-input>
         <!-- placeholder-align="right" -->
-        <x-input class="input_login xinput_verify" placeholder="请输入验证码" v-model="authCode" title="验证码" type="tel" @on-blur="inputCodeChange">
+        <x-input class="input_login xinput_verify" :max="10" placeholder="请输入验证码" v-model="authCode" title="验证码" type="tel" @on-blur="inputCodeChange">
           <span ref="getCodeCtrl" :class="['get-code', flag ? 'active' : '']" slot="right" v-on:click="flag && getVerificationCode()">获取验证码</span>
         </x-input>
       </group>
@@ -276,6 +276,7 @@ export default {
     // 请求 登录
     reqLogin() {
       let that = this;
+      that.$store.commit('updateLoadingStatus', { isLoading: true });
       let urlParam = '?smsCode=' + that.authCode + '&seqNo=' + that.seqNo + '&mobile=' + that.phoneNum;
       let platform = that.$store.state.platformCode;
       console.log('login platform === ' + platform);
@@ -312,6 +313,7 @@ export default {
             });
             that.btnActive = true; // 按钮可以点击
           }
+          this.$store.commit('updateLoadingStatus', { isLoading: false });
         })
         .catch(err => {
           that.btnActive = true; // 按钮可以点击

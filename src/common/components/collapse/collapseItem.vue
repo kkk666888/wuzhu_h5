@@ -47,4 +47,7 @@ export default {
   padding: 15px;
   font-size: 14px;
 }
+  .collapse-item {
+    padding: 15px;
+  }
 </style>

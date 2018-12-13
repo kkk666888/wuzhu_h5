@@ -1,7 +1,7 @@
 // 创建一个用于枚举的对象
 export let CategoryStatus = {};
-CategoryStatus.Normal = 0;   // 存在该机型的设备，但是被没有被用户选定
-CategoryStatus.Disable = 1;  // 无对应机型的设备
+CategoryStatus.Normal = 0; // 存在该机型的设备，但是被没有被用户选定
+CategoryStatus.Disable = 1; // 无对应机型的设备
 CategoryStatus.Selected = 2; // 存在着该机型，且已经被用户选定
 
 // 建立对象模型
@@ -140,8 +140,8 @@ export class ParseData {
     }
     this.bannerList = bannerList;
     this.categoryTable = [];
-    this.financeProductList = [];         // 租期列表
-    this.rentStyleArray = [];             // 租赁方式列表
+    this.financeProductList = []; // 租期列表
+    this.rentStyleArray = []; // 租赁方式列表
   }
   // 获取图文详情的文件列表
   getImageTxtList() {
@@ -240,17 +240,19 @@ export class ParseData {
           for (let g = 0; g < goodslist.length; g++) {
             let currentGood = goodslist[g];
             let goodsCategorySpecList = currentGood['listCommoditySpec'];
-            let findResult = goodsCategorySpecList.findIndex(function(element, index, array) {
-              return element.categorySpecCode === categortyItem.categorySpecCode;
-            });
-            if (findResult !== -1) {
-              // 只添加对应该商品的规格列表和对应的对应的数组编号进入数组
-              categortyItem.MyGoods.push({
-                goodsIndex: g,
-                commodityNo: currentGood.commodityNo,
-                listCommoditySpec: currentGood.listCommoditySpec
-              })
-              // categortyItem.MyGoods.push(currentGood);
+            if (goodsCategorySpecList) {
+              let findResult = goodsCategorySpecList.findIndex(function(element, index, array) {
+                return element.categorySpecCode === categortyItem.categorySpecCode;
+              });
+              if (findResult !== -1) {
+                // 只添加对应该商品的规格列表和对应的对应的数组编号进入数组
+                categortyItem.MyGoods.push({
+                  goodsIndex: g,
+                  commodityNo: currentGood.commodityNo,
+                  listCommoditySpec: currentGood.listCommoditySpec
+                });
+                // categortyItem.MyGoods.push(currentGood);
+              }
             }
           }
         }
@@ -266,27 +268,27 @@ export class ParseData {
     if (goodslist !== undefined && goodslist instanceof Array) {
       for (let g = 0; g < goodslist.length; g++) {
         let tempGood = goodslist[g];
-        let listProduct = tempGood && tempGood['listProduct']
+        let listProduct = tempGood && tempGood['listProduct'];
         if (listProduct !== undefined && listProduct instanceof Array) {
           for (let p = 0; p < listProduct.length; p++) {
-            let product = listProduct[p]
+            let product = listProduct[p];
             // productNo 是金融产品的唯一标识
             let findResult = termDayArray.findIndex(function(element, index, array) {
               return element.totalDays === product.totalDays;
             });
             let rentResult = rentStyleArray.findIndex(function(element, index, array) {
-              return element.rentSolution === product.rentSolution
-            })
+              return element.rentSolution === product.rentSolution;
+            });
             if (findResult === -1) {
-              // 如果不存在添加到该列表中
+              // 如果不存在添加到该列表 中
               termDayArray.push({
                 productNo: product.productNo,
                 totalDays: product.totalDays,
                 Status: CategoryStatus.Normal,
                 termShortDes: product.termShortDes
-              })
+              });
               if (maxDay < product.totalDays) {
-                maxDay = product.totalDays
+                maxDay = product.totalDays;
               }
             }
             if (rentResult === -1) {
@@ -295,7 +297,7 @@ export class ParseData {
                 rentSolution: product.rentSolution,
                 rentSolutionName: product.rentSolutionName,
                 Status: CategoryStatus.Normal
-              })
+              });
             }
           }
         }
@@ -304,6 +306,6 @@ export class ParseData {
     this.financeProductList = termDayArray;
     this.rentStyleArray = rentStyleArray;
     this.maxDay = maxDay;
-    console.info('financeProductList ==== ' + JSON.stringify(termDayArray))
+    console.info('financeProductList ==== ' + JSON.stringify(termDayArray));
   }
 }

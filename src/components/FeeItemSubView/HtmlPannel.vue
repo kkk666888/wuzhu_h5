@@ -5,7 +5,7 @@
         <strong class="showScrollBox_hd_title">{{ protocolTitle }}</strong>
       </div>
       <div class="showScrollBox_bd" style="max-height: 400px; overflow:scroll;-webkit-overflow-scrolling:touch;" ref="html">
-        <div v-html="html"></div>
+        <div v-html="html" style="max-width: 500px"></div>
       </div>
       <div class="showScrollBox-dialog__ft" @click="sureBtnClick">
         <a href="javascript:;" class="showScrollBox-dialog__btn showScrollBox-dialog__btn_primary">
@@ -129,6 +129,7 @@ export default {
     min-height: 40px;
     font-size: 15px;
     line-height: 1.3;
+    max-width: 500px !important;
     word-wrap: break-word;
     word-break: break-all;
     color: #999999;

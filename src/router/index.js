@@ -78,6 +78,17 @@ const router = new Router({
       }
     },
     {
+      path: '/OrderSet/AddContact',
+      name: 'AddContact',
+      component: resolve => {
+        require.ensure([], () => resolve(require('@/components/OrderSet/AddContact.vue')), 'AddContact');
+      },
+      beforeEnter: (to, from, next) => {
+        setTitle('紧急联系人');
+        next();
+      }
+    },
+    {
       path: '/OrderSubmit/OrderSubmitPage',
       name: 'OrderSubmitPage',
       component: resolve => {
@@ -85,6 +96,17 @@ const router = new Router({
       },
       beforeEnter: (to, from, next) => {
         setTitle('确认预约');
+        next();
+      }
+    },
+    {
+      path: '/OrderSubmit/OrderSubmitPageNew',
+      name: 'OrderSubmitPageNew',
+      component: resolve => {
+        require.ensure([], () => resolve(require('@/components/OrderSubmit/OrderSubmitPageNew.vue')), 'OrderSubmitPageNew');
+      },
+      beforeEnter: (to, from, next) => {
+        setTitle('提交订单');
         next();
       }
     },
@@ -121,7 +143,7 @@ const router = new Router({
         );
       },
       beforeEnter: (to, from, next) => {
-        setTitle('订单提交成功');
+        setTitle('下单成功');
         next();
       }
     },
@@ -406,7 +428,7 @@ const router = new Router({
         require.ensure([], () => resolve(require('@/components/Credit/Credit.vue')), 'Credit');
       },
       beforeEnter: (to, from, next) => {
-        setTitle('信用认证');
+        setTitle('工作单位/学校信息认证');
         next();
       }
     },

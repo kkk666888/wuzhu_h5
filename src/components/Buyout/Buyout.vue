@@ -120,6 +120,7 @@
         })
       },
       goNext() {
+        this.$store.commit('updateLoadingStatus', { isLoading: true });
         if (this.isFinish) { // 支付金额为0,调用主动买断
           this.goBuyOut()
         } else {
@@ -133,6 +134,7 @@
           buyOutType: this.commodityInfo.buyOutType
         }
         that.$http.post('/wuzhu/order/buyOut/settlte', params).then(res => {
+          this.$store.commit('updateLoadingStatus', { isLoading: false });
           if (res.code === '00') {
             this.goSussussPay()
           } else {

@@ -5,9 +5,9 @@
     </div>
     <div class="login_input">
       <group class="group_input">
-        <x-input class="input_login needsclick" placeholder="请输入手机号" v-model="phoneNum" title="手机号" type="tel" @on-blur="inputPhoneChange"></x-input>
+        <x-input class="input_login needsclick" :max="20" placeholder="请输入手机号" v-model="phoneNum" title="手机号" type="tel" @on-blur="inputPhoneChange"></x-input>
         <!-- placeholder-align="right" -->
-        <x-input class="input_login xinput_verify needsclick" placeholder="请输入验证码" v-model="authCode" title="验证码" type="tel" @on-blur="inputCodeChange">
+        <x-input class="input_login xinput_verify needsclick" :max="10" placeholder="请输入验证码" v-model="authCode" title="验证码" type="tel" @on-blur="inputCodeChange">
           <span ref="getCodeCtrl" :class="['get-code', flag ? 'active' : '']" slot="right" v-on:click="flag && getVerificationCode()">获取验证码</span>
         </x-input>
       </group>
@@ -246,6 +246,7 @@ export default {
     // 请求 登录
     reqLogin() {
       let that = this;
+      that.$store.commit('updateLoadingStatus', { isLoading: true });
       // smsCode 验证码 seqNo 短信序列号 mobile 手机
       let urlParam = '?smsCode=' + that.authCode + '&seqNo=' + that.seqNo + '&mobile=' + that.phoneNum;
       let platform = that.$store.state.platformCode;
@@ -280,6 +281,7 @@ export default {
           strMembershipLoginLogDO: JSON.stringify(_logDO)
         })
         .then(res => {
+          this.$store.commit('updateLoadingStatus', { isLoading: false });
           if (res.code === '00' && res.data) {
             that.waitTime = 0; // 跳转下一步时,停止倒计时
             that.$store.commit('tokenMemory', { token: res.data.Token });

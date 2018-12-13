@@ -54,7 +54,7 @@
           <!--<cell @click.native="goPage(8)" class="cell_info" title="我的账户" is-link></cell>-->
           <cell v-if="!isAlipayLife" @click.native="goPage(3)" class="cell_info" title="身份认证" is-link></cell>
           <!--<cell :link="{path:'/OrderList/OrderListPage'}" class="cell_info" title="地址管理" is-link></cell>-->
-          <cell v-if="!isAlipayLife" @click.native="goPage(5)" class="cell_info" title="信用认证" is-link></cell>
+          <!-- <cell v-if="!isAlipayLife" @click.native="goPage(5)" class="cell_info" title="信用认证" is-link></cell> -->
           <cell v-if="!_isWzapp && !isAlipayLife" @click.native="goPage(4)" class="cell_info" title="邀请好友" is-link></cell>
           <cell v-if="!isAlipayLife" @click.native="goPage(7)" class="cell_info" title="关注物主公众号" is-link></cell>
           <cell @click.native="goPage(6)" class="cell_info" title="设置" is-link></cell>
@@ -125,7 +125,7 @@ export default {
     ...mapMutations(['updateRouteName']),
     goLogin() {
       // this.$router.push({ name: 'InitLogin' });
-      unionLogin(this, this.loginSucc());
+      unionLogin(this, this.loginSucc);
     },
     loginSucc() {
       this.isLogin = true;

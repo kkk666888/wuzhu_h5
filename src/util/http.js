@@ -107,15 +107,14 @@ const Http = {
         .then(
           res => {
             resolve(res.data);
-          },
-          err => {
-            reject(err);
-            setError(err);
-            if (typeof errorCallback === 'function') {
-              errorCallback(err);
-            }
+        })
+        .catch(err => {
+          reject(err);
+          setError(err);
+          if (typeof errorCallback === 'function') {
+            errorCallback(err);
           }
-        );
+        });
     });
   },
   patch: (url, data = {}, headers = {}, usrTimeout = null, errorCallback) => {

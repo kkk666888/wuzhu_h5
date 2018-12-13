@@ -4,8 +4,8 @@
       <img class="success-icon" srcset="./Success@1x.png 1x, ./Success@1.5x.png 1.5x" />
     </div>
     <div class="textDescDiv">
-      <div style="text-align: center; font-size: 18px; font-family:'PingFangSC-Medium'; color: #333333; margin-bottom: 12px">您的租赁订单已预约成功</div>
-      <div style="text-align: center; font-size: 14px; font-family:'PingFangSC-Medium'; color: #888888">请耐心等待后台审核，审核结果会及时告知， <br>请保持电话畅通</div>
+      <div style="text-align: center; font-size: 18px; font-weight:500;font-family:'PingFangSC-Medium'; color: #111111; margin-bottom: 12px">您的租赁订单已预约成功</div>
+      <div style="text-align: center; font-size: 14px; font-family:'PingFangSC-Medium'; color: #888888" v-html="resultTips"></div>
     </div>
     <!--按钮部分-->
     <div class="buttonsPlane" style="display: flex; justify-content: center">
@@ -32,17 +32,22 @@ export default {
   data() {
     return {
       menuList: ['返回首页', '查看订单'],
-      orderNo: ''
+      orderNo: '',
+      processType: sessionStorage.getItem('processType'),
+      resultTips: ''
     };
   },
   created() {
     let tempParam = this.$router.app._route.params;
     this.orderNo = tempParam.orderNo;
     console.log('传递过来的订单号为: ' + JSON.stringify(tempParam));
+    this.resultTips = (this.processType !== '1') ? '请保持电话畅通，<br>15分钟内工作人员将来电（0755-2197450）确认<br>工作时间：09:00-18:00' : '工作人员确认中，<br>请耐心等待并留意确认结果及时进行支付';
+    // 清除申请序列号
+    this.$store.commit('updateApplySerialNo', { applySerialNo: '' });
   },
   // 路由部分的处理，离开页面和进入页面的处理
   beforeRouteLeave(to, from, next) {
-    if (to.name === 'OrderSubmitPage') {
+    if (to.name === 'OrderSubmitPage' || to.name === 'OrderSubmitPageNew') {
       next({ name: 'HomePage' });
     } else {
       next();
@@ -51,12 +56,12 @@ export default {
   methods: {
     menuButtonClick(menuTtem) {
       if (menuTtem === '返回首页') {
-        this.$router.replace({ name: 'HomePage' });
+        this.$router.push({ name: 'HomePage' });
       } else if (menuTtem === '查看订单') {
         let item = {
           orderNo: this.orderNo
         };
-        this.$router.replace({ name: 'OrderDetailNewPage', params: item });
+        this.$router.push({ name: 'OrderDetailNewPage', params: item });
       } else {
         // Do Nothine
       }
@@ -93,7 +98,8 @@ export default {
       width: 111px !important;
       height: 36px !important;
       background: #ffda29 !important;
-      font-size: 17px !important;
+      font-size: 14px !important;
+      color: #111111 !important;
       text-align: center !important;
       border-radius: 6px !important;
     }

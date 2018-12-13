@@ -1,4 +1,5 @@
 <template>
+<!-- 改版后的订单提交页面，适用于微信、京东、App渠道，支付宝生活号渠道还是OrderSubmitPage.vue -->
   <div class="OrderSubmitPage">
     <!--头部信息-->
     <div class="header OrderDetail_Shadow">
@@ -9,72 +10,52 @@
         </div>
         <div class="goodsInfoPlane">
           <div class="fullName">{{ fullName }}</div>
-          <div class="markPrice">商品价值:{{ markPrice }}元</div>
+          <!-- <div class="markPrice">商品价值:{{ markPrice }}元</div> -->
           <div class="categoryList">
-            <span class="categoryListItem" v-for="(specItem, specIndex) in listCommoditySpec" :key="specIndex">{{ specItem.specContent }}</span>
+            <span class="categoryListItem" v-for="(specItem, specIndex) in listCommoditySpec" :key="specIndex">{{ specItem.specContent }}
+              <span v-if="specIndex < listCommoditySpec.length-1">/</span>
+            </span>
           </div>
         </div>
       </div>
       <div class="feePlane">
         <div class="feeCell">
-          <div class="feeName">原商品押金</div>
-          <div class="feeValue">￥{{ deposit }}</div>
+          <div class="feeName">租金</div>
+          <div class="feeValue">￥{{ rentForOneDay }}/天    *{{ tenancyTerm }}天</div>
         </div>
-        <div class="feeCell">
-          <div class="feeName">商家减免押金</div>
-          <div class="feeValue">申请中
-            <i class="icon iconfont icon-help1" v-if="isAlipayLife" @click="showDetail(1)" style="color: #007AFF; font-size: 14px"></i>
-          </div>
+        <div class="feeTips">*租金支持<span class="feeTipsBold">按月支付</span>或<span class="feeTipsBold">一次性支付</span>
         </div>
-        <div class="feeCell" v-if="isAlipayLife">
-          <div class="feeName">押金支付方式</div>
-          <div class="feeValue">花呗冻结押金
-            <i class="icon iconfont icon-help1" @click="showDetail(2)" style="color: #007AFF; font-size: 14px"></i>
-          </div>
-        </div>
-        <div class="feeCell">
-          <div class="feeName">日均租金</div>
-          <div class="feeValue">￥{{ rentForOneDay }}/天</div>
-        </div>
-        <div class="feeCell" v-for="(feeItem, feeIndex) in feeList" :key="feeIndex">
-          <div class="feeName">
-            {{ feeItem['feeName'] }}
+        <div class="feeCell gray" v-for="(feeItem, feeIndex) in feeList" :key="feeIndex">
+          <div class="feeName">{{ feeItem['feeName'] }}
           </div>
           <div class="feeValue">{{ feeItemItemDesc(feeItem) }}</div>
         </div>
-        <div v-if="isAlipayLife" class="feeCell">
-          <div class="feeName">租金支付方式</div>
-          <div class="feeValue">支付宝预授权
-            <i class="icon iconfont icon-help1" @click="showDetail(3)" style="color: #007AFF; font-size: 14px"></i>
-          </div>
-        </div>
       </div>
-      <div class="termDayPlane vux-1px-b">
+
+      <div class="depositBlock">
         <div class="feeCell">
-          <div class="feeName" style="color: #111111">租期</div>
-          <div class="feeValue" style="color: #888888">{{ tenancyTerm }}天</div>
+          <div class="feeName">押金
+            <!-- <span class="depositBlue">可退</span> -->
+          </div>
+          <div class="feeValue gray">￥{{ deposit | moneyFormat }}</div>
         </div>
-      </div>
-      <div class="feePlaneTrail">
-        <div class="feeCell" @click="showOrderTrailClick">
-          <div class="feeName" style="color: #000000">每期费用支付计划试算
-            <i style="font-size: 14px; color:#888888;font-style: normal;">(不含押金)</i>
-          </div>
-          <div class="feeValue" style="margin-right: 5px;">
-            <i class="icon iconfont icon-help1" style="color: #007AFF; font-size: 14px"></i>
-          </div>
+        <!-- <div class="feeCell">
+          <div class="feeName">押金支付方式</div>
+        </div> -->
+        <div class="depositDetail">
+          <div class="depositTitle">{{ depositPayName }}</div>
+          <div class="depositDesc">{{ depositPayDesc }}</div>
         </div>
       </div>
     </div>
-    <div v-if="isAlipayLife" class="orderdetail-tips">为确保正常收货，请填写您本人真实收货信息</div>
-    <div v-else class="orderdetail-tips">确认收货地址</div>
-    <!--订单详情信息-->
+    <!-- 收货信息-->
     <div class="orderInfoPlane OrderDetail_Shadow">
       <div class="orderInfoBase">
+      <div class="orderSubmit-flexBox bb1">请确认收货地址</div>
         <div class="orderSubmit-flexBox bb1">
-          <div class="flexBox-left">{{isAlipayLife ? '真实姓名' : '收货人'}}</div>
+          <div class="flexBox-left">姓名</div>
           <group class="customer-info">
-            <x-input :max="20" title="" class="info-input needsclick" :readonly="hasUserName" type="text" :show-clear="false" v-model="userName" @on-blur="setWindowSize" placeholder="请输入"></x-input>
+            <x-input :max="20" class="info-input needsclick" :readonly="hasUserName" type="text" :show-clear="false" v-model="userName" ref="input01" @on-blur="setWindowSize" placeholder="请输入" @on-focus="focusName" @on-change="changeUserName"></x-input>
           </group>
         </div>
         <div class="orderSubmit-flexBox bb1">
@@ -83,29 +64,28 @@
             <x-input :max="20" title="" class="info-input needsclick" type="text" v-model="phoneNum" :show-clear="false" :readonly="hasPhoneNum" @on-blur="setWindowSize" placeholder="请输入" keyboard="number" is-type="china-mobile"></x-input>
           </group>
         </div>
-        <div class="orderSubmit-flexBox bb1" v-if="isAlipayLife">
+        <!-- <div class="orderSubmit-flexBox bb1" v-if="isAlipayLife">
           <div class="flexBox-left">身份证号</div>
           <group class="customer-info">
-            <x-input :max="30" title="" class="info-input needsclick" type="text" v-model="certId" :readonly="hasCertId" :show-clear="false" @on-blur="setWindowSize" placeholder="请输入"></x-input>
+            <x-input title="" class="info-input needsclick" type="text" v-model="certId" :readonly="hasCertId" :show-clear="false" @on-blur="setWindowSize" placeholder="请输入"></x-input>
           </group>
-        </div>
+        </div> -->
       </div>
       <div class="OrderInputPlane">
         <group>
           <x-address class="padding-address" title="省/市/区" :placeholder="placeholder" v-model="addressArea" raw-value :list="addressData" @on-hide="inputAddrChange"></x-address>
           <x-textarea class="needsclick" :max="100" :placeholder="addressPlaceHolder" :show-counter="false" :rows="2" v-model="addressDetail" @on-blur="inputAddrDetailChange" autosize></x-textarea>
         </group>
-        <div class="orderdetail-tips">添加紧急联系人（紧急联系人仅用于意外失联情况，请填写真实有效的联系人信息）</div>
-        <!-- app -->
+        <!-- <div class="orderdetail-tips">添加紧急联系人（紧急联系人仅用于意外失联情况，请填写真实有效的联系人信息）</div>
         <section v-if="isWzapp" class="mt15">
           <group class="group-2">
-            <x-input :max="40" class="padding-address" title="重要联系人" type="text" readonly :show-clear="false" placeholder="请选择联系人" text-align="left" v-model="emergencyApp1" @on-blur="inputNameChange" @on-change="inputChangeEvent">
+            <x-input class="padding-address" title="重要联系人" type="text" readonly :show-clear="false" placeholder="请选择联系人" text-align="left" v-model="emergencyApp1" @on-blur="inputNameChange" @on-change="inputChangeEvent">
               <span slot="right" class="add-contact" @click="addContact(1)">添加</span>
             </x-input>
             <popup-picker ref="emergency1" class="padding-address" title="所属关系" :showName="true" :data="shipData" v-model="emergencyShip" :placeholder="placeholder" value-text-align="right" @on-hide="inputShipChange"></popup-picker>
           </group>
           <group class="group-2 contact2">
-            <x-input :max="40" class="padding-address" title="其他联系人" type="text" readonly :show-clear="false" placeholder="请选择联系人" text-align="left" v-model="emergencyApp2" @on-blur="inputNameChange" @on-change="inputChangeEvent">
+            <x-input class="padding-address" title="其他联系人" type="text" readonly :show-clear="false" placeholder="请选择联系人" text-align="left" v-model="emergencyApp2" @on-blur="inputNameChange" @on-change="inputChangeEvent">
               <span slot="right" class="add-contact" @click="addContact(2)">添加</span>
             </x-input>
             <popup-picker ref="emergency2" class="padding-address" title="所属关系" :showName="true" :data="shipData" v-model="emergencyShip2" :placeholder="placeholder" value-text-align="right" @on-hide="inputShipChange"></popup-picker>
@@ -113,43 +93,63 @@
         </section>
         <section v-else-if="isAlipayLife" class="mt15">
           <group class="group-2">
-            <x-input :max="40" class="padding-address" title="紧急联系人" type="text" readonly :show-clear="false" placeholder="请选择联系人" text-align="left" v-model="emergencyApp1" @on-blur="inputNameChange" @on-change="inputChangeEvent">
+            <x-input class="padding-address" title="紧急联系人" type="text" readonly :show-clear="false" placeholder="请选择联系人" text-align="left" v-model="emergencyApp1" @on-blur="inputNameChange" @on-change="inputChangeEvent">
               <span slot="right" class="add-contact" @click="addContact(3)">添加</span>
             </x-input>
           </group>
         </section>
-        <!-- h5 -->
         <section v-else class="">
           <group class="group-2">
-            <x-input :max="20" class="padding-address" title="重要联系人" type="text" :show-clear="false" placeholder="请填写重要联系人(必填)" text-align="left" v-model="emergencyName" @on-blur="inputNameChange" @on-change="inputChangeEvent"></x-input>
-            <x-input :max="20" class="padding-address" title="联系人电话" type="tel" :show-clear="false" placeholder="请填写重要联系人电话" text-align="left" v-model="emergencyPhone" keyboard="number" is-type="china-mobile" @on-blur="inputPhoneChange" @on-change="inputChangeEvent"></x-input>
+            <x-input class="padding-address" title="重要联系人" type="text" :show-clear="false" placeholder="请填写重要联系人(必填)" text-align="left" v-model="emergencyName" @on-blur="inputNameChange" @on-change="inputChangeEvent"></x-input>
+            <x-input class="padding-address" title="联系人电话" type="tel" :show-clear="false" placeholder="请填写重要联系人电话" text-align="left" v-model="emergencyPhone" keyboard="number" is-type="china-mobile" @on-blur="inputPhoneChange" @on-change="inputChangeEvent"></x-input>
             <popup-picker ref="emergency1" class="padding-address" title="所属关系" :showName="true" :data="shipData" v-model="emergencyShip" :placeholder="placeholder" value-text-align="right" @on-hide="inputShipChange"></popup-picker>
           </group>
           <group class="group-2 contact2">
-            <x-input :max="20" class="padding-address" title="其他联系人" type="text" :show-clear="false" placeholder="请填写联系人(必填)" text-align="left" v-model="emergencyName2" @on-blur="inputNameChange" @on-change="inputChangeEvent"></x-input>
-            <x-input :max="20" class="padding-address" title="联系人电话" type="tel" :show-clear="false" placeholder="请填写联系人电话" text-align="left" v-model="emergencyPhone2" keyboard="number" is-type="china-mobile" @on-blur="inputPhoneChange" @on-change="inputChangeEvent"></x-input>
+            <x-input class="padding-address" title="其他联系人" type="text" :show-clear="false" placeholder="请填写联系人(必填)" text-align="left" v-model="emergencyName2" @on-blur="inputNameChange" @on-change="inputChangeEvent"></x-input>
+            <x-input class="padding-address" title="联系人电话" type="tel" :show-clear="false" placeholder="请填写联系人电话" text-align="left" v-model="emergencyPhone2" keyboard="number" is-type="china-mobile" @on-blur="inputPhoneChange" @on-change="inputChangeEvent"></x-input>
             <popup-picker ref="emergency2" class="padding-address" title="所属关系" :showName="true" :data="shipData" v-model="emergencyShip2" :placeholder="placeholder" value-text-align="right" @on-hide="inputShipChange"></popup-picker>
           </group>
-        </section>
+        </section> -->
       </div>
     </div>
+
+    <!-- <div class="messageBoard">
+      <div class="feeCell mb13">
+        <div class="feeName">留言板</div>
+      </div>
+      <div class="messageDetail">
+        <x-textarea class="needsclick messageText" :max="100" :placeholder="messageHolder" :show-counter="false" v-model="leaveMessage" @on-blur="inputMessageChange" autosize></x-textarea>
+      </div>
+    </div> -->
+
     <!--用户协议部分-->
     <div class="protocolPlane">
+      <div v-bind:class="agreementClass" @click="agreementClick"></div>
       <p>
-        <span class="protocolPlane_normal">点击确认代表已同意</span>
+        <span class="protocolPlane_normal">我已阅读并同意</span>
         <span class="protocolPlane_protocol" v-for="(protocolItem, protocolIndex) in pdfFileList" :key="protocolIndex" @click="protocolClick(protocolIndex, protocolItem)">{{ protocolItem }}</span>
       </p>
     </div>
     <!--用户点击提交按钮部分-->
-    <div class="submitPlane">
-      <x-button @click.native="subOrderClick">{{isAlipayLife ? '立即减免' : '确认预约下单'}}</x-button>
+    <!-- <div class="submitPlane">
+      <x-button @click.native="subOrderClick">提交资料</x-button>
+    </div> -->
+
+    <div class="bottomBlock">
+      <div class="leftBlock">
+        <div class="bottomDeposit">商品押金：
+          <div class="bottomDepositAmt">￥{{ deposit | moneyFormat}}
+          </div>
+        </div>
+        <div class="bottomTips">{{ bottomTips }}</div>
+      </div>
+      <div class="rightBlock" @click="submitClick"> {{ processType === '1' ? '提交订单' : '提交资料'}}</div>
     </div>
     <!--用来显示协议部分插件-->
     <html-pannel :showScrollBox="potocolShow" :protocolTitle="potocolTitle" :url="potocolUrl" @sureBtnClick="potocolSureClick"></html-pannel>
     <!--Toast展示对应的结果-->
     <alert v-model="alertShow" :title="alertTitle" :content="alertContent"></alert>
     <toast v-model="showToast" type="text" width="20em">{{ toastContent }}</toast>
-    <fee-trial-table-new :feeTrialList="feeTrialList" :curDate="curDate" :goodReturnDate="myDate" v-show="showTrailDetail" @hideClick="trailHideClick"></fee-trial-table-new>
   </div>
 </template>
 
@@ -189,7 +189,7 @@ import userLeaseServiceAgreements from './../Potocol/UserLeaseServiceAgreements'
 import feeDescAlert from './../FeeItemSubView/FeeDescAlert';
 import userLeaseServiceAdditionalAgree from './../Potocol/UserLeaseServiceAdditionalAgree';
 import { ReportData } from './../../util/ReportData';
-import { getFeeDescStr, getTimerStr, getTrailTableList } from './../../wuzhuUtil/wuzhuUtil';
+import { getFeeDescStr } from './../../wuzhuUtil/wuzhuUtil';
 import htmlPannel from './../FeeItemSubView/HtmlPannel';
 import feeTrialTableNew from './../FeeItemSubView/FeeTrialTableNew';
 import { mapMutations } from 'vuex';
@@ -224,6 +224,10 @@ export default {
       placeholder: '请选择',
       rentForOneDay: '', // 日均租金
       applySerialNo: '', // 预约申请号
+      depositPayName: '', // 押金支付方式名称,后续会有多种
+      depositPayDesc: '', // 押金支付方式描述,后续会有多种
+      processType: '',
+      bottomTips: '',
       inputChangeFlag: false, // 用于标记input的change事件
       brisk: {
         // 埋点报文
@@ -234,18 +238,6 @@ export default {
           },
           {
             type: 'delivery', // 收货地址详细地址修改次数
-            times: 0
-          },
-          {
-            type: 'contactname', // 紧急联系人修改次数
-            times: 0
-          },
-          {
-            type: 'contactphone', // 紧急联系人电话修改次数
-            times: 0
-          },
-          {
-            type: 'contactrelationship', // 紧急联系人关系修改次数
             times: 0
           }
         ],
@@ -286,9 +278,9 @@ export default {
       emergencyShip: [], // 紧急联系人关系
       emergencyShip2: [], // 紧急联系人2关系
       addressData: ChinaAddressV4Data,
-      addressPlaceHolder: '请输入收货详细地址，审核后不可修改',
+      addressPlaceHolder: '请输入收货详细地址，审核通过后不可修改',
       addressDetail: '',
-
+      messageHolder: '还有什么要交代我的吗？尽管留言好啦...',
       shipData: [], // 根据产品和风控需求，紧急联系人如下,其中微信公众号渠道隐藏2、3、10，但对应的code不能变，1.父母、2.子女、3.配偶、4.兄弟姐妹、5. 非直系亲属、6.朋友、7.同学、8. 室友、9.情侣、 10. 同事、11.其他
       needShipData: ['父母', '子女', '配偶', '兄弟姐妹'],
       pdfFileList: ['《 用户租赁及服务协议》', '《用户租赁及服务协议之补充协议》'],
@@ -314,14 +306,17 @@ export default {
       gpsLatitude: '',
       platformCode: this.$store.state.platformCode, // 平台号
       isWzapp: isWzapp(),
-      isAlipayLife: isAlipayLife()
+      isAlipayLife: isAlipayLife(),
+      leaveMessage: '',
+      agreementChoose: true
     };
   },
   computed: {
-    arrowShowTrailDetailClasssOject: function() {
+    agreementClass: function() {
+      let agreementChoose = this.agreementChoose;
       return {
-        'icon iconfont icon-xia': !this.showTrailDetail,
-        'icon iconfont icon-shang': this.showTrailDetail
+        'feeNorCir': !agreementChoose,
+        'feeSelCir': agreementChoose
       };
     }
   },
@@ -352,7 +347,7 @@ export default {
       }
     }
     this.getCacheData(() => {
-      this.getShipData();
+      // this.getShipData();
       if (this.isAlipayLife) {
         this.emergencyName = '';
         this.emergencyPhone = '';
@@ -372,9 +367,23 @@ export default {
     ...mapMutations(['updateLoadingStatus', 'updateOrderNo']),
     // 软键盘弹起还原
     setWindowSize() {
+      console.log('name', this.userName);
+      if (!this.userName) {
+        this.userName = this.$refs.input01.$refs.input.value;
+      }
       setTimeout(function() {
         window.scrollTo(0, 0);
       }, 100);
+    },
+    focusName(val) {
+      console.log('focus', val);
+      console.log(this.$refs.input01.$refs.input.value);
+    },
+    changeUserName(val) {
+      if (!this.userName) {
+        this.userName = this.$refs.input01.$refs.input.value;
+      }
+      console.log('change', val, this.userName);
     },
     // 从后台获取订单相关数据
     getCacheData(callback) {
@@ -385,9 +394,13 @@ export default {
       let getDoodsDetailFromSessionUrl = '/wuzhu/reservationController/getCachData';
       // 从localStorage里面拿到对应的applyNo
       let applySerialNo = that.$store.state.applySerialNo;
+      // TODO 测试
+      // that.$store.commit('tokenMemory', { token: 'Token_395d5c5d17434ef1b58b6d69b09b6225' });
+      // applySerialNo = '00320181211142011734867942';
+
       console.log('applySerialNo = ' + applySerialNo);
       that.applySerialNo = applySerialNo;
-      if (applySerialNo === null) {
+      if (!applySerialNo) {
         return;
       }
       // 请求的参数
@@ -402,13 +415,13 @@ export default {
           that.parseJsonStrFromSession(data);
         } else {
           that.$vux.confirm.show({
-            content: res.msg,
-            onConfirm() {
-              that.$router.replace({ name: 'HomePage' });
-            },
-            onCancel() {
-              that.$router.replace({ name: 'HomePage' });
-            }
+            content: res.msg
+            // onConfirm() {
+            //   that.$router.replace({ name: 'HomePage' });
+            // },
+            // onCancel() {
+            //   that.$router.replace({ name: 'HomePage' });
+            // }
           });
         }
         if (callback && callback instanceof Function) {
@@ -421,8 +434,8 @@ export default {
       switch (type) {
         case 1:
           this.$vux.alert.show({
-            title: '商家减免押金',
-            content: '减免押金：为减少用户冻结押金使用的花呗额度，商家可减免部分押金。点击下方“立即减免”按钮进行授权查看'
+            title: '信用免押',
+            content: '根据您的芝麻信用，可获取相应额度的免押服务。<br> 点击页面下方“免押授权”按钮，查看免押额度。'
           });
           break;
         case 2:
@@ -453,33 +466,16 @@ export default {
         that.getLocationAlready = true;
       }
     },
-    inputShipChange(res) {
-      if (res) {
-        this.brisk.edittimes[4].times++;
-      }
-    },
-    // 紧急联系人电话修改次数
-    inputPhoneChange() {
-      if (this.inputChangeFlag) {
-        this.brisk.edittimes[3].times++;
-        this.inputChangeFlag = false;
-      }
-      this.setWindowSize();
-    },
-    // 紧急联系人修改次数
-    inputNameChange() {
-      if (this.inputChangeFlag) {
-        this.brisk.edittimes[2].times++;
-        this.inputChangeFlag = false;
-      }
-      this.setWindowSize();
-    },
     // 收货地址详细地址修改次数
     inputAddrDetailChange() {
       if (this.inputChangeFlag) {
         this.brisk.edittimes[1].times++;
         this.inputChangeFlag = false;
       }
+      this.setWindowSize();
+    },
+    // 留言板修改次数
+    inputMessageChange() {
       this.setWindowSize();
     },
     // 收货地址省市区修改次数
@@ -514,14 +510,6 @@ export default {
         return true;
       } else {
         this.alertTitle = '温馨提示';
-        // let citys = '';
-        // this.openCityArr.forEach(item => {
-        //   citys += item.openCityName + '、';
-        // });
-        // if (citys) {
-        //   citys = citys.substring(0, citys.length - 1);
-        // }
-        // this.alertContent = ' 目前开业的城市：' + citys + ',请选择以上城市作为收货地址';
         // 修改提示为未开放城市
         this.alertContent = '目前暂未开放：' + realCity + ',请选择其他城市作为收货地址';
         this.alertShow = true;
@@ -534,10 +522,48 @@ export default {
     },
     // 解析Storage里面返回的数据
     parseJsonStrFromSession(data) {
-      // console.log('parseJsonStrFromSession data = ', data);
+      console.log('parseJsonStrFromSession data = ', data);
+      // 解析押金支付方式
+      // 授信流程或支用流程
+      let processType = '';
+      let amountExemption = '';
+      if (data && data.recivingInfo) {
+        let listStyle = data.recivingInfo.listStyle;
+        if (listStyle && listStyle.length > 0) {
+          for (let index = 0; index < listStyle.length; index++) {
+            const element = listStyle[index];
+            // 001-免押授信申请
+            if (element && element.styleCode === '001') {
+              // Y表示支用流程
+              if (element.isDisburse === 'Y') {
+                amountExemption = element.amountExemption
+                processType = '1';
+              } else {
+              }
+              // 押金支付方式名称及描述
+              this.depositPayName = element.styleDesc;
+              this.depositPayDesc = element.explain;
+            }
+          }
+        }
+        this.leaveMessage = data.recivingInfo.leaveMessage;
+        this.userName = data.recivingInfo.reciveName;
+        this.hasUserName = !!this.userName;
+      }
+      if (processType === '1') {
+        this.bottomTips = '本单可免押¥' + parseFloat(amountExemption).toFixed(2);
+      } else {
+        this.bottomTips = '提交资料，可减免押金';
+      }
+      sessionStorage.setItem('processType', processType);
+      sessionStorage.setItem('amountExemption', amountExemption);
+      this.processType = processType;
+
       // 开始配置用户测试数据
       let userChooseJsonStr = data && data.commodityJsonStr;
       let userChooseData = JSON.parse(userChooseJsonStr);
+      // let userChooseData = JSON.parse(userChooseJson.commodityStr);
+      console.log('parseJsonStrFromSession userChooseData = ' + JSON.stringify(userChooseData));
       // 用户选择的配置信息
       this.fullName = userChooseData && userChooseData.fullName;
       this.rentForOneDay = userChooseData && userChooseData['leaseForOneDayPrice'];
@@ -549,17 +575,14 @@ export default {
       this.deposit = this.userChooseGood['performanceBond'];
       this.tenancyTerm = this.userChooseFinancialProduct['totalDays'];
       this.JDCoin = data && data['jdscore'];
+      if (!this.userName) {
+        this.userName = data && data['customerName'];
+        this.hasUserName = !!this.userName;
+      }
       this.phoneNum = data && data['phoneNumber'];
       this.hasPhoneNum = !!data['phoneNumber'];
       this.certId = data && data['certId'];
       this.hasCertId = !!data['certId'];
-      if (data && data.recivingInfo) {
-        this.userName = data.recivingInfo.reciveName;
-        this.hasUserName = !!this.userName;
-      } else {
-        this.userName = data && data['customerName'];
-        this.hasUserName = !!this.userName;
-      }
       // 用户选择的费用列表
       // let additionFeeInfoListStr = userChooseData && userChooseData['additionFeeInfo']
       // let userChooseFeeInfoListStr = userChooseData && userChooseData['userChooseFeeInfo']
@@ -615,68 +638,6 @@ export default {
         this.addressDetail = consigneeAddress.detailAddr;
       }
     },
-    // 箭头打开和关闭商品详情的函数
-    showOrderTrailClick() {
-      let that = this;
-      if (this.trialTableGetAlready === false && this.showTrailDetail === false) {
-        let feeInfoList = that.getHttpFeeList();
-        // 判断下是否获取了对应商品详情等信息
-        var curDate = new Date(); // 当前时间
-        var myDate = new Date(curDate.getTime() + 24 * 4 * 60 * 60 * 1000);
-        var myDateStr = myDate.Format('yyyy-MM-dd');
-        that.curDate = getTimerStr(curDate);
-        that.myDate = getTimerStr(myDate);
-        let param = {
-          feeInfoList: feeInfoList,
-          openId: that.$store.state.othersOpenID,
-          channelNo: that.$store.state.channelNo,
-          applySerialNo: this.applySerialNo,
-          // loginMobile: cslTestData.phoneNumber,
-          startDay: myDateStr,
-          commodityNo: that.userChooseGood.commodityNo,
-          productNo: that.userChooseFinancialProduct.productNo
-        };
-        let getPayRentPlanUrl = '/wuzhu/reservationController/payRentPlan';
-        that.$store.commit('updateLoadingStatus', { isLoading: true });
-        that.$http.post(getPayRentPlanUrl, param).then(res => {
-          that.$store.commit('updateLoadingStatus', { isLoading: false });
-          if (res.code === '00') {
-            // 开始获取试算的信息
-            let data = res['data'];
-            // 获取的对应的试算，并且进行数组转换
-            let mapData = data['map'];
-            that.feeTrialList = getTrailTableList(mapData);
-            that.trialTableGetAlready = true;
-            // 开始获取当前html上的
-            that.htmlScrollTop = document.documentElement.scrollTop;
-            document.documentElement.classList.add('alpha');
-            this.showTrailDetail = true;
-          } else {
-            // 错误信息的提示
-            let errormsg = res['msg'];
-            that.toastContent = errormsg;
-            that.showToast = true;
-          }
-        });
-      } else {
-        if (this.showTrailDetail) {
-          this.showTrailDetail = false;
-          document.documentElement.scrollTop = that.htmlScrollTop;
-          document.documentElement.classList.remove('alpha');
-        } else {
-          this.showTrailDetail = true;
-          // 开始获取当前html上的
-          that.htmlScrollTop = document.documentElement.scrollTop;
-          document.documentElement.classList.add('alpha');
-        }
-      }
-    },
-    // 当展示隐藏试算的时候
-    trailHideClick() {
-      this.showTrailDetail = false;
-      document.documentElement.scrollTop = this.htmlScrollTop;
-      document.documentElement.classList.remove('alpha');
-    },
     // 添加联系人
     addContact(type) {
       if (type === 3) {
@@ -729,78 +690,17 @@ export default {
       this.toastContent = content;
       this.showToast = true;
     },
-    // 检查身份证
-    checkIDCardName(name) {
-      if (!name) {
-        this.showToastWithMessage('请输入正确的姓名');
-        return false;
-      }
-      let reg = /^[\u2E80-\uFE4F·]{2,12}$/i;
-      let result = reg.test(name);
-      if (!result) {
-        this.showToastWithMessage('请输入正确的姓名');
-        // this.$vux.alert.show({
-        //   title: '身份信息错误',
-        //   content: '请输入正确的姓名'
-        // });
-        return false;
-      }
-      return true;
-    },
-    // 检查 身份证
-    checkIDCard(id) {
-      if (!id) {
-        this.showToastWithMessage('请输入正确的身份证号码');
-        return false;
-      }
-      // 身份证号码为15位或者18位，15位时全为数字，18位前17位为数字，最后一位是校验位，可能为数字或字符X
-      let reg = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
-      let result = reg.test(id);
-      if (!result) {
-        this.showToastWithMessage('请输入正确的身份证号码');
-        // this.$vux.alert.show({
-        //   title: '身份信息错误',
-        //   content: '请输入正确的姓名与身份证号码'
-        // });
-        return false;
-      }
-      return true;
-    },
-    checkAliInfo() {
-      console.log('emergency', this.emergencyPhone, this.emergencyName);
-      if (this.addressArea && this.addressArea.length === 0) {
-        this.showToastWithMessage('请选择您收货的省市区信息');
-        return false;
-      }
-      if (this.addressDetail && this.addressDetail.length === 0) {
-        this.showToastWithMessage('请输入您的收货详细地址');
-        return false;
-      }
-      if (this.checkAddressAvailable() === false) {
-        return false;
-      }
-      if (!this.checkName(this.emergencyName)) {
-        return false;
-      }
-      if (!this.checkPhone(this.emergencyPhone)) {
-        return false;
-      }
-      if (!this.checkIDCardName(this.userName)) {
-        return false;
-      }
-      if (!this.checkIDCard(this.certId)) {
-        return false;
-      }
-      if (!isPhoneAvailable(this.phoneNum)) {
-        this.showToastWithMessage('手机号码格式错误(仅11位数字)或为不支持的号段，请检查');
-        return false;
-      }
-      return true;
+    // 协议是否被点击勾选
+    agreementClick() {
+      this.agreementChoose = !this.agreementChoose;
     },
     // 判断下是否需要弹框 如果信息不完善弹出对应的提示
     // 返回是否OK  OK 就直接返回  true
     checkInfo() {
-      // let that = this;
+      // 姓名
+      if (!this.hasUserName && !this.checkName(this.userName)) {
+        return false;
+      }
       if (this.addressArea && this.addressArea.length === 0) {
         this.showToastWithMessage('请选择您收货的省市区信息');
         return false;
@@ -812,61 +712,22 @@ export default {
       if (this.checkAddressAvailable() === false) {
         return false;
       }
-
-      // 紧急联系人1
-      if (!this.checkName(this.emergencyName)) {
+      if (!this.agreementChoose) {
+        this.showToastWithMessage('请先阅读并同意协议');
         return false;
       }
-      if (!this.checkPhone(this.emergencyPhone)) {
-        return false;
-      }
-
-      if (!this.emergencyShip.length) {
-        this.showToastWithMessage('请选择您和重要联系人的关系');
-        return false;
-      }
-
-      // 紧急联系人2
-      if (!this.checkName(this.emergencyName2)) {
-        return false;
-      }
-      if (!this.checkPhone(this.emergencyPhone2)) {
-        return false;
-      }
-      // 不能两个联系人选同一人
-      if (this.emergencyPhone === this.emergencyPhone2) {
-        this.showToastWithMessage('请勿添加相同的紧急联系人');
-        return false;
-      }
-      if (!this.emergencyShip2.length) {
-        this.showToastWithMessage('请选择您和其他联系人的关系');
-        return false;
-      }
-
-      let name1 = this.$refs.emergency1.getNameValues();
-
-      if (this.needShipData.indexOf(name1) === -1) {
-        this.showToastWithMessage('重要联系人中必须是父母/子女/配偶/兄弟姐妹中的一个');
-        return false;
-      }
-
       return true;
     },
     checkName(name) {
       console.log('checkName name = ' + name);
       if (!name) {
-        this.showToastWithMessage('请输入您的联系人信息');
+        this.showToastWithMessage('请输入您的姓名');
         return false;
       } else {
-        // 紧急联系人姓名仅包含汉字和·
+        // 姓名仅包含汉字和·
         let reg = /^[\u4e00-\u9fa5·]{2,12}$/i;
         if (!reg.test(name)) {
           this.showToastWithMessage('请输入正确的姓名，仅包含汉字和·，长度至少为2位');
-          return false;
-        }
-        // 紧急联系人姓名不能与本人相同
-        if (name === this.userName) {
-          this.showToastWithMessage('联系人不能填写本人姓名');
           return false;
         }
       }
@@ -979,6 +840,140 @@ export default {
         }
       );
     },
+    // 迭代2.12.0 提交资料&提交订单按钮点击
+    submitClick() {
+      if (!this.checkInfo()) {
+        return;
+      }
+
+      this.checkCustomerBaseInfo();
+    },
+    checkCustomerBaseInfo() {
+      // 开始进行转圈圈
+      this.$store.commit('updateLoadingStatus', { isLoading: true });
+      piwikTrackEvent('checkCustomerBaseInfo', 'type', 'start');
+      let that = this;
+      let url = '/wuzhu/customerVerController/checkCustomerBaseInfo';
+      let address = this.getAddressArray(this.addressArea);
+      let addressArray = address.split(' ');
+      let provice = addressArray[0];
+      let city = addressArray[1];
+      let county = addressArray[2];
+      let platform = that.$store.state.platformCode;
+      let recivingInfo = {};
+      recivingInfo.province = provice;
+      recivingInfo.city = city;
+      recivingInfo.county = county;
+      recivingInfo.consigneeDetailAddr = that.addressDetail;
+      recivingInfo.gpsLatitude = that.gpsLatitude;
+      recivingInfo.gpsLongitude = that.gpsLongitude;
+      recivingInfo.leaveMessage = that.leaveMessage;
+      recivingInfo.payDepositAmtStyle = '001';
+      recivingInfo.reciveMobile = that.phoneNum;
+      recivingInfo.reciveName = that.userName;
+
+      // 请求的参数
+      let param = {
+        applySerialNo: this.applySerialNo,
+        continueFlag: that.$store.state.continueFlag,
+        fromFlag: '1', // 获取入口 1:入口是确认预约  2：入口是个人中心
+        step: '', // 如果为空就从第一步开始
+        platformCode: platform, // 客户端平台
+        checkIDCardRequest: {},
+        recivingInfo: recivingInfo
+      };
+      that.$http.post(url, param).then(res => {
+        piwikTrackEvent('checkCustomerBaseInfo', 'type', res.code);
+        if (res.code === '00') {
+          that.$store.commit('updateLoadingStatus', { isLoading: false });
+          // that.$router.replace({
+          //   name: 'OrderSubSuccessPage',
+          //   params: { orderNo: orderNo }
+          // });
+          that.gotoNext(res);
+        } else if (res.code === '1001') {
+          unionLogin(this, this.aliOrderSubmit);
+        } else {
+          that.$store.commit('updateLoadingStatus', { isLoading: false });
+          that.gotoNext(res);
+        }
+      });
+    },
+    // 根据对应的返回的Step进行对应的逻辑跳转<处理> 理解下单之后的跳转逻辑
+    gotoNext(res) {
+      let that = this;
+      let data = res && res['data'];
+      let step = data && data['step'];
+      if (step) {
+        switch (step) {
+          case 'CRA': {
+            // 预约申请检查
+            // 弹窗提示对应的错误
+            that.reminderInfoMessage = res['msg'];
+            that.reminderShow = true;
+            break;
+          }
+          case 'QIV': {
+            // 身份验证-身份查询
+            break;
+          }
+          case 'CID': {
+            // 身份验证
+            // console.log('身份验证已经验证通过了')
+            that.$store.commit('ID_INFO_BTN_STATE', { IDInfoBtnState: 'next' });
+            that.$router.push({ name: 'IDverify' });
+            break;
+          }
+          case 'CJDXB': {
+            // 京东小白分
+            // 直接跳转到京东小白分页面后，说明身份验证已经通过，需要将状态修改为正常，防止在小白页面提示未通过身份验证
+            that.$store.commit('accountStatusMemory', { accountStatus: '正常' });
+            localStorage.setItem('origin', 'GoodsDetailPage');
+            that.$router.push({ name: 'Credit' });
+            break;
+          }
+          case 'LIVE': {
+            // 活体检测页面
+            that.$router.push({ name: 'LivenessVerify' });
+            break;
+          }
+          case 'LIFENUM':
+            // 支付宝生活号如果没有校验过手机号码则需要先校验手机号码
+            if (this.$store.state.channelNo === '004') {
+              let rememberMobile = sessionStorage.getItem('rememberMobile');
+              console.log('orderEventSubmit rememberMobile = ' + rememberMobile);
+              if (!rememberMobile || rememberMobile === 'null') {
+                this.$router.push({ name: 'CheckMobile' });
+              } else {
+                this.$router.push({ name: 'OrderSubmitPage' });
+              }
+            } else {
+              this.$router.push({ name: 'OrderSubmitPage' });
+            }
+            break;
+          case 'EMERGENCY':
+            // 增加紧急联系人
+            that.$router.push({ name: 'AddContact' });
+            break;
+          case 'SUBMIT':
+            // 确认下单
+            that.confirmBook();
+            break;
+          default:
+            break;
+        }
+      } else {
+        // 错误信息的提示
+        let errormsg = res['msg'] || '未知错误';
+        that.alertShow = true;
+        that.alertTitle = '提示';
+        that.alertContent = errormsg;
+        // // 输出对应的错误信息
+        // let errorMsg = res['msg'] || '未知错误';
+        // that.reminderInfoMessage = errorMsg;
+        // that.reminderShow = true;
+      }
+    },
     // 提交订单按钮点击事件
     subOrderClick() {
       let stu = false;
@@ -1009,23 +1004,23 @@ export default {
     },
     // 发送HTTP确认预约的服务
     confirmBook() {
-      if (this.$store.state.channelNo === '004') {
+      if (this.isAlipayLife) {
         this.aliOrderSubmit();
         return;
       }
       let that = this;
       // 获取对应的商品详情页面 GET /reservationController/getCommodityFromSession
       let comfirmUrl = '/wuzhu/reservationController/confirmReservationApplication';
-      let address = this.getAddressArray(this.addressArea);
-      let addressArray = address.split(' ');
-      let provice = addressArray[0];
-      let city = addressArray[1];
-      let county = addressArray[2];
-      // 将对应的费用列表进行处理
-      let tempFeeList = that.getHttpFeeList();
-      // 获取联系人关系
-      let emergencyShipIndex = parseInt(this.emergencyShip[0]);
-      let emergencyShipIndex2 = parseInt(this.emergencyShip2[0]);
+      // let address = this.getAddressArray(this.addressArea);
+      // let addressArray = address.split(' ');
+      // let provice = addressArray[0];
+      // let city = addressArray[1];
+      // let county = addressArray[2];
+      // // 将对应的费用列表进行处理
+      // let tempFeeList = that.getHttpFeeList();
+      // // 获取联系人关系
+      // let emergencyShipIndex = parseInt(this.emergencyShip[0]);
+      // let emergencyShipIndex2 = parseInt(this.emergencyShip2[0]);
       let _brickSessionStore = that.serviceAgreet.getSessionStore();
       let byno = _brickSessionStore.byno; // 分控埋点的号码
       // console.log('确认预约前 byno === ' + byno);
@@ -1035,31 +1030,31 @@ export default {
       let param = {
         continueFlag: that.$store.state.continueFlag,
         applySerialNo: this.applySerialNo,
-        channelNo: that.$store.state.channelNo,
-        commodityNo: this.userChooseGood.commodityNo,
-        consigneeDetailAddr: that.addressDetail,
-        listPhoneReper: [
-          {
-            emergencyContact: that.emergencyName,
-            emergencyContactNo: that.emergencyPhone,
-            emergencyContactRelation: emergencyShipIndex
-          },
-          {
-            emergencyContact: that.emergencyName2,
-            emergencyContactNo: that.emergencyPhone2,
-            emergencyContactRelation: emergencyShipIndex2
-          }
-        ],
-        feeList: tempFeeList,
-        gpsLatitude: that.gpsLatitude,
-        gpsLongitude: that.gpsLongitude,
+        // channelNo: that.$store.state.channelNo,
+        // commodityNo: this.userChooseGood.commodityNo,
+        // consigneeDetailAddr: that.addressDetail,
+        // listPhoneReper: [
+        //   {
+        //     emergencyContact: that.emergencyName,
+        //     emergencyContactNo: that.emergencyPhone,
+        //     emergencyContactRelation: emergencyShipIndex
+        //   },
+        //   {
+        //     emergencyContact: that.emergencyName2,
+        //     emergencyContactNo: that.emergencyPhone2,
+        //     emergencyContactRelation: emergencyShipIndex2
+        //   }
+        // ],
+        // feeList: tempFeeList,
+        // gpsLatitude: that.gpsLatitude,
+        // gpsLongitude: that.gpsLongitude,
         // loginMobile: cslTestData.phoneNumber,
-        name: that.userName,
-        openId: that.$store.state.othersOpenID,
-        provice: provice,
-        city: city,
-        county: county,
-        productNo: this.userChooseFinancialProduct.productNo,
+        // name: that.userName,
+        // openId: that.$store.state.othersOpenID,
+        // provice: provice,
+        // city: city,
+        // county: county,
+        // productNo: this.userChooseFinancialProduct.productNo,
         recommCode: that.$store.state.recommeCode, // 邀请码 -// -
         byno: byno, // 风控埋点
         contactInfo: JSON.stringify(that.brisk.contactInfo),
@@ -1105,159 +1100,6 @@ export default {
         }
       });
     },
-    // 阿里预授权
-    async aliOrderSubmit() {
-      this.$store.commit('updateLoadingStatus', { isLoading: true });
-      let _this = this;
-      let address = this.getAddressArray(this.addressArea);
-      let addressArray = address.split(' ');
-      let provice = addressArray[0];
-      let city = addressArray[1];
-      let county = addressArray[2];
-      // 将对应的费用列表进行处理
-      let tempFeeList = this.getHttpFeeList();
-      // 获取联系人关系
-      let emergencyShipIndex = parseInt(this.emergencyShip[0]);
-      let emergencyShipIndex2 = parseInt(this.emergencyShip2[0]);
-      let _brickSessionStore = this.serviceAgreet.getSessionStore();
-      let byno = _brickSessionStore.byno; // 分控埋点的号码
-      let platform = this.$store.state.platformCode;
-      // 请求的参数
-      let param = {
-        payWay: 0, // 花呗分期
-        continueFlag: this.$store.state.continueFlag,
-        applySerialNo: this.applySerialNo,
-        channelNo: this.$store.state.channelNo,
-        commodityNo: this.userChooseGood.commodityNo,
-        consigneeDetailAddr: this.addressDetail,
-        listPhoneReper: [
-          {
-            emergencyContact: this.emergencyName,
-            emergencyContactNo: this.emergencyPhone,
-            emergencyContactRelation: emergencyShipIndex
-          },
-          {
-            emergencyContact: this.emergencyName2,
-            emergencyContactNo: this.emergencyPhone2,
-            emergencyContactRelation: emergencyShipIndex2
-          }
-        ],
-        feeList: tempFeeList,
-        gpsLatitude: this.gpsLatitude,
-        gpsLongitude: this.gpsLongitude,
-        name: this.userName,
-        loginMobile: this.phoneNumber,
-        certId: this.certId,
-        openId: this.$store.state.othersOpenID,
-        provice: provice,
-        city: city,
-        county: county,
-        productNo: this.userChooseFinancialProduct.productNo,
-        recommCode: this.$store.state.recommeCode, // 邀请码 -// -
-        byno: byno, // 风控埋点
-        contactInfo: JSON.stringify(this.brisk.contactInfo),
-        platformCode: platform // 客户端平台
-      };
-      let aliUrl = '/wuzhu/aliPayLifeNumController/createAliLifeNumOrder';
-      try {
-        let res = await this.$http.post(aliUrl, param);
-        this.$store.commit('updateLoadingStatus', { isLoading: false });
-        if (res.code === '00') {
-          console.log('orderStr success');
-          console.log('res.data.orderStr = ' + res.data.orderStr);
-          piwikTrackEvent('aliLifeTradePay', 'type', 'start');
-          this.updateOrderNo({ orderNo: res.data.orderNo });
-          // eslint-disable-next-line
-          ap.tradePay(
-            {
-              orderStr: res.data.orderStr
-            },
-            res => {
-              console.log('resultcode = ' + res.resultCode);
-              piwikTrackEvent('aliLifeTradePay', 'type', res.resultCode);
-              let fail = {};
-              switch (res.resultCode) {
-                case '9000':
-                  this.goPayResult();
-                  break;
-                case '8000':
-                  fail = {
-                    failCode: '8000',
-                    failReason: '后台获取支付结果超时，暂时未拿到支付结果'
-                  };
-                  this.goPayResult(fail);
-                  break;
-                case '7001':
-                  fail = {
-                    failCode: '7001',
-                    failReason: '钱包中止快捷支付'
-                  };
-                  this.goPayResult(fail);
-                  break;
-                case '6004':
-                  fail = {
-                    failCode: '6004',
-                    failReason: '支付过程中网络出错， 暂时未拿到支付结果'
-                  };
-                  this.goPayResult(fail);
-                  break;
-                case '4000':
-                  fail = {
-                    failCode: '4000',
-                    failReason: '订单支付失败'
-                  };
-                  this.goPayResult(fail);
-                  break;
-                case '6001':
-                  this.$vux.alert.show({
-                    content: '支付失败，请重新下单',
-                    onHide() {
-                      _this.$router.replace({ name: 'HomePage' });
-                    }
-                  });
-                  break;
-                case '6002':
-                  fail = {
-                    failCode: '6002',
-                    failReason: '普通网络出错'
-                  };
-                  this.goPayResult(fail);
-                  break;
-                case '99':
-                  this.$vux.alert.show({
-                    content: '支付失败，请重新下单',
-                    onHide() {
-                      _this.$router.replace({ name: 'HomePage' });
-                    }
-                  });
-                  break;
-                default:
-                  fail = {
-                    failCode: res.resultCode,
-                    failReason: '其他异常'
-                  };
-                  this.goPayResult(fail);
-                  break;
-              }
-            }
-          );
-        } else if (res.code === '1001') {
-          this.beforeJumpToLoginPage();
-          unionLogin(this, this.aliOrderSubmit);
-        } else {
-          this.alertShow = true;
-          this.alertTitle = '提示';
-          this.alertContent = res.msg;
-          // this.$vux.toast.text(res.msg);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    },
-    // 阿里预授权后去支付结果页
-    goPayResult(obj) {
-      this.$router.replace({ name: 'WXPaySuccess', params: obj });
-    },
     // 费用详情部分的页面
     // 费用的显示逻辑<支付方式，费用名称，费用计算基数>
     feeItemItemDesc(feeItem) {
@@ -1275,8 +1117,6 @@ export default {
       let currentPath = window.location.href.split('/dist')[0];
       let nowDate = new Date().getDate();
       if (protocolIndex === 0) {
-        // this.potocolUrl = 'https://wuzhutes.woozhu.cn/doc/wx/user_lease_agreement.htm';
-        // this.potocolUrl = currentPath + '/static/protocolHtml/用户租赁及服务协议（金达主体）.htm';
         if (this.isAlipayLife) {
           this.potocolUrl = currentPath + '/doc/alipaylife/user_lease_agreement.htm' + '?t=' + nowDate;
         } else {
@@ -1284,8 +1124,6 @@ export default {
         }
         this.serviceAgreet.refreshPagein();
       } else if (protocolIndex === 1) {
-        // this.potocolUrl = 'https://wuzhutes.woozhu.cn/doc/wx/user_lease_supplementary_agreement.htm';
-        // this.potocolUrl = currentPath + '/static/protocolHtml/用户租赁及服务协议之补充协议（金达主体）.htm';
         if (this.isAlipayLife) {
           this.potocolUrl = currentPath + '/doc/alipaylife/user_lease_supplementary_agreement.htm' + '?t=' + nowDate;
         } else {
@@ -1335,50 +1173,6 @@ export default {
         }
       }
       return result;
-    },
-    // 获取联系人关系数据
-    getShipData() {
-      this.$http
-        .get('/wuzhu/common/queryRelationshipListByChannel', { channelNo: this.$store.state.channelNo })
-        .then(res => {
-          if (res.code === '00') {
-            if (res.data && res.data.length > 0) {
-              this.shipData = [];
-              let data = [];
-              res.data.forEach(item => {
-                data.push({ name: item.relationShipName, value: String(item.relationShipCode) });
-              });
-              this.shipData.push(data);
-              // 判断是否存在(getCacheData方法里有对this.emergencyShip赋值)
-              if (this.emergencyShip.length > 0) {
-                let isExist = false;
-                let shipValue = this.emergencyShip[0];
-                for (var i in res.data) {
-                  if (String(res.data[i].relationShipCode) === shipValue) {
-                    isExist = true;
-                    break;
-                  }
-                }
-                if (!isExist) {
-                  this.emergencyShip = [];
-                }
-              }
-              if (this.emergencyShip2.length > 0) {
-                let isExist = false;
-                let shipValue = this.emergencyShip2[0];
-                for (var j in res.data) {
-                  if (String(res.data[j].relationShipCode) === shipValue) {
-                    isExist = true;
-                    break;
-                  }
-                }
-                if (!isExist) {
-                  this.emergencyShip2 = [];
-                }
-              }
-            }
-          }
-        });
     }
   }
 };
@@ -1401,17 +1195,20 @@ export default {
   background: @bg;
   font-family: 'PingFang SC';
   position: relative;
-  overflow: scroll;
   overflow-x: hidden;
   .feeCell {
-    margin: 15px 18px 16px 18px;
+    font-size: 16px;
+    color: #222222;
+    margin: 15px 0px;
     display: flex;
     justify-content: space-between;
     .xiaobai {
       color: rgba(255, 196, 0, 1);
     }
   }
-
+  .gray {
+    color: #888888;
+  }
   .xiaobai-row {
     .border-1px();
   }
@@ -1429,8 +1226,8 @@ export default {
       display: flex;
       justify-content: flex-start;
       background: #fff;
-      padding: 18px;
-      margin-bottom: 15px;
+      padding: 15px 15px 5px 15px;
+      // margin-bottom: 15px;
       .goodsImgDiv {
         width: 90px;
         flex: 0 0 90px;
@@ -1443,11 +1240,11 @@ export default {
         flex: 1;
         margin-left: 10px;
         .fullName {
-          font-size: 14px;
-          color: #000000;
+          font-size: 16px;
+          color: #222222;
           letter-spacing: 0;
-          line-height: 15px;
-          margin-bottom: 5px;
+          line-height: 22px;
+          margin-bottom: 10px;
         }
         .markPrice {
           font-size: 11px;
@@ -1457,15 +1254,16 @@ export default {
           margin-bottom: 2px;
         }
         .categoryList {
+          line-height: 17px;
           .categoryListItem {
-            padding: 0 6px;
-            font-size: 10px;
-            color: #000000;
+            // padding: 0 6px;
+            font-size: 12px;
+            color: #888888;
             letter-spacing: 0;
             margin-right: 5px;
-            background: #fef7b3;
-            border: 1px solid #ffda29;
-            border-radius: 2px;
+            // background: #fef7b3;
+            // border: 1px solid #ffda29;
+            // border-radius: 2px;
             white-space: nowrap; /*强制span不换行*/
             display: inline-block; /*将span当做块级元素对待*/
           }
@@ -1473,7 +1271,8 @@ export default {
       }
     }
     .feePlane {
-      .border-1px();
+      // .border-1px();
+      padding: 0 15px 0px 15px;
       &:after {
         left: 18px;
         border-bottom: 1px solid #ddd;
@@ -1484,9 +1283,20 @@ export default {
       font-size: 14px;
       letter-spacing: 0;
       color: #888888;
+      .feeTips {
+        font-size: 12px;
+        color: #888888;
+      }
+      .feeTipsBold {
+        font-size: 12px;
+        color: #222222;
+      }
     }
-    .termDayPlane {
-      .border-1px();
+
+    .depositBlock {
+      margin-top: 15px;
+      padding: 0 15px 15px;
+      // .border-1px();
       &:after {
         left: 18px;
         border-bottom: 1px solid #ddd;
@@ -1494,16 +1304,41 @@ export default {
       background: #fff;
       overflow: hidden;
 
-      font-size: 16px;
-      color: #000000;
+      font-size: 14px;
       letter-spacing: 0;
-    }
-    .feePlaneTrail {
-      background: #fff;
-      overflow: hidden;
-      font-size: 16px;
-      color: #000000;
-      letter-spacing: 0;
+      color: #888888;
+      .depositBlue {
+        margin-left: 5px;
+        padding: 1px 8px;
+        width:40px;
+        height:19px;
+        border-radius:3px;
+        border:1px solid rgba(0,122,255,1);
+        font-size:12px;
+        font-family:PingFangSC-Regular;
+        font-weight:400;
+        color:rgba(0,122,255,1);
+        line-height:17px;
+      }
+      .depositDetail {
+        background:rgba(245,245,245,1);
+        border-radius:3px;
+        padding: 15px;
+        .depositTitle {
+          font-size:14px;
+          font-family:PingFangSC-Regular;
+          font-weight:400;
+          color:rgba(34,34,34,1);
+          line-height:20px;
+        }
+      }
+      .depositDesc {
+        font-size:12px;
+        font-family:PingFangSC-Regular;
+        font-weight:400;
+        color:rgba(136,136,136,1);
+        line-height:17px;
+      }
     }
   }
   .orderdetail-tips {
@@ -1514,6 +1349,7 @@ export default {
   /*// 需要用户确认的表单信息*/
   .orderInfoPlane {
     background: #fff;
+    margin-top: 15px;
     .orderSubmit-flexBox {
       display: flex;
       font-size: 16px;
@@ -1543,7 +1379,7 @@ export default {
         border-bottom: 1px solid rgba(217, 217, 217, 0.56);
         padding: 12px 15px 12px 0;
         margin: 0;
-        margin-left: 18px;
+        margin-left: 15px;
       }
     }
     .OrderInputPlane {
@@ -1577,8 +1413,9 @@ export default {
       }
       textarea {
         font-size: 16px;
-        color: #000000;
+        color: #888888;
         letter-spacing: 0;
+        height: 71px !important;
       }
       textarea::-webkit-input-placeholder {
         font-size: 16px;
@@ -1602,23 +1439,122 @@ export default {
       }
     }
   }
+  // 留言板
+  .messageBoard {
+    margin-top: 15px;
+    padding: 0px 15px 15px 15px;
+    // .border-1px();
+    // &:after {
+    //   left: 18px;
+    //   border-bottom: 1px solid #ddd;
+    // }
+    background: #fff;
+    overflow: hidden;
+
+    font-size: 14px;
+    letter-spacing: 0;
+    color: #888888;
+    .mb13 {
+      margin-bottom: 13px !important;
+    }
+    .messageDetail {
+      background:rgba(245,245,245,1);
+      border-radius:3px;
+      // padding: 15px;
+      textarea {
+        font-size: 14px;
+        background-color: #F5F5F5;
+        color: #888888;
+        letter-spacing: 0;
+        height: 50px !important;
+      }
+      .messageText {
+        padding-top: 15px !important;
+      }
+      // textarea::-webkit-input-placeholder {
+      //   font-size: 14px;
+      //   letter-spacing: 0;
+      //   color: #888888;
+      // }
+    }
+  }
+
   /*// 用户协议部分*/
   .protocolPlane {
-    margin: 10px 15px 0 15px;
+    margin: 20px 18px 58px 18px;
+    display:-webkit-box;
     p {
-      margin: 0 auto;
-      line-height: 15px;
-      padding: 2px;
+      margin: 0 15px 0 5px;
+      line-height: 20px;
+      // padding: 2px;
     }
     .protocolPlane_normal {
-      font-size: 12px;
-      color: #000000;
-      letter-spacing: 0;
+      font-size: 14px;
+      color: #111111;
+      // letter-spacing: 0;
     }
     .protocolPlane_protocol {
-      font-size: 12px;
+      font-size: 14px;
       color: #2878fe;
-      letter-spacing: 0;
+      // letter-spacing: 0;
+    }
+  }
+  .feeSelCir {
+    width: 18px;
+    height: 18px;
+    margin-right: 2px;
+    .bg('./../components/Goods/Check-on');
+  }
+  .feeNorCir {
+    width: 18px;
+    height: 18px;
+    margin-right: 2px;
+    .bg('./../components/Goods/Check-off');
+  }
+
+  .bottomBlock {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    display: flex;
+    width:100%;
+    height:48px;
+    background:rgba(255,255,255,1);
+    box-shadow:0px 1px 0px 0px rgba(221,221,221,1);
+    .leftBlock {
+      width:55%;
+      padding: 8px 15px;
+      .bottomDeposit {
+        display: flex;
+        height:20px;
+        font-size:14px;
+        font-family:PingFangSC-Regular;
+        font-weight:400;
+        color:rgba(34,34,34,1);
+        line-height:20px;
+        .bottomDepositAmt {
+          color:#FF4754;
+        }
+      }
+      .bottomTips {
+        height:14px;
+        font-size:10px;
+        font-family:PingFangSC-Regular;
+        font-weight:400;
+        color:rgba(155,155,155,1);
+        line-height:14px;
+      }
+    }
+    .rightBlock {
+      width:45%;
+      text-align: center;
+      height:48px;
+      background:rgba(255,218,41,1);
+      font-size:16px;
+      font-family:PingFangSC-Regular;
+      font-weight:400;
+      color:rgba(17,17,17,1);
+      line-height:48px;
     }
   }
   /*用户点击提交按钮部分*/
@@ -1633,8 +1569,9 @@ export default {
     }
     .weui-btn {
       background: #ffda29 !important;
-      font-size: 17px !important;
+      font-size: 16px !important;
       text-align: center !important;
+      color: #111111;
     }
     .weui-btn:after {
       border: none;

@@ -1,34 +1,30 @@
-import {
-  Swiper,
-  Loading,
-  SwiperItem,
-  Flexbox,
-  FlexboxItem,
-  Divider,
-  Grid,
-  GridItem,
-  Scroller,
-  XButton,
-  Tab,
-  TabItem
-} from 'vux';
+import { Swiper, Loading, SwiperItem, Flexbox, FlexboxItem, Divider, Grid, GridItem, Scroller, XButton, Tab, TabItem } from 'vux';
 import MainPage from './../Main/MainPage';
-import { RegainOpenid, isWeiXin, piwikTrackEvent } from './../../util/utils';
+import { RegainOpenid, isWeiXin, piwikTrackEvent, isAlipayLife } from './../../util/utils';
+import { mapMutations } from 'vuex';
+
 export default {
   name: 'HomePage',
   data() {
     return {
+      canGotoOrderSubmit: false, // 有未完成订单可以进入提交订单页面
+      isAlipayLife: isAlipayLife(),
       wxReady: false,
       range: 60, // 距下边界高度
       scrollFlag: true, // 控制下滑滚动特效
       banner_index: 1,
       banner_list: [],
-      rent_progress: './img/liucheng.png',
       goodsCategory: [], // 手机分类 toggle
       phoneList: [], // 二维数组
       popularList: [],
       tabFlex: {},
-      activityItem: {} // 活动图片
+      activityItem: [], // 活动图片
+      switchConfig: {}, // 开关配置
+      rentProcessImg: '', // 租赁流程
+      bussniessEntrance: [], // 业务入口
+      brandBannars: [], // 品牌
+      activityData: [], // 活动商品
+      brandAdvertising: '' // slogan
     };
   },
   created() {
@@ -47,25 +43,28 @@ export default {
     that.$store.commit('goodsCheckNoMemory', { goodsCheckNo: this.enum.depreciation[0] });
     that.queryHomeInfomation(function(res) {
       that.alertOpenIDerr();
-      // that.preventImgDefault() // 禁止 img 默认行为
     });
     // app window
     document.getElementById('app').addEventListener('scroll', this.handleScroll);
     // 获取到申请码后更新到store
-    // let recommCode = that.GetQueryString('recommCode')
-    // if (localStorage) {
-    //   let recommCode = localStorage.getItem('recommCode');
-    //   // console.log('recommCode = ' + recommCode);
-    //   if (recommCode) {
-    //     recommCode = recommCode.split('#')[0];
-    //     console.log('recommCode split = ' + recommCode);
-    //     this.$store.commit('updateRecommeCode', { recommeCode: recommCode });
-    //   }
-    // }
+    let recommCode = localStorage.getItem('recommCode');
+    console.log('recommCode = ' + recommCode);
+    if (recommCode) {
+      that.$store.commit('updateRecommeCode', { recommeCode: recommCode });
+      console.log('store recommCode = ' + that.$store.state.recommeCode);
+    }
     if (this.gotoGoodsDetail()) {
       return;
     }
     that.checkOrder(); // 查看是否有“待确定-未审批”定单
+  },
+  // 路由部分的处理，离开页面和进入页面的处理
+  beforeRouteLeave(to, from, next) {
+    if ((to.name === 'OrderSubmitPage' || to.name === 'OrderSubmitPageNew') && !this.canGotoOrderSubmit) {
+      console.log('do nothing.');
+    } else {
+      next();
+    }
   },
   destroyed() {
     // 销毁
@@ -74,8 +73,8 @@ export default {
     document.getElementById('app').removeEventListener('scroll', this.handleScroll);
   },
   methods: {
+    ...mapMutations(['updateLoadingStatus']),
     checkFromWXSign() {
-      // console.log('checkFromWXSign')
       let url = location.href;
       let wxDataSignLabel = ['from_wxpay=1'];
       let isFromWXSign = true;
@@ -141,57 +140,19 @@ export default {
       console.log('>>> rangeTrigger');
     },
     queryHomeInfomation(callback) {
-      this.$store.commit('updateLoadingStatus', { isLoading: true });
+      this.updateLoadingStatus({ isLoading: true });
       let that = this;
+      let params = {
+        openId: that.$store.state.othersOpenID,
+        channelNo: that.$store.state.channelNo
+      };
       that.$http
-        .get('/wuzhu/homePageController/queryHomeInfomation', {
-          // that.$http.get('/src/components/Home/副本/HomePageData.json', {
-          openId: that.$store.state.othersOpenID,
-          channelNo: that.$store.state.channelNo
-        })
+        .get('/wuzhu/homePageController/queryHomeInfomation', params)
+        // .get('/src/components/Home/副本/HomePageData.json', params)
         .then(res => {
-          that.$store.commit('updateLoadingStatus', { isLoading: false });
+          this.updateLoadingStatus({ isLoading: false });
           if (res.code === '00' && res.data) {
-            // banner
-            that.banner_list = res.data.bannerData || [];
-            for (var i in that.banner_list) {
-              if (that.banner_list[i].type === '2') {
-                that.activityItem = that.banner_list[i];
-                break;
-              }
-            }
-            // 手机 电脑 切换
-            that.goodsCategory = res.data.typeData;
-            if (that.goodsCategory.length > 4) {
-              that.$set(that.tabFlex, 'flex', '0 0 20%');
-            }
-            if (res.data.pageData) {
-              // 热租爆款
-              that.popularList = res.data.pageData[0] && res.data.pageData[0].listCommodityCategory;
-              if (!that.popularList) {
-                that.popularList = [];
-              } else if (res.data.pageData[0] && res.data.pageData[0].pageModuleNo !== '1') {
-                // 根据 第一个pageData 的 pageModuleNo 确定是否显示 热租爆款
-                that.popularList = [];
-              }
-              // 获取手机列表信息 -- 此处需优化 图片懒加载
-              res.data.pageData.map(function(item, index, array) {
-                if (res.data.pageData[index].pageModuleNo !== '1') {
-                  that.phoneList.push(res.data.pageData[index]);
-                }
-              });
-              // that.$nextTick(function() { // GoodsSection-ban-img
-              //   let bodyW = document.body.clientWidth
-              //   let _popularWidth = (that.goodsSectionBanImgs.length * bodyW)
-              //   that.$refs.phoneListBox.map(function(item, index, array) {
-              //     that.$refs.phoneListBox[index].style.width = _popularWidth + 'px'
-              //     let fsNodeList = that.$refs.phoneListBox[index].querySelectorAll('.box-item')
-              //     for (let i = 0; i < fsNodeList.length; i++) {
-              //       fsNodeList[i].style.width = bodyW + 'px'
-              //     }
-              //   })
-              // })
-            }
+            this.handleHomeData(res);
           } else {
             that.$vux.alert.show({
               content: res.msg
@@ -200,9 +161,48 @@ export default {
           callback(res.code);
         })
         .catch(err => {
-          // that.$store.commit('updateLoadingStatus', { isLoading: false });
           console.log(err);
         });
+    },
+    handleHomeData(res) {
+      // 手机 电脑 切换
+      this.goodsCategory = res.data.typeData;
+      if (this.goodsCategory.length > 4) {
+        this.$set(this.tabFlex, 'flex', '0 0 20%');
+      }
+      if (res.data.pageData) {
+        // 获取手机列表信息 -- 此处需优化 图片懒加载
+        res.data.pageData.map((item, index, array) => {
+          if (res.data.pageData[index].pageModuleNo !== '1') {
+            this.phoneList.push(res.data.pageData[index]);
+          }
+        });
+      }
+
+      // banner
+      this.banner_list = res.data.rollBannars;
+      this.activityItem = res.data.commonBannars;
+      let resData = res.data;
+      this.switchConfig = { ...resData.homeSwitchConfig }; //
+      this.rentProcessImg = resData.rentFlowUrl;
+      this.bussniessEntrance = resData.businessEntryBanners;
+      this.brandBannars = resData.brandBannars;
+      this.activityData = resData.activities;
+      this.brandAdvertising = resData.brandAdvertising;
+    },
+    // 活动跳转
+    activityClick(type, url) {
+      switch (type) {
+        // 直接跳转
+        case 1:
+          window.location.href = url;
+          break;
+        //  带参数
+        case 2:
+          break;
+        default:
+          break;
+      }
     },
     bannerClickIndex(index, item) {
       this.banner_index = index;
@@ -245,7 +245,7 @@ export default {
         location.href = item.imgLinkUrl + '?_r=' + Math.random();
       }
     },
-    // 检查是否有未审核完成定单
+    // 检查是否有未审核完成订单
     checkOrder() {
       let that = this;
       that.$http
@@ -258,7 +258,14 @@ export default {
               content: '发现您有未完成的订单，是否继续操作',
               onConfirm() {
                 that.$store.commit('updateApplySerialNo', { applySerialNo: res.data.applySerialNo });
-                that.$router.push({ name: 'LivenessVerify' });
+                that.canGotoOrderSubmit = true;
+                // that.$router.push({name: 'OrderSubmitPageNew'})
+                // 2018-12-8 迭代2.12.0 新流程，未完成订单跳转到提交订单页面
+                if (that.isAlipayLife) {
+                  that.$router.push({ name: 'OrderSubmitPage' });
+                } else {
+                  that.$router.push({ name: 'OrderSubmitPageNew' });
+                }
               },
               onCancel() {
                 that.delOrder();

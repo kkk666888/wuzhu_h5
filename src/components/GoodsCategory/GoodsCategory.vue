@@ -1,78 +1,16 @@
 <template>
   <div class="GoodsCategory" style="height: 100%;">
+    <!-- header -->
     <div v-transfer-dom>
-      <header class="category-header">
+      <header class="category-header" >
         <tab active-color='#FFDA29' custom-bar-width="40px" v-model="typeIndex">
-          <tab-item class="vux-center" :selected="defaultItem === item.val" v-for="item in tabList" @on-item-click="onTypesClick(item.no)" :key="item.no">{{item.val}}
+          <tab-item class="vux-center" :selected="defaultItem === item.no" v-for="item in newTabList" @on-item-click="onTypesClick(item.no)" :key="item.no">{{item.val}}
           </tab-item>
         </tab>
-        <div class="sel-wrapper">
-          <div class="sel-item" @click="toggleBrand">
-            <span v-if="sortObj.brand.brandNum > 1" :class="[sortObj.brand.isSelected ? 'f-w-bold' : 'f-w-d' ]">
-              {{sortObj.brand.brandText}}...</span>
-            <span v-else :class="[sortObj.brand.isSelected ? 'f-w-bold' : 'f-w-d' ]">
-              {{sortObj.brand.brandText}}</span>
-            <span class="r-icon dropdown-on" v-if="sortObj.brand.brandNum == 1 && sortObj.brand.isSelected"></span>
-            <span class="r-icon dropdown-num" v-else-if="sortObj.brand.brandNum > 1">
-              <span class="top2">{{sortObj.brand.brandNum}}</span>
-            </span>
-            <span class="r-icon dropdown" v-else></span>
-          </div>
-          <div class="sel-item" @click="toggleSort">
-            <span :class="[sortObj.sort.isSelected ? 'f-w-bold' : 'f-w-d' ]">{{sortObj.sort.sortText}}</span>
-            <span class="r-icon" :class="[sortObj.sort.isSelected ? 'dropdown-on' : 'dropdown' ]"></span>
-          </div>
-          <div class="sel-item" @click="toggleFilter">
-            <span :class="[sortObj.filter.isSelected ? 'f-w-bold' : 'f-w-d' ]">{{sortObj.filter.filterText}}</span>
-            <span class="r-icon" :class="[sortObj.filter.isSelected ? 'screen-on' : 'screen' ]"></span>
-          </div>
-        </div>
       </header>
-      <popup style="margin-top: 84px;" v-model="showMask" position="top" @on-hide="maskHide" max-height="50%">
-        <div>
-          <!-- 品牌选择 -->
-          <section class="brand-list-wrapper" v-show="showBrandList">
-            <div class="box-checker">
-              <checker type="checkbox" v-model="sortObj.brand.curBrandCheckItems" disabled-item-class="item-disabled" selected-item-class="item-selected">
-                <checker-item :value="item.value" v-for="(item, index) in sortObj.brand.brandList" @on-item-click="clickBrandItem(item)" :key="index">
-                  <span></span>{{item.name}}
-                </checker-item>
-              </checker>
-              <span>{{sortObj.brand.brandCheckItems}}</span>
-              <div class="box-bottom-btn-wrapper">
-                <div class="left-btn" @click="resetBrand">重置</div>
-                <div class="right-btn" @click="confirmBrand">完成</div>
-              </div>
-            </div>
-          </section>
-          <section class="price-sort-list-wrapper" v-show="showPriceSort">
-            <div class="box-checker">
-              <ul>
-                <li v-for="(item, index) in sortObj.sort.sortList" :key="index" @click="changePriceSort(item)" class="priceSort">
-                  <div :class="{priceSortActive: sortObj.sort.sortCheckItems == item.value}">
-                    {{item.name}}
-                  </div>
-                </li>
-              </ul>
-            </div>
-          </section>
-          <section class="isnew-list-wrapper" v-show="showIsNew">
-            <div class="box-checker">
-              <checker type="radio" radio-required v-model="sortObj.filter.curFilterItems" disabled-item-class="item-disabled" selected-item-class="item-selected">
-                <checker-item :value="item" v-for="(item, index) in sortObj.filter.filterList" @on-item-click="clickFilterItem" :key="index">
-                  <span></span>{{item.name}}
-                </checker-item>
-              </checker>
-              <div class="box-bottom-btn-wrapper">
-                <div class="left-btn" @click="resetFilter">重置</div>
-                <div class="right-btn" @click="confirmFilter">完成</div>
-              </div>
-            </div>
-          </section>
-        </div>
-      </popup>
     </div>
-    <div class="scroll-wrapper" style="height: 100%; box-sizing: border-box;">
+    <!-- contentList -->
+    <div class="scroll-wrapper" :class="'new-category'" style="height: 100%; box-sizing: border-box;">
       <div v-show="showNoData" style="margin: 140px 0; text-align: center">
         <img width="60" height="60" alt="" srcset="./search.png 1x, ./search@2x.png 2x">
         <p style="color: #BBB;margin-top:20px;font-size:14px;">咦？一件商品都没有找到</p>
@@ -83,11 +21,15 @@
         <div v-show="!contentData" class="no-info" style="text-align: center; margin-top: 40px;">暂无数据～</div>
       </div>
     </div>
+    <section>
+      <main-page></main-page>
+    </section>
   </div>
 </template>
 <script>
 import { Tab, TabItem, Checker, CheckerItem, Popup, TransferDom } from 'vux';
 import Scroll from '../Scroll/Scroll';
+import MainPage from './../Main/MainPage';
 import { deepCopy, piwikTrackEvent } from '../../util/utils';
 export default {
   directives: {
@@ -100,7 +42,8 @@ export default {
     Checker,
     CheckerItem,
     Scroll,
-    Popup
+    Popup,
+    MainPage
   },
   data() {
     let item = this.enum.getDepreciationByKey(parseInt(this.$store.state.goodsCheckNo.key || 0));
@@ -113,12 +56,12 @@ export default {
       curCheck: item, // 当前选项
       checkItems: this.enum.depreciation,
       typeIndex: 0, // 分类 tab选中项 0 手机， 1 电脑
-      defaultItem: '', // 选中项加class
-      tabList: [{}, {}], // 分类 tab 不给两个默认对象会导致IOS上显示不全
+      defaultItem: '', // 默认选中项
+      newTabList: [], // 2.12改版
       contentData: [],
       showNoData: false,
       showLoading: true,
-      curTypeNo: this.$store.state.typeNo, // 当前typeNo // 001手机，002电脑, 用于传给后台
+      curTypeNo: this.$store.state.typeNo, // 当前typeNo
       curPage: 1, // 当前页
       maxNum: 10, // 每页加载条数
       noMoreDataFlag: false,
@@ -156,7 +99,9 @@ export default {
     };
   },
   created() {
-    this.getDefaultData();
+  },
+  mounted() {
+    this.getNewData();
   },
   // activated() {
   //   // console.log(this.$route);
@@ -166,7 +111,7 @@ export default {
   //   }
   // },
   methods: {
-    getDefaultData() {
+    getNewData() {
       if (this.getDataFlag) {
         return false;
       }
@@ -187,10 +132,9 @@ export default {
       }
       this.$store.commit('updateLoadingStatus', { isLoading: true });
       this.getDataFlag = true;
+
       let params = {
-        openId: '', // 空
         channelNo: this.$store.state.channelNo,
-        typeNo: this.$store.state.typeNo,
         isNew: '', // 默认
         pageNum: 1,
         maxRecordNum: this.maxNum,
@@ -198,38 +142,48 @@ export default {
         brand: brandToString,
         priceSort: priceSort
       };
+      if (this.$store.state.typeNo && this.$store.state.typeNo !== '99999') {
+        params['typeNo'] = this.$store.state.typeNo;
+      }
       this.$http.get('/wuzhu/homePageController/queryCommodityListPage', params).then(res => {
         this.showLoading = false;
         this.$store.commit('updateLoadingStatus', { isLoading: false });
         if (res.code === '00' && res.data) {
-          let arr = [];
-          if (res.data.listCommodityType && res.data.listCommodityType.length > 0) {
-            for (let i = 0, j = res.data.listCommodityType.length; i < j; i++) {
-              let tab = {};
-              tab.val = res.data.listCommodityType[i].typeName;
-              tab.no = res.data.listCommodityType[i].typeNo;
-              arr.push(tab);
-            }
-            this.tabList = arr;
-            this.defaultItem = arr[0].val; // 没有typeNo的时候默认为第一个
-          }
-          // 设置筛选条件
-          if (res.data.conditions) {
-            this.setSortObj(res.data.conditions);
-          }
-          this.$nextTick(() => {
-            this.setTab();
-          });
-          if (res.data.listCommodityCategory && res.data.listCommodityCategory.length) {
-            this.contentData = res.data.listCommodityCategory;
-          } else {
-            this.showNoData = true;
-          }
+          this.handleData(res)
         } else {
           console.log(`没有数据～`);
         }
         this.getDataFlag = false;
       });
+    },
+    handleData(res) {
+      let arr = [{no: '99999', val: '全部'}]; // 新增全部类型
+      if (res.data.listCommodityType && res.data.listCommodityType.length > 0) {
+        for (let i = 0, j = res.data.listCommodityType.length; i < j; i++) {
+          let tab = {};
+          tab.val = res.data.listCommodityType[i].typeName;
+          tab.no = res.data.listCommodityType[i].typeNo;
+          arr.push(tab);
+        }
+        this.newTabList = arr;
+      }
+      // 设置筛选条件
+      if (res.data.conditions) {
+        this.setSortObj(res.data.conditions);
+      }
+      this.$nextTick(() => {
+        this.setTab();
+        setTimeout(() => {
+          let no = this.$store.state.typeNo;
+          this.typeIndex = this.newTabList.findIndex(y => Object.is(no, y.no));
+          this.defaultItem = no;
+        }, 100);
+      });
+      if (res.data.listCommodityCategory && res.data.listCommodityCategory.length) {
+        this.contentData = res.data.listCommodityCategory;
+      } else {
+        this.showNoData = true;
+      }
     },
     // 设置当前SortObj的数据
     setSortObj(arr = []) {
@@ -257,11 +211,13 @@ export default {
         }
       }
     },
-    getData() {
+    getData(hideLoading) {
       if (this.getDataFlag) {
         return false;
       }
-      this.$store.commit('updateLoadingStatus', { isLoading: true });
+      if (!hideLoading) {
+        this.$store.commit('updateLoadingStatus', { isLoading: true });
+      }
       this.getDataFlag = true;
       if (this.curPage > 1) {
       } else {
@@ -278,13 +234,17 @@ export default {
       let params = {
         openId: '',
         channelNo: this.$store.state.channelNo,
-        typeNo: this.curTypeNo,
+        // typeNo: this.curTypeNo,
         isNew: this.sortObj.filter.filterCheckItems.value,
         pageNum: this.curPage,
         maxRecordNum: this.maxNum,
+        queryTypeFlag: 1,
         brand: brandToString, // 空表示所有
         priceSort: this.sortObj.sort.sortCheckItems // 默认
       };
+      if (this.$store.state.typeNo && this.$store.state.typeNo !== '99999') {
+        params['typeNo'] = this.$store.state.typeNo;
+      }
       this.$http.get('/wuzhu/homePageController/queryCommodityListPage', params).then(res => {
         this.showLoading = false;
         this.$store.commit('updateLoadingStatus', { isLoading: false });
@@ -325,17 +285,17 @@ export default {
     onTypesClick(index) {
       this.curTypeNo = index;
       this.$store.commit('typeNoMemory', { typeNo: index });
-      this.getCurTypeSortObj(index);
+
       this.curPage = 1;
       this.showNoData = false;
-      this.showLoading = true;
       this.showMask = false; // 关闭蒙层, 数据回退到生效数据
+      this.showLoading = true;
       this.getData();
     },
-    clickBrandItem(item) {
-      // 选择品牌
-      // console.log(item.name);
-    },
+    // clickBrandItem(item) {
+    //   // 选择品牌
+    //   // console.log(item.name);
+    // },
     goodsClick(e) {
       console.log('进入  GoodsDetailPage页面 ===============');
       piwikTrackEvent('normalClick', 'goodsDetail', e.categoryCode);
@@ -351,21 +311,20 @@ export default {
       } else {
         setTimeout(function() {
           that.curPage++;
-          that.getData();
+          that.getData(true);
         }, 1500);
       }
     },
     // 设置选中的Tab-item
     setTab() {
       // 分类 tab选中项
-      if (this.$store.state.typeNo) {
-        let no = this.$store.state.typeNo;
-        for (let i = 0, l = this.tabList.length; i < l; i++) {
-          if (Object.is(no, this.tabList[i].no)) {
-            this.typeIndex = i;
-          }
-        }
-      }
+
+        // console.log('no', no)
+        // for (let i = 0, l = this.newTabList.length; i < l; i++) {
+        //   if (Object.is(no, this.newTabList[i].no)) {
+        //     this.typeIndex = i;
+        //   }
+        // }
     },
     rebuildScroll() {
       // 每次刷新有闪动。。
@@ -376,115 +335,115 @@ export default {
       //        })
     },
     // 点击排序
-    changePriceSort(item) {
-      this.curPage = 1;
-      this.showMask = false; // 关闭蒙层
-      this.sortObj.sort.isSelected = true;
-      this.sortObj.sort.sortCheckItems = item.value;
-      this.sortObj.sort.sortText = item.name;
-      this.getData();
-    },
+    // changePriceSort(item) {
+    //   this.curPage = 1;
+    //   this.showMask = false; // 关闭蒙层
+    //   this.sortObj.sort.isSelected = true;
+    //   this.sortObj.sort.sortCheckItems = item.value;
+    //   this.sortObj.sort.sortText = item.name;
+    //   this.getData();
+    // },
     // 点击筛选
     clickFilterItem(value) {
       // this.curIsNewCheckItem = value
     },
     // 重置 品牌
-    resetBrand() {
-      this.sortObj.brand.curBrandCheckItems = [''];
-    },
+    // resetBrand() {
+    //   this.sortObj.brand.curBrandCheckItems = [''];
+    // },
     // 确认 brand
-    confirmBrand() {
-      this.curPage = 1;
-      this.showMask = false;
-      this.sortObj.brand.isSelected = true; // 选择过品牌
-      this.sortObj.brand.brandCheckItems = this.sortObj.brand.curBrandCheckItems; // 确认时,把当前状态传给已生效
-      let arr = this.sortObj.brand.brandCheckItems.slice(',');
-
-      if (arr.length >= 1) {
-        for (let i = 0; i < arr.length; i++) {
-          if (arr[i] === '') {
-            console.log('选择了全部');
-            this.sortObj.brand.brandCheckItems = this.sortObj.brand.curBrandCheckItems = [''];
-            this.sortObj.brand.brandText = '全部品牌';
-          }
-        }
-      } else {
-        // 一项都没选
-        console.log('一项都没选');
-        this.sortObj.brand.brandCheckItems = this.sortObj.brand.curBrandCheckItems = [''];
-        this.sortObj.brand.brandText = '全部品牌';
-      }
-      this.sortObj.brand.brandNum = this.sortObj.brand.brandCheckItems.length || 1; // 一项都没选的时候默认为1
-      if (this.sortObj.brand.brandCheckItems[0]) {
-        this.setBrandText(this.sortObj.brand.brandCheckItems[0]);
-      }
-      this.getData();
-    },
-    setBrandText(id) {
-      for (let i = 0; i < this.sortObj.brand.brandList.length; i++) {
-        if (this.sortObj.brand.brandList[i].value === id) {
-          this.sortObj.brand.brandText = this.sortObj.brand.brandList[i].name;
-        }
-      }
-    },
+    // confirmBrand() {
+    //   this.curPage = 1;
+    //   this.showMask = false;
+    //   this.sortObj.brand.isSelected = true; // 选择过品牌
+    //   this.sortObj.brand.brandCheckItems = this.sortObj.brand.curBrandCheckItems; // 确认时,把当前状态传给已生效
+    //   let arr = this.sortObj.brand.brandCheckItems.slice(',');
+    //
+    //   if (arr.length >= 1) {
+    //     for (let i = 0; i < arr.length; i++) {
+    //       if (arr[i] === '') {
+    //         console.log('选择了全部');
+    //         this.sortObj.brand.brandCheckItems = this.sortObj.brand.curBrandCheckItems = [''];
+    //         this.sortObj.brand.brandText = '全部品牌';
+    //       }
+    //     }
+    //   } else {
+    //     // 一项都没选
+    //     console.log('一项都没选');
+    //     this.sortObj.brand.brandCheckItems = this.sortObj.brand.curBrandCheckItems = [''];
+    //     this.sortObj.brand.brandText = '全部品牌';
+    //   }
+    //   this.sortObj.brand.brandNum = this.sortObj.brand.brandCheckItems.length || 1; // 一项都没选的时候默认为1
+    //   if (this.sortObj.brand.brandCheckItems[0]) {
+    //     this.setBrandText(this.sortObj.brand.brandCheckItems[0]);
+    //   }
+    //   this.getData();
+    // },
+    // setBrandText(id) {
+    //   for (let i = 0; i < this.sortObj.brand.brandList.length; i++) {
+    //     if (this.sortObj.brand.brandList[i].value === id) {
+    //       this.sortObj.brand.brandText = this.sortObj.brand.brandList[i].name;
+    //     }
+    //   }
+    // },
     // 重置 筛选
-    resetFilter() {
-      this.sortObj.filter.curFilterItems = { value: '', name: '全部' };
-    },
+    // resetFilter() {
+    //   this.sortObj.filter.curFilterItems = { value: '', name: '全部' };
+    // },
     // 确认 筛选
-    confirmFilter() {
-      this.curPage = 1;
-      this.showMask = false;
-      this.sortObj.filter.isSelected = true;
-      this.sortObj.filter.filterCheckItems = this.sortObj.filter.curFilterItems; // 确认时,把当前状态传给已生效
-      this.getData();
-    },
+    // confirmFilter() {
+    //   this.curPage = 1;
+    //   this.showMask = false;
+    //   this.sortObj.filter.isSelected = true;
+    //   this.sortObj.filter.filterCheckItems = this.sortObj.filter.curFilterItems; // 确认时,把当前状态传给已生效
+    //   this.getData();
+    // },
     // 隐藏所有选择层
-    hideAllSelectLayer() {
-      this.showPriceSort = false;
-      this.showBrandList = false;
-      this.showIsNew = false;
-    },
+    // hideAllSelectLayer() {
+    //   this.showPriceSort = false;
+    //   this.showBrandList = false;
+    //   this.showIsNew = false;
+    // },
     // 品牌 显示/隐藏
-    toggleBrand() {
-      if (this.showBrandList) {
-        this.showMask = false; // 会触发maskHide
-      } else {
-        this.setEffectiveData();
-        this.showBrandList = !this.showBrandList;
-      }
-    },
+    // toggleBrand() {
+    //   if (this.showBrandList) {
+    //     this.showMask = false; // 会触发maskHide
+    //   } else {
+    //     this.setEffectiveData();
+    //     this.showBrandList = !this.showBrandList;
+    //   }
+    // },
     // 排序 显示/隐藏
-    toggleSort() {
-      if (this.showPriceSort) {
-        this.showMask = false; // 会触发maskHide
-      } else {
-        this.setEffectiveData();
-        this.showPriceSort = !this.showPriceSort;
-      }
-    },
+    // toggleSort() {
+    //   if (this.showPriceSort) {
+    //     this.showMask = false; // 会触发maskHide
+    //   } else {
+    //     this.setEffectiveData();
+    //     this.showPriceSort = !this.showPriceSort;
+    //   }
+    // },
     // 筛选 显示/隐藏
-    toggleFilter() {
-      if (this.showIsNew) {
-        this.showMask = false; // 会触发maskHide
-      } else {
-        this.setEffectiveData();
-        this.showIsNew = !this.showIsNew;
-      }
-    },
-    setEffectiveData() {
-      let typeId = this.curTypeNo;
-      this.hideAllSelectLayer();
-      if (!this.showMask) {
-        this.showMask = true;
-      }
-      this.sortObj.brand.curBrandCheckItems = [...this.sortObj.brand.brandCheckItems]; // 已生效的赋值给当前
-      this.sortObj.filter.curFilterItems = this.sortObj.filter.filterCheckItems;
-      this.$store.state.moduleGoodsList.typeObj[typeId] = this.sortObj;
-    },
-    maskHide() {
-      this.hideAllSelectLayer();
-    },
+    // toggleFilter() {
+    //   if (this.showIsNew) {
+    //     this.showMask = false; // 会触发maskHide
+    //   } else {
+    //     this.setEffectiveData();
+    //     this.showIsNew = !this.showIsNew;
+    //   }
+    // },
+    // setEffectiveData() {
+    //   let typeId = this.curTypeNo;
+    //   this.hideAllSelectLayer();
+    //   if (!this.showMask) {
+    //     this.showMask = true;
+    //   }
+    //   this.sortObj.brand.curBrandCheckItems = [...this.sortObj.brand.brandCheckItems]; // 已生效的赋值给当前
+    //   this.sortObj.filter.curFilterItems = this.sortObj.filter.filterCheckItems;
+    //   this.$store.state.moduleGoodsList.typeObj[typeId] = this.sortObj;
+    // },
+    // maskHide() {
+    //   this.hideAllSelectLayer();
+    // },
     // 生成缓存对象并更新data
     createNewTpl() {
       let typeId = this.curTypeNo;
@@ -506,12 +465,12 @@ export default {
       } else {
         that.createNewTpl(typeId);
       }
-    },
-    // 清除store的筛选及typeNo
-    clearSortStore() {
-      this.$store.commit('setTypeObj', { typeObj: {} });
-      this.$store.commit('typeNoMemory', { typeNo: '' });
     }
+    // 清除store的筛选及typeNo
+    // clearSortStore() {
+    //   this.$store.commit('setTypeObj', { typeObj: {} });
+    //   this.$store.commit('typeNoMemory', { typeNo: '' });
+    // }
   },
   watch: {
     scrollbarObj: {
@@ -539,8 +498,7 @@ export default {
           }
         : false;
     }
-  },
-  mounted() {}
+  }
 };
 </script>
 <style lang="less" rel="stylesheet/less">
@@ -548,6 +506,10 @@ export default {
 .GoodsCategory {
   .scroll-wrapper {
     padding-top: 90px;
+  }
+  .new-category {
+    padding-top: 50px;
+    padding-bottom: 45px;
   }
 }
 .f-w-bold {
@@ -612,8 +574,24 @@ export default {
   right: 0;
   z-index: 999;
   background: #fff;
+  .vux-tab-container {
+    height: 50px;
+  }
   .vux-center {
     font-size: 16px;
+  }
+  .vux-tab {
+    height: 50px;
+  }
+  .vux-tab .vux-tab-item {
+    line-height: 50px;
+    height: 50px;
+    font-size: 14px !important;
+    color: #888 !important;
+    &.vux-tab-selected {
+      font-size: 16px !important;
+      color: #222 !important;
+    }
   }
 }
 .vux-checker-box {
@@ -632,7 +610,7 @@ export default {
 }
 .vux-checker-item {
   flex: 0 1 30%;
-  height: 44px;
+  height: 50px;
   margin-right: 4.5%;
   margin-bottom: 4.5%;
   text-align: center;
@@ -640,7 +618,7 @@ export default {
   border: 1px solid transparent;
   border-radius: 4px;
   font-size: 12px;
-  line-height: 44px;
+  line-height: 50px;
   color: #222;
   background-color: rgba(0, 0, 0, 0.04);
   text-overflow: ellipsis;

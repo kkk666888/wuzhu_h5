@@ -1,7 +1,32 @@
 <template>
   <div class="credit">
+    <StepDescBlock :stepDesc="stepDesc" :stepIndex="1">
+    </StepDescBlock>
+    <div class="creditArea">
+      <tab :line-width=2 custom-bar-width="40px" active-color='#FFDA29' v-model="tabIndex">
+        <tab-item class="vux-center" selected @click="tabIndex = 0">上班族</tab-item>
+        <tab-item class="vux-center" @click="tabIndex = 1" >在校生</tab-item>
+      </tab>
+      <!--上班族-->
+      <div class="creditBlock" v-show="tabIndex === 0">
+        <!-- <group title="" class="slide auth" :class="showContent001 ? 'animate' : ''"> -->
+          <x-input :max="50" type="text" v-model="employerName" placeholder="填写您的工作单位名称" @on-blur="setWindowSize"></x-input>
+          <x-input :max="20" type="text" v-model="employerPhone" placeholder="填写您的工作单位联系电话" @on-blur="setWindowSize"></x-input>
+        <!-- </group> -->
+      </div>
+      <!--在校生-->
+      <div class="creditBlock" v-show="tabIndex === 1">
+        <!-- <group title="" class="slide chsi" :class="showContent002 ? 'animate' : ''"> -->
+          <x-input  :max="20" label-width="7.2em" :readonly="chsiVerified" class="chsi-input" :show-clear="false" type="number" v-model="Chsi" placeholder="填写您的学信网验证码" @on-blur="setWindowSize">
+          </x-input>
+          <span class="p_guide" slot="right" @click="showChsiDialog = !showChsiDialog">
+            学信网验证码获取指引
+          </span>
+        <!-- </group> -->
+      </div>
+    </div>
     <!-- 基础认证 -->
-    <section class="text-msg">
+    <!-- <section class="text-msg">
       <span class="text-msg-icon">!</span>以下基础认证请至少完成一项，即可
       <span class="emphasis">获得免押资格</span>;
     </section>
@@ -29,8 +54,8 @@
       </cell>
       <template>
         <group title="" class="slide auth" :class="showContent001 ? 'animate' : ''">
-          <x-input title="工作单位：" type="text" v-model="employerName" placeholder="填写您工作单位的名称"></x-input>
-          <x-input title="联系电话：" type="text" v-model="employerPhone" placeholder="填写您工作单位的联系电话"></x-input>
+          <x-input title="工作单位：" :max="50" type="text" v-model="employerName" placeholder="填写您工作单位的名称"></x-input>
+          <x-input title="联系电话：" :max="20" type="text" v-model="employerPhone" placeholder="填写您工作单位的联系电话"></x-input>
         </group>
       </template>
 
@@ -57,14 +82,14 @@
       </cell>
       <template>
         <group title="" class="slide chsi" :class="showContent002 ? 'animate' : ''">
-          <x-input title="学信网验证码：" label-width="7.2em" :readonly="chsiVerified" class="chsi-input" :show-clear="false" type="number" v-model="Chsi" placeholder="在校生推荐">
+          <x-input title="学信网验证码：" :max="20" label-width="7.2em" :readonly="chsiVerified" class="chsi-input" :show-clear="false" type="number" v-model="Chsi" placeholder="在校生推荐">
             <span class="p_guide" slot="right" @click="showChsiDialog = !showChsiDialog">
               查看获取指引
             </span>
           </x-input>
         </group>
       </template>
-    </group>
+    </group> -->
     <section>
       <div class="fs-dialog">
         <fee-desc-alert :dialogTitle="dialogTitle" :potocol-type="true" :showScrollBox="showChsiDialog" @sureBtnClick="showChsiDialog = !showChsiDialog">
@@ -85,7 +110,7 @@
       </div>
     </section>
     <!-- 进阶认证 -->
-    <section class="text-msg">
+    <!-- <section class="text-msg">
       <span class="text-msg-icon">!</span>完成以下进阶认证，额度最高可提升至
       <span class="emphasis">￥20000</span>;
     </section>
@@ -131,16 +156,17 @@
           </div>
         </div>
       </cell>
-    </group>
+    </group> -->
     <!-- 确认按钮 -->
     <x-button class="wz-btn" @click.native="goLivenessVerify">{{ btnName }}</x-button>
   </div>
 </template>
 <script type="text/ecmascript-6">
-import { XInput, Group, XButton, Cell, XDialog } from 'vux';
+import { Tab, TabItem, XInput, Group, XButton, Cell, XDialog } from 'vux';
 import FeeDescAlert from './../FeeItemSubView/FeeDescAlert';
 import Config from './../../util/config';
 import { isPhoneAvailable, isTelePhoneAvailable } from './../../util/utils';
+import StepDescBlock from '../../common/components/stepDescBlock/index.js';
 import { mapMutations } from 'vuex';
 export default {
   data() {
@@ -166,7 +192,9 @@ export default {
       workVerify: '',
       ChsiVerify: '',
       jdVerify: '',
-      mxVerify: ''
+      mxVerify: '',
+      stepDesc: '',
+      tabIndex: 0
     };
   },
   computed: {
@@ -176,6 +204,7 @@ export default {
   },
   created() {
     this.checkJDXBCreditAndMOXStatus();
+    this.stepDesc = '还差3步：填写资料提交订单，最高免押20000';
   },
   mounted() {
     this.routeName = this.$store.state.Verify.routeName;
@@ -193,6 +222,12 @@ export default {
   },
   methods: {
     ...mapMutations(['updateLoadingStatus', 'updateRouteName']),
+    // 软键盘弹起还原
+    setWindowSize() {
+      setTimeout(function() {
+        window.scrollTo(0, 0);
+      }, 100);
+    },
     verifyDesc(code) {
       let des = '';
       switch (code) {
@@ -387,7 +422,9 @@ export default {
     },
     goNext() {
       if (this.routeName === 'GoodsDetailPage') {
-        this.$router.replace({ name: 'LivenessVerify' });
+        // this.$router.replace({ name: 'LivenessVerify' });
+        // 迭代2.12.0 跳转到增加紧急联系人
+        this.$router.replace({ name: 'AddContact' });
       } else {
         this.$router.push({ name: 'MinePage' });
       }
@@ -486,12 +523,15 @@ export default {
     }
   },
   components: {
+    Tab,
+    TabItem,
     XInput,
     Group,
     XButton,
     Cell,
     XDialog,
-    FeeDescAlert
+    FeeDescAlert,
+    StepDescBlock
   }
 };
 </script>
@@ -541,6 +581,17 @@ export default {
   background: @bg;
   overflow: scroll;
   padding-bottom: 60px;
+  .weui-cell {
+    padding: 0 0 14px 0 !important;
+    margin: 14px 0px 0 0px !important;
+    border-bottom: 0.5px solid #DDDDDD !important;
+  }
+  .weui-cell:before {
+    border: none !important;
+  }
+  .stepDescBlock {
+    background-size: 25% 100% !important;
+  }
   .text-msg {
     background-color: #fefbea;
     color: #222;
@@ -562,11 +613,21 @@ export default {
       color: #f5222d;
     }
   }
+  .creditArea {
+    background:rgba(255,255,255,1);
+    margin-bottom: 156px;
+    .creditBlock {
+      //  height:195px;
+       padding: 44px 15px;
+    }
+  }
   .p_guide {
-    color: #1890ff;
+    color: #007AFF;
     font-size: 12px;
     display: block;
-    text-align: center;
+    padding-top: 19px;
+    padding-bottom: 17px;
+    // text-align: center;
   }
   .slide {
     overflow: hidden;

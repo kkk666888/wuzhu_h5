@@ -1,13 +1,15 @@
 <template>
   <div class="IDverify">
+    <StepDescBlock :stepDesc="stepDesc" :stepIndex="0">
+    </StepDescBlock>
     <div class="d_id_box">
-      <p class="p_img_info">请上传您本人的有效证件</p>
+      <p class="p_img_info">请拍摄您本人身份证原件，确保照片清晰</p>
       <flexbox class="fb_box" :gutter="0">
         <flexbox-item>
           <div class="f_item f_item-1">
             <img class="id-img" :src="imgUrl0.localId">
             <label for="uploadImage" class="upload-input"></label>
-            <input :disabled="isCheckCustomer" ref="uploadImage" id="uploadImage" name="uploadImage" type="file" accept="image/*" capture="camera" style="display: none;">
+            <input :disabled="isCheckCustomer" ref="uploadImage" id="uploadImage" name="uploadImage" type="file" accept="image/*" style="display: none;">
             <p class="img_tips">身份证人像面</p>
           </div>
         </flexbox-item>
@@ -15,7 +17,7 @@
           <div class="f_item f_item-2">
             <img class="id-img" :src="imgUrl1.localId">
             <label for="uploadImage2" class="upload-input"></label>
-            <input :disabled="isCheckCustomer" ref="uploadImage2" id="uploadImage2" name="uploadImage2" type="file" accept="image/*" capture="camera" style="display: none;">
+            <input :disabled="isCheckCustomer" ref="uploadImage2" id="uploadImage2" name="uploadImage2" type="file" accept="image/*" style="display: none;">
             <p class="img_tips">身份证国徽面</p>
           </div>
         </flexbox-item>
@@ -24,15 +26,15 @@
     <div class="padding-line"></div>
     <div class="id_info">
       <group class="id_group" label-width="8em" label-margin-right="2em" label-align="right">
-        <x-input v-if="!isCheckCustomer" class="xi_info" title="姓名" placeholder="请输入" v-model="ocrMsg.name" @on-blur="inputNameChange"></x-input>
-        <x-input v-else class="xi_info" title="姓名" placeholder="请输入" :disabled="true" v-model="ocrMsgShow.name"></x-input>
-        <x-input v-if="!isCheckCustomer" class="xi_info" title="身份证号" placeholder="请输入" v-model="ocrMsg.number" @on-blur="inputMsgChange"></x-input>
-        <x-input v-else class="xi_info" title="身份证号" placeholder="请输入" :disabled="true" v-model="ocrMsgShow.number"></x-input>
+        <x-input :max="20" v-if="!isCheckCustomer" class="xi_info" title="姓名" placeholder="请输入" v-model="ocrMsg.name" @on-blur="inputNameChange"></x-input>
+        <x-input :max="20" v-else class="xi_info" title="姓名" placeholder="请输入" :disabled="true" v-model="ocrMsgShow.name"></x-input>
+        <x-input :max="30" v-if="!isCheckCustomer" class="xi_info" title="身份证号" placeholder="请输入" v-model="ocrMsg.number" @on-blur="inputMsgChange"></x-input>
+        <x-input :max="30" v-else class="xi_info" title="身份证号" placeholder="请输入" :disabled="true" v-model="ocrMsgShow.number"></x-input>
       </group>
     </div>
     <div class="fs-box-next">
-      <div class="idverify-tips">请检查姓名及身份证号是否读取正确，<br /> 资料将严格保密，仅用于平台认证。</div>
-      <x-button v-show="btnState === 'next'" @click.native="goNext" class="mt15">下一步</x-button>
+      <div class="idverify-tips">请检查姓名及身份证号是否读取正确，<br /> 资料将严格保密，仅用于物主平台认证。</div>
+      <x-button v-show="btnState === 'next'" @click.native="goNext" class="">下一步</x-button>
       <x-button v-show="btnState === 'save'" :class="(isCheckCustomer )?'fs-gray fs-display-none':''" :disabled="(isCheckCustomer)" @click.native="saveID">认 证</x-button>
     </div>
   </div>
@@ -41,10 +43,12 @@
 <script>
 import { XImg, Flexbox, FlexboxItem, XHeader, Group, XInput, XButton } from 'vux';
 import { compressImg } from './../../util/utils';
+import StepDescBlock from '../../common/components/stepDescBlock/index.js';
 export default {
   name: 'IDverify',
   data() {
     return {
+      stepDesc: '',
       flatBtnCtrl: true,
       brisk: {
         // 埋点报文
@@ -138,6 +142,9 @@ export default {
     }
   },
   created() {
+    let processType = sessionStorage.getItem('processType');
+    let amountExemption = sessionStorage.getItem('amountExemption');
+    this.stepDesc = (processType !== '1') ? '还差4步：填写资料提交订单，最高免押20000' : '还差4步：填写资料提交订单，本单可免押¥' + amountExemption;
     this.$store.commit('updateLoadingStatus', { isLoading: true });
     this.queryCustomerInfoAndEd();
   },
@@ -206,6 +213,7 @@ export default {
           applySerialNo: that.$store.state.applySerialNo, // 后台定义
           filePath: opt.filePath,
           imageName: opt.imageName,
+          photoType: opt.photoType,
           side: side || 'front' // front or back
         })
         .then(res => {
@@ -252,12 +260,14 @@ export default {
       const files = e.target.files;
       if (files.length > 0) {
         const file = files[0];
-        if (!that.checkRealFile(file.lastModifiedDate)) {
-          that.$vux.alert.show({
-            content: '请直接拍摄照片，不可以使用本地照片哦～若无法拍摄照片，请使用京东APP且更新京东App至最新版本。'
-          });
-          return;
-        }
+        // if (!that.checkRealFile(file.lastModifiedDate)) {
+        //   that.$vux.alert.show({
+        //     content: '请直接拍摄照片，不可以使用本地照片哦～若无法拍摄照片，请使用京东APP且更新京东App至最新版本。'
+        //   });
+        //   return;
+        // }
+        // 照片类型，摄像头拍摄为1，否则为2
+        let photoType = (that.checkPhotoType(file.lastModifiedDate)) ? '1' : '2';
         // 加载 loading
         that.$store.state.isLoading = true;
         // 压缩图片
@@ -269,9 +279,10 @@ export default {
               .post('/wuzhu/common/uploadFile', formData, {}, 300000)
               .then(res => {
                 that.$store.state.isLoading = false;
-                that.dealUploadRes(order, res); // 处理上传后的 结果
+                that.dealUploadRes(order, res, photoType); // 处理上传后的 结果
               })
               .catch(err => {
+                console.log('uploadFile err=' + JSON.stringify(err));
                 that.$store.state.isLoading = false;
                 if (!err.response || err.message === 'Network Error') {
                   that.$vux.alert.show({
@@ -291,9 +302,10 @@ export default {
               .post('/wuzhu/common/uploadFile', formData, {}, 300000)
               .then(res => {
                 that.$store.state.isLoading = false;
-                that.dealUploadRes(order, res);
+                that.dealUploadRes(order, res, photoType);
               })
               .catch(err => {
+                console.log('uploadFile err=' + JSON.stringify(err));
                 that.$store.state.isLoading = false;
                 if (!err.response || err.message === 'Network Error') {
                   that.$vux.alert.show({
@@ -308,7 +320,7 @@ export default {
       }
     },
     // 处理上传后的 结果
-    dealUploadRes(order, res) {
+    dealUploadRes(order, res, photoType) {
       let that = this;
       that.$store.state.isLoading = false;
       if (res.code === '00' && res.data) {
@@ -316,12 +328,12 @@ export default {
           // 正面
           that.imgUrl0.localId = res.data.filePath;
           that.imgUrl0.imageName = res.data.imageName;
-          that.checkOCRIDCard('front', { filePath: res.data.filePath, imageName: res.data.imageName });
+          that.checkOCRIDCard('front', { filePath: res.data.filePath, imageName: res.data.imageName, photoType: photoType });
         } else {
           // 返面
           that.imgUrl1.localId = res.data.filePath;
           that.imgUrl1.imageName = res.data.imageName;
-          that.checkOCRIDCard('back', { filePath: res.data.filePath, imageName: res.data.imageName });
+          that.checkOCRIDCard('back', { filePath: res.data.filePath, imageName: res.data.imageName, photoType: photoType });
         }
       } else {
         that.$vux.alert.show({
@@ -537,6 +549,19 @@ export default {
         }
       }
       return true;
+    },
+    // 判断照片是通过摄像头拍摄还是从相册中选择（通过file.lastModifiedDate判断是否是实时拍摄的照片，30秒内的视为有效照片）
+    checkPhotoType(lastModifiedDate) {
+      if (lastModifiedDate) {
+        let nowTime = new Date().getTime();
+        let fileTime = lastModifiedDate.getTime();
+        if (fileTime && fileTime <= nowTime && fileTime + 30000 >= nowTime) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+      return true;
     }
   },
   beforeRouteEnter(to, from, next) {
@@ -552,7 +577,8 @@ export default {
     FlexboxItem,
     XHeader,
     Group,
-    XInput
+    XInput,
+    StepDescBlock
   }
 };
 </script>
@@ -563,6 +589,9 @@ export default {
   height: 100%;
   background: #f5f5f5;
   font-family: PingFangSC-Medium;
+  .stepDescBlock {
+    background-size: 5% 100% !important;
+  }
   .d_title {
     margin-top: 14px;
     .i_back {
@@ -585,10 +614,11 @@ export default {
     background: #fff;
     .p_img_info {
       font-size: 16px;
-      color: #000000;
+      color: #222222;
       letter-spacing: 0;
       padding: 16px 8px;
-      font-weight: bold;
+      font-weight:500;
+      // font-weight: bold;
     }
     .fb_box {
       .f_item {
@@ -621,7 +651,7 @@ export default {
           height: 100px;
         }
         .img_tips {
-          margin-top: 10px;
+          margin: 12px 0px 15px;
           font-family: PingFangSC-Regular;
           font-size: 12px;
           color: #333333;
@@ -694,8 +724,8 @@ export default {
     display: none;
   }
   .fs-box-next {
-    margin-top: 16px;
-    height: 45px;
+    margin-top: 12px;
+    height: 48px;
     padding: 0 18px;
     .weui-btn_default {
       background: #ffda29;
@@ -716,6 +746,7 @@ export default {
     font-size: 12px;
     color: #888;
     line-height: 17px;
+    margin-bottom: 40px;
   }
 
   @media screen and (max-width: 320px) {
@@ -725,7 +756,7 @@ export default {
       .fb_box {
         .f_item {
           .id-img {
-            width: 150px;
+            width: 165px;
           }
           &.f_item-1 {
             margin-right: 2px;

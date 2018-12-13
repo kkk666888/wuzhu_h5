@@ -1,8 +1,24 @@
 <template>
   <div class="LivenessVerify">
+    <StepDescBlock :stepDesc="stepDesc" :stepIndex="3">
+    </StepDescBlock>
     <section>
+      <input v-if="clearInput" :disabled="!isClick" ref="uploadVideo" id="uploadVideo" name="uploadVideo" class="upload-input" type="file" accept="video/*" capture="camcorder">
+      <div class="liveBlock">
+        <div class="liveTitle">录制一段您自己的视频，并上传进行验证：</div>
+          <div class="liveDesc">
+            1、请使用<span class="red">前置摄像头</span><br>
+            2、录制中需要您重复动作【<span class="red">{{livenessData.description}}</span>】<br>
+            3、拍摄时长&lt;{{livenessData.fileTime}}秒<br>
+            4、请正脸拍摄、人像清晰、光线均匀
+          </div>
+      </div>
+    </section>
+    <section>
+      <div class="liveTips">视频仅用于物主平台检测，请确保当前操作是您本人</div>
+    </section>
+    <!-- <section>
       <div class="fs-liveness">
-        <!-- <div class="liveness-img"></div> -->
         <div class="liveness-header">
           根据要求拍摄视频，在视频中您需要：
         </div>
@@ -45,7 +61,7 @@
           </div>
         </div>
       </div>
-    </section>
+    </section> -->
     <section class="btn-section">
       <div class="fs-btn">
         <x-button class="button-toOrder" v-if='showSkipLiving' @click.native="goNext" text="跳过活体" :gradients="['#f1cd37', '#f1cd37']"></x-button>
@@ -55,17 +71,24 @@
         <x-button :class="isClick?'button-toOrder':'button-toOrder fs-gray'" text="开始录制" :gradients="['#f1cd37', '#f1cd37']"></x-button>
       </div>
     </section>
+    <alert v-model="alertShow" :title="alertTitle" :content="alertContent"></alert>
   </div>
 </template>
 
 <script>
-import { XHeader, XButton } from 'vux';
+import { XHeader, XButton, Alert } from 'vux';
 import Config from './../../util/config';
+import { ReportData } from './../../util/ReportData';
+import StepDescBlock from '../../common/components/stepDescBlock/index.js';
 export default {
   name: 'LivenessVerify',
   data() {
     return {
+      serviceAgreet: null, // 埋点数据
       showSkipLiving: false, // 跳过活体按钮
+      alertShow: false, // 通过alert的形式展示弹框
+      alertTitle: '',
+      alertContent: '',
       brisk: {
         // 埋点报文
         edittimes: [
@@ -121,7 +144,8 @@ export default {
       intCtrl: 0, // 循环查询
       clearInput: true,
       isChangeEffect: false, // input change 事件是否有效
-      isClick: false
+      isClick: false,
+      stepDesc: ''
     };
   },
   watch: {
@@ -129,8 +153,15 @@ export default {
       this.switchImgSrc();
     }
   },
+  created() {
+    let that = this;
+    let processType = sessionStorage.getItem('processType');
+    let amountExemption = sessionStorage.getItem('amountExemption');
+    that.stepDesc = (processType !== '1') ? '还差1步：填写资料提交订单，最高免押20000' : '还差1步：填写资料提交订单，本单可免押¥' + amountExemption;
+  },
   mounted: function() {
     let that = this;
+    that.serviceAgreet = new ReportData();
     that.$store.commit('updateLoadingText', { loadText: '正在检测' });
     that.$reporter.init(); // 埋点初始化
     that.isBeyondeLimit();
@@ -158,14 +189,15 @@ export default {
         this.checkFileInterval();
       }
     },
-    // 跳过活体 -- 测试环境 检查 jindatest.dafyjk.com
+    // 跳过活体 -- 测试环境
     skipLiving() {
       if (Config.active === 'dev' || Config.active === 'test') {
         this.showSkipLiving = true;
       }
     },
     goNext() {
-      this.$router.replace({ name: 'OrderSubmitPage' });
+      // this.$router.replace({ name: 'OrderSubmitPageNew' });
+      this.confirmBook();
     },
     onSuccess(res) {
       let that = this;
@@ -178,7 +210,8 @@ export default {
           text: '检测成功',
           isShowMask: true,
           onHide() {
-            that.$router.replace({ name: 'OrderSubmitPage' });
+            // that.$router.replace({ name: 'OrderSubmitPageNew' });
+            that.confirmBook();
           }
         });
       } else {
@@ -345,23 +378,71 @@ export default {
           console.log(err);
         });
     },
-    // 京东渠道，Android手机，通过file.lastModifiedDate判断是否是实时拍摄的视频，15秒内的视为有效视频
+    // 京东渠道，Android手机，通过file.lastModifiedDate判断是否是实时拍摄的视频，20秒内的视为有效视频
     checkRealFile(lastModifiedDate) {
       if (lastModifiedDate && this.$store.state.channelNo === '003' && this.$store.state.osinfo === 'Android') {
         let nowTime = new Date().getTime();
         let fileTime = lastModifiedDate.getTime();
-        if (fileTime && fileTime <= nowTime && fileTime + 15000 >= nowTime) {
+        if (fileTime && fileTime <= nowTime && fileTime + 20000 >= nowTime) {
           return true;
         } else {
           return false;
         }
       }
       return true;
+    },
+    // 发送HTTP确认预约的服务
+    confirmBook() {
+      let that = this;
+      that.$store.commit('updateLoadingStatus', { isLoading: true });
+      // 获取对应的商品详情页面 GET /reservationController/getCommodityFromSession
+      let comfirmUrl = '/wuzhu/reservationController/confirmReservationApplication';
+      let _brickSessionStore = that.serviceAgreet.getSessionStore();
+      let byno = _brickSessionStore.byno; // 分控埋点的号码
+      // console.log('确认预约前 byno === ' + byno);
+      let platform = that.$store.state.platformCode;
+      // console.log('确认预约前 platform === ' + platform);
+      // 请求的参数
+      let param = {
+        continueFlag: that.$store.state.continueFlag,
+        applySerialNo: that.$store.state.applySerialNo,
+        recommCode: that.$store.state.recommeCode, // 邀请码 -// -
+        byno: byno, // 风控埋点
+        contactInfo: JSON.stringify(that.brisk.contactInfo),
+        platformCode: platform // 客户端平台
+      };
+      that.$http.post(comfirmUrl, param).then(res => {
+        if (res.code === '00') {
+          // 先判断下是否获取了对应的订单号
+          let orderNo = res && res.data;
+          // 埋点数据上报
+          that.$reporter.dataReport(that.brisk);
+          that.$store.commit('updateLoadingStatus', { isLoading: false });
+          that.$router.replace({
+            name: 'OrderSubSuccessPage',
+            params: { orderNo: orderNo }
+          });
+          // let userChooseData = res['data']
+          // let userChooseData = JSON.parse(data['commodityJsonStr'])
+          // this.parseJsonStrFromSession(userChooseData)
+        } else {
+          that.$store.commit('updateLoadingStatus', { isLoading: false });
+          // 错误信息的提示
+          that.$vux.alert.show({
+            content: res.msg,
+            onHide() {
+              that.$router.replace({ name: 'HomePage' });
+            }
+          });
+        }
+      });
     }
   },
   components: {
     XHeader,
-    XButton
+    XButton,
+    Alert,
+    StepDescBlock
   }
 };
 </script>
@@ -369,6 +450,9 @@ export default {
 <style lang="less">
 @import './../../common/less/index';
 .LivenessVerify {
+  .stepDescBlock {
+    background-size: 75% 100% !important;
+  }
   font-family: PingFangSC-Regular;
   background-color: #f5f5f5;
   height: 100%;
@@ -419,9 +503,9 @@ export default {
       font-size: 18px;
       font-weight: bold;
     }
-    .upload-input {
-      display: none;
-    }
+  }
+  .upload-input {
+    display: none;
   }
   .fs-attention {
     .attention-txt {
@@ -518,6 +602,37 @@ export default {
   .fs-gray {
     background: #f8f8f8 !important;
     color: #ccc !important;
+  }
+  // 新UI
+  .liveBlock {
+    padding: 30px 15px;
+    background: #fff;
+    .liveTitle {
+      font-size:16px;
+      font-weight: bold;
+      color:#222222;
+      line-height:20px;
+      margin-bottom: 30px;
+    }
+    .liveDesc {
+      background:rgba(254,247,179,0.3);
+      border-radius:3px;
+      border:0.5px solid rgba(151,151,151,0.3);
+      padding: 15px;
+      z-index: 999;
+      font-size:14px;
+      line-height:36px;
+      color: #222222;
+    }
+    .red {
+      color: #F5222D;
+    }
+  }
+  .liveTips {
+    padding: 12px 15px;
+    font-size:12px;
+    color: #888888;
+    line-height:17px;
   }
 }
 @media screen and (max-height: 568px) {

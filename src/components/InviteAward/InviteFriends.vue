@@ -68,7 +68,7 @@
           monthRecomeNum: '0',
           monthApplyNum: '0',
           recommCode: '', // 邀请码
-          qrcode: {},         // 用户产生二维码的对象
+          qrcode: {}, // 用户产生二维码的对象
           customerName: '',
           qrStr: '',
           showToast: false

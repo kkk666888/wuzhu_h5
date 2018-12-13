@@ -1,4 +1,5 @@
 import htmlPannel from './../FeeItemSubView/HtmlPannel'
+import { getFeeDescStr } from './../../wuzhuUtil/wuzhuUtil';
 import { PopupHeader, Popup } from 'vux'
 export default {
   name: 'reletConfirmOrder',
@@ -58,13 +59,15 @@ export default {
           item._check = item.isCancelled === '0'
           item._fee = ''
           item._feeDay = ''
-          if (item.feeAccessWayConfig) {
-            let arr = item.feeAccessWayConfig.split(',')
-            if (arr.length === 2) {
-              item._fee = arr[1]
-              item._feeDay = arr[0]
-            }
-          }
+          let feeDesc = getFeeDescStr(item);
+          item.feeDesc = feeDesc;
+          // if (item.feeAccessWayConfig) {
+          //   let arr = item.feeAccessWayConfig.split(',')
+          //   if (arr.length === 2) {
+          //     item._fee = arr[1]
+          //     item._feeDay = arr[0]
+          //   }
+          // }
         })
       }
     },

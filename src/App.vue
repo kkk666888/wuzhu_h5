@@ -103,16 +103,6 @@ export default {
           categoryCode: _categoryCode
         });
       }
-      // 获取到申请码后更新到store
-      if (localStorage) {
-        let recommCode = localStorage.getItem('recommCode');
-        // console.log('recommCode = ' + recommCode);
-        if (recommCode) {
-          recommCode = recommCode.split('#')[0];
-          console.log('recommCode split = ' + recommCode);
-          this.$store.commit('updateRecommeCode', { recommeCode: recommCode });
-        }
-      }
     },
     // 生活号静默登录
     AliLifeLogin() {
@@ -156,7 +146,7 @@ export default {
         openId = that.$store.state.deviceId;
       }
       if (!openId) {
-        openId = String(new Date().getTime());
+        openId = '';
       }
       this.$nextTick(() => {
         /* eslint-disable no-undef */
@@ -194,7 +184,7 @@ export default {
         } else if (res.code === '1001') {
           this.isLogin = false;
         }
-        this.initYsfConfig();
+        // this.initYsfConfig();
       });
     },
     getUserLocation() {

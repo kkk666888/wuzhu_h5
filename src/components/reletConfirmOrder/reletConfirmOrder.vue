@@ -54,10 +54,10 @@
         <!--租期选项-->
         <template v-if="orderInfo.productList && orderInfo.productList.length > 1">
           <div v-show="showRentItems" class="rent-items">
-            <div 
-              class="item-row" 
+            <div
+              class="item-row"
               :class="{'rent-item-activity':item._id === selectedTenancyTerm._id}"
-              v-for="item in orderInfo.productList" 
+              v-for="item in orderInfo.productList"
               :key="item._id"
               @click="rentItemClick(item)">
               <div class="item-col">
@@ -75,8 +75,8 @@
             </div>
           </div>
         </template>
-        <div class="item-row" 
-          v-for="item in selectedTenancyTerm.listFeeInfo" 
+        <div class="item-row"
+          v-for="item in selectedTenancyTerm.listFeeInfo"
           :key="item.feeNo"
           @click="feeItemClick(item)">
           <div class="item-col">
@@ -88,7 +88,8 @@
           </div>
           <div class="item-col item-col-100">
             <div class="text-right">
-              ￥{{item._fee|moneyFormat}}/<span v-show="item._feeDay > 1">{{item._feeDay}}</span>天
+              {{ item.feeDesc }}
+              <!-- ￥{{item._fee|moneyFormat}}/<span v-show="item._feeDay > 1">{{item._feeDay}}</span>天 -->
             </div>
           </div>
         </div>
@@ -204,7 +205,7 @@
             </div>
           </div>
           <div class="item-body">
-            <div class="item vux-1px-b" 
+            <div class="item vux-1px-b"
               v-for="(item,$index) in planMoneyModel.terms" :key="$index">
               <div class="item-row" @click="showItemPlanDetailClick(item)">
                 <div class="item-col plan-col-periods">{{item.term}}/{{planMoneyModel.totalTerms}}</div>
