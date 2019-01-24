@@ -33,7 +33,6 @@
         <!--商品详情部分-->
         <div class="GoodsConfigDetailPlane">
           <span class="GoodsConfigDetailPlane_info">{{ commodities.fullName }}</span>
-          <!-- <span v-bind:class="stockBtnClass">{{ isStockNumEmpty }}</span> -->
         </div>
         <div
           class="GoodsDetailTags vux-1px"
@@ -53,17 +52,14 @@
             <span>￥{{leastMonthRentAmtOut}}</span>
           </span>
         </div>
-        <div class="goods-price-comment">
+        <!-- <div class="goods-price-comment">
           <span class="goods-market-price">市场价: ￥{{leastMarketPrice}}</span>
           <span class="goods-buyout-price">买断尾款: ￥{{leastBuyoutAmtOut}}起</span>
           <i class="icon iconfont icon-help1 color-blue" @click="showBuyOutDetail"></i>
-        </div>
+        </div> -->
         <div class="comment-img mt10" v-if="detailRentDescriptionUrl">
           <img v-lazy="detailRentDescriptionUrl">
         </div>
-        <!-- <div class="safeguardMark">
-          <img src="./safeguardMark_jd.png" srcset="./safeguardMark_jd.png 1x, ./safeguardMark_jd@2x.png 2x" />
-        </div>-->
       </div>
       <div class="padding-line"></div>
       <!--租机必看 和 租赁说明的展示框-->
@@ -111,34 +107,14 @@
             v-lazy="detailImageItem"
           >
         </div>
-        <!-- 常见问题 -->
-        <!-- <div v-show="declarePlaneIndex === 2">
-          <Collapse :listData="QAData"></Collapse>
-        </div>-->
       </div>
       <div class="marginBottom70px"></div>
     </div>
     <!-- 选择商品弹框 -->
     <div class="GoodsDetail_Bottom_fixed vux-1px-t">
       <div class="GoodsDetail_Bottom_fixed_Content">
-        <!-- <div class="leftSection">
-          <span
-            class="GoodsDetail_Bottom_fixed_Content_left GoodsDetail_Bottom_fixed_Content_txt1"
-          >日均租金</span>
-          <span class="GoodsDetail_Bottom_fixed_Content_left GoodsDetail_Bottom_fixed_Content_txt2">
-            <em>￥{{ leastRentDay }}</em>
-          </span>
-          <span
-            class="GoodsDetail_Bottom_fixed_Content_left GoodsDetail_Bottom_fixed_Content_txt3"
-          >/天起</span>
-        </div>-->
-        <div class="detail-customer-service">
-          <img
-            src="./contact.png"
-            srcset="./contact.png 1x, ./contact@2x.png 2x"
-            style="vertical-align: middle;"
-            alt="我的客服"
-          >我的客服
+        <div class="detail-customer-service" @click="activityClick(1, customerServiceUrl)">
+          <img src="./contact.svg" style="vertical-align: middle;" alt="我的客服">我的客服
         </div>
         <div
           @click="showCategoryPlanClick"

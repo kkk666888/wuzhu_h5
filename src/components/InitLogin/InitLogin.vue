@@ -7,7 +7,7 @@
       <group class="group_input">
         <x-input class="input_login needsclick" :max="20" placeholder="请输入手机号" v-model="phoneNum" title="手机号" type="tel" @on-blur="inputPhoneChange"></x-input>
         <!-- placeholder-align="right" -->
-        <x-input class="input_login xinput_verify needsclick" :max="10" placeholder="请输入验证码" v-model="authCode" title="验证码" type="tel" @on-blur="inputCodeChange">
+        <x-input class="input_login xinput_verify needsclick" :max="6" placeholder="请输入验证码" v-model="authCode" title="验证码" type="tel" @on-blur="inputCodeChange">
           <span ref="getCodeCtrl" :class="['get-code', flag ? 'active' : '']" slot="right" v-on:click="flag && getVerificationCode()">获取验证码</span>
         </x-input>
       </group>
@@ -340,6 +340,9 @@ export default {
 
 <style lang="less" rel="stylesheet/less">
 @import './../../common/less/index';
+body {
+  background-color: #ffffff;
+}
 .InitLogin {
   position: relative;
   background-color: #ffffff;
@@ -470,8 +473,11 @@ export default {
     }
   }
   .login_small_icon {
-    position: absolute;
-    bottom: 5px;
+    // position: fixed;
+    // left: 0px;
+    // bottom: 5px;
+    margin-top: 40px;
+    margin-bottom: 5px;
     width: 100%;
     .login-small-icon {
       width: 45px;

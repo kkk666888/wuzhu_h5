@@ -1,6 +1,19 @@
-import { Swiper, Loading, SwiperItem, Flexbox, FlexboxItem, Divider, Grid, GridItem, Scroller, XButton, Tab, TabItem } from 'vux';
+import {
+  Swiper,
+  Loading,
+  SwiperItem,
+  Flexbox,
+  FlexboxItem,
+  Divider,
+  Grid,
+  GridItem,
+  Scroller,
+  XButton,
+  Tab,
+  TabItem
+} from 'vux';
 import MainPage from './../Main/MainPage';
-import { RegainOpenid, isWeiXin, piwikTrackEvent, isAlipayLife } from './../../util/utils';
+import { RegainOpenid, isWeiXin, piwikTrackEvent, isAlipayLife, isWzapp } from './../../util/utils';
 import { mapMutations } from 'vuex';
 
 export default {
@@ -9,6 +22,7 @@ export default {
     return {
       canGotoOrderSubmit: false, // 有未完成订单可以进入提交订单页面
       isAlipayLife: isAlipayLife(),
+      isWzapp: isWzapp(),
       wxReady: false,
       range: 60, // 距下边界高度
       scrollFlag: true, // 控制下滑滚动特效
@@ -41,9 +55,6 @@ export default {
     let that = this;
     that.$store.commit('updateLoadingText', { loadText: '加载中' });
     that.$store.commit('goodsCheckNoMemory', { goodsCheckNo: this.enum.depreciation[0] });
-    that.queryHomeInfomation(function(res) {
-      that.alertOpenIDerr();
-    });
     // app window
     document.getElementById('app').addEventListener('scroll', this.handleScroll);
     // 获取到申请码后更新到store
@@ -53,10 +64,13 @@ export default {
       that.$store.commit('updateRecommeCode', { recommeCode: recommCode });
       console.log('store recommCode = ' + that.$store.state.recommeCode);
     }
-    if (this.gotoGoodsDetail()) {
-      return;
-    }
-    that.checkOrder(); // 查看是否有“待确定-未审批”定单
+    that.queryHomeInfomation(function(res) {
+      that.alertOpenIDerr();
+      if (that.gotoGoodsDetail()) {
+        return;
+      }
+      that.checkOrder(); // 查看是否有“待确定-未审批”定单
+    });
   },
   // 路由部分的处理，离开页面和进入页面的处理
   beforeRouteLeave(to, from, next) {
@@ -162,6 +176,7 @@ export default {
         })
         .catch(err => {
           console.log(err);
+          callback(err);
         });
     },
     handleHomeData(res) {
@@ -249,7 +264,7 @@ export default {
     checkOrder() {
       let that = this;
       that.$http
-        .post('/wuzhu/order/checkHavePendingConfirmationOrder', {
+        .get('/wuzhu/order/checkHavePendingConfirmationOrder', {
           channelNo: that.$store.state.channelNo
         })
         .then(res => {
@@ -262,7 +277,7 @@ export default {
                 // that.$router.push({name: 'OrderSubmitPageNew'})
                 // 2018-12-8 迭代2.12.0 新流程，未完成订单跳转到提交订单页面
                 if (that.isAlipayLife) {
-                  that.$router.push({ name: 'OrderSubmitPage' });
+                  that.$router.push({ name: 'OrderSubmitPageNew' });
                 } else {
                   that.$router.push({ name: 'OrderSubmitPageNew' });
                 }
@@ -278,7 +293,7 @@ export default {
     delOrder() {
       let that = this;
       that.$http
-        .post('/wuzhu/order/deletePendingConfirmationOrder', {
+        .get('/wuzhu/order/deletePendingConfirmationOrder', {
           channelNo: that.$store.state.channelNo
         })
         .then(res => {
@@ -303,7 +318,12 @@ export default {
       console.log('gotoGoodsDetail _categoryCode = ' + _categoryCode + ', _from = ' + _from);
       if (_categoryCode) {
         this.$store.commit('categoryCodeMemory', { categoryCode: _categoryCode });
-        this.$router.push({ name: 'GoodsDetailPage' });
+        // 如果是从app跳转到详情，则使用replace
+        if (this.isWzapp) {
+          this.$router.replace({ name: 'GoodsDetailPage' });
+        } else {
+          this.$router.push({ name: 'GoodsDetailPage' });
+        }
         return true;
       }
     }

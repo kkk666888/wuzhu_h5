@@ -1,155 +1,170 @@
 <template>
-<!-- 改版后的订单提交页面，适用于微信、京东、App渠道，支付宝生活号渠道还是OrderSubmitPage.vue -->
   <div class="OrderSubmitPage">
-    <!--头部信息-->
-    <div class="header OrderDetail_Shadow">
-      <!--商品详情的信息-->
-      <div class="goodsDetial">
-        <div class="goodsImgDiv">
-          <img class="goodsImage" :src="goodListImage" />
+    <div class="OrderSubmitPageContent">
+      <!--头部信息-->
+      <div class="header OrderDetail_Shadow">
+        <!--商品详情的信息-->
+        <div class="goodsDetial">
+          <div class="goodsImgDiv">
+            <img class="goodsImage" :src="goodListImage" />
+          </div>
+          <div class="goodsInfoPlane">
+            <div class="fullName">{{ fullName }}</div>
+            <!-- <div class="markPrice">商品价值:{{ markPrice }}元</div> -->
+            <div class="categoryList">
+              <span class="categoryListItem" v-for="(specItem, specIndex) in listCommoditySpec" :key="specIndex">{{ specItem.specContent }}
+                <span v-if="specIndex < listCommoditySpec.length-1">/</span>
+              </span>
+            </div>
+          </div>
         </div>
-        <div class="goodsInfoPlane">
-          <div class="fullName">{{ fullName }}</div>
-          <!-- <div class="markPrice">商品价值:{{ markPrice }}元</div> -->
-          <div class="categoryList">
-            <span class="categoryListItem" v-for="(specItem, specIndex) in listCommoditySpec" :key="specIndex">{{ specItem.specContent }}
-              <span v-if="specIndex < listCommoditySpec.length-1">/</span>
-            </span>
+        <div class="feePlane">
+          <div class="feeCell bb1 mb10">
+            <div class="feeName">租金</div>
+            <div class="feeValue">￥{{ rentForOneDay }}/天    *{{ tenancyTerm }}天</div>
+          </div>
+          <div v-if="!isAlipayLife" class="feeTips">*租金支持<span class="feeTipsBold">按月支付</span>或<span class="feeTipsBold">一次性支付</span>
+          </div>
+          <div class="feeCellSmall gray" v-for="(feeItem, feeIndex) in feeList" :key="feeIndex">
+            <div class="feeName">{{ feeItem['feeName'] }}
+            </div>
+            <div class="feeValue">{{ feeItemItemDesc(feeItem) }}</div>
+          </div>
+          <div v-if="isAlipayLife" class="feeCellSmall gray">
+            <div class="feeName">租金支付方式</div>
+            <div class="feeValue">支付宝预授权
+              <i class="icon iconfont icon-help1" @click="showDetail(3)" style="color: #007AFF; font-size: 14px"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="depositBlock">
+          <div class="feeCell">
+            <div class="feeName">押金
+              <!-- <span class="depositBlue">可退</span> -->
+            </div>
+            <div class="feeValue gray">￥{{ deposit | moneyFormat }}</div>
+          </div>
+          <!-- <div class="feeCell">
+            <div class="feeName">押金支付方式</div>
+          </div> -->
+          <div v-if="isAlipayLife" class="depositDetail">
+            <div class="depositTitle">花呗额度冻结押金</div>
+            <div class="depositDesc">商家提供押金减免，填写资料可减免押金</div>
+          </div>
+          <div v-else class="depositDetail">
+            <div class="depositTitle">{{ depositPayName }}</div>
+            <div class="depositDesc">{{ depositPayDesc }}</div>
           </div>
         </div>
       </div>
-      <div class="feePlane">
-        <div class="feeCell">
-          <div class="feeName">租金</div>
-          <div class="feeValue">￥{{ rentForOneDay }}/天    *{{ tenancyTerm }}天</div>
-        </div>
-        <div class="feeTips">*租金支持<span class="feeTipsBold">按月支付</span>或<span class="feeTipsBold">一次性支付</span>
-        </div>
-        <div class="feeCell gray" v-for="(feeItem, feeIndex) in feeList" :key="feeIndex">
-          <div class="feeName">{{ feeItem['feeName'] }}
+      <!-- 收货信息-->
+      <div class="orderInfoPlane OrderDetail_Shadow">
+        <div class="orderInfoBase">
+        <div class="orderSubmit-flexBox fw-b">{{ isAlipayLife ? '为确保正常收货，请填写本人真实收货信息' : '请确认收货地址'}}</div>
+          <div class="orderSubmit-flexBox bb1">
+            <div class="flexBox-left">{{isAlipayLife ? '真实姓名' : '姓名'}}</div>
+            <group class="customer-info">
+              <x-input :max="20" class="info-input needsclick" :readonly="hasUserName" type="text" :show-clear="false" v-model="userName" ref="input01" @on-blur="setWindowSize" placeholder="请输入" @on-focus="focusName" @on-change="changeUserName"></x-input>
+            </group>
           </div>
-          <div class="feeValue">{{ feeItemItemDesc(feeItem) }}</div>
-        </div>
-      </div>
-
-      <div class="depositBlock">
-        <div class="feeCell">
-          <div class="feeName">押金
-            <!-- <span class="depositBlue">可退</span> -->
+          <div class="orderSubmit-flexBox bb1">
+            <div class="flexBox-left">手机号</div>
+            <group class="customer-info">
+              <x-input :max="20" class="info-input needsclick" type="text" v-model="phoneNum" :show-clear="false" :readonly="hasPhoneNum" @on-blur="setWindowSize" placeholder="请输入" keyboard="number" is-type="china-mobile"></x-input>
+            </group>
           </div>
-          <div class="feeValue gray">￥{{ deposit | moneyFormat }}</div>
+          <div class="orderSubmit-flexBox bb1" v-if="isAlipayLife">
+            <div class="flexBox-left">身份证号</div>
+            <group class="customer-info">
+              <x-input :max="30" class="info-input needsclick" type="text" v-model="certId" :readonly="hasCertId" :show-clear="false" @on-blur="setWindowSize" placeholder="请输入"></x-input>
+            </group>
+          </div>
         </div>
-        <!-- <div class="feeCell">
-          <div class="feeName">押金支付方式</div>
-        </div> -->
-        <div class="depositDetail">
-          <div class="depositTitle">{{ depositPayName }}</div>
-          <div class="depositDesc">{{ depositPayDesc }}</div>
+        <div class="OrderInputPlane">
+          <group>
+            <x-address class="padding-address" title="省/市/区" :placeholder="placeholder" v-model="addressArea" raw-value :list="addressData" @on-hide="inputAddrChange"></x-address>
+            <x-textarea class="needsclick" :max="100" :placeholder="addressPlaceHolder" :show-counter="false" :rows="2" v-model="addressDetail" @on-blur="inputAddrDetailChange" autosize></x-textarea>
+          </group>
+          <!-- <section v-if="isWzapp" class="mt15">
+            <div class="orderdetail-tips">填写紧急联系人</div>
+            <group class="group-2">
+              <x-input :max="40" class="padding-address" title="重要联系人" type="text" readonly :show-clear="false" placeholder="请选择联系人" text-align="left" v-model="emergencyApp1" @on-blur="inputNameChange" @on-change="inputChangeEvent">
+                <span slot="right" class="add-contact" @click="addContact(1)">添加</span>
+              </x-input>
+              <popup-picker ref="emergency1" class="padding-address" title="所属关系" :showName="true" :data="shipData" v-model="emergencyShip" :placeholder="placeholder" value-text-align="right" @on-hide="inputShipChange"></popup-picker>
+            </group>
+            <group class="group-2 contact2">
+              <x-input :max="40" class="padding-address" title="其他联系人" type="text" readonly :show-clear="false" placeholder="请选择联系人" text-align="left" v-model="emergencyApp2" @on-blur="inputNameChange" @on-change="inputChangeEvent">
+                <span slot="right" class="add-contact" @click="addContact(2)">添加</span>
+              </x-input>
+              <popup-picker ref="emergency2" class="padding-address" title="所属关系" :showName="true" :data="shipData" v-model="emergencyShip2" :placeholder="placeholder" value-text-align="right" @on-hide="inputShipChange"></popup-picker>
+            </group>
+          </section> -->
+          <section v-if="isAlipayLife" class="mt15">
+            <div class="orderdetail-tips">填写紧急联系人</div>
+            <group class="group-2">
+              <x-input :max="40" class="padding-address" title="紧急联系人" type="text" readonly :show-clear="false" placeholder="请选择联系人" text-align="left" v-model="emergencyApp1" @on-blur="inputNameChange" @on-change="inputChangeEvent">
+                <span slot="right" class="add-contact" @click="addContact(3)">添加</span>
+              </x-input>
+            </group>
+          </section>
+          <!-- h5 -->
+          <!-- <section v-else class="">
+            <group class="group-2">
+              <x-input :max="20" class="padding-address" title="重要联系人" type="text" :show-clear="false" placeholder="请填写重要联系人(必填)" text-align="left" v-model="emergencyName" @on-blur="inputNameChange" @on-change="inputChangeEvent"></x-input>
+              <x-input :max="20" class="padding-address" title="联系人电话" type="tel" :show-clear="false" placeholder="请填写重要联系人电话" text-align="left" v-model="emergencyPhone" keyboard="number" is-type="china-mobile" @on-blur="inputPhoneChange" @on-change="inputChangeEvent"></x-input>
+              <popup-picker ref="emergency1" class="padding-address" title="所属关系" :showName="true" :data="shipData" v-model="emergencyShip" :placeholder="placeholder" value-text-align="right" @on-hide="inputShipChange"></popup-picker>
+            </group>
+            <group class="group-2 contact2">
+              <x-input :max="20" class="padding-address" title="其他联系人" type="text" :show-clear="false" placeholder="请填写联系人(必填)" text-align="left" v-model="emergencyName2" @on-blur="inputNameChange" @on-change="inputChangeEvent"></x-input>
+              <x-input :max="20" class="padding-address" title="联系人电话" type="tel" :show-clear="false" placeholder="请填写联系人电话" text-align="left" v-model="emergencyPhone2" keyboard="number" is-type="china-mobile" @on-blur="inputPhoneChange" @on-change="inputChangeEvent"></x-input>
+              <popup-picker ref="emergency2" class="padding-address" title="所属关系" :showName="true" :data="shipData" v-model="emergencyShip2" :placeholder="placeholder" value-text-align="right" @on-hide="inputShipChange"></popup-picker>
+            </group>
+          </section> -->
         </div>
       </div>
-    </div>
-    <!-- 收货信息-->
-    <div class="orderInfoPlane OrderDetail_Shadow">
-      <div class="orderInfoBase">
-      <div class="orderSubmit-flexBox bb1">请确认收货地址</div>
-        <div class="orderSubmit-flexBox bb1">
-          <div class="flexBox-left">姓名</div>
-          <group class="customer-info">
-            <x-input :max="20" class="info-input needsclick" :readonly="hasUserName" type="text" :show-clear="false" v-model="userName" ref="input01" @on-blur="setWindowSize" placeholder="请输入" @on-focus="focusName" @on-change="changeUserName"></x-input>
-          </group>
-        </div>
-        <div class="orderSubmit-flexBox bb1">
-          <div class="flexBox-left">手机号</div>
-          <group class="customer-info">
-            <x-input :max="20" title="" class="info-input needsclick" type="text" v-model="phoneNum" :show-clear="false" :readonly="hasPhoneNum" @on-blur="setWindowSize" placeholder="请输入" keyboard="number" is-type="china-mobile"></x-input>
-          </group>
-        </div>
-        <!-- <div class="orderSubmit-flexBox bb1" v-if="isAlipayLife">
-          <div class="flexBox-left">身份证号</div>
-          <group class="customer-info">
-            <x-input title="" class="info-input needsclick" type="text" v-model="certId" :readonly="hasCertId" :show-clear="false" @on-blur="setWindowSize" placeholder="请输入"></x-input>
-          </group>
-        </div> -->
-      </div>
-      <div class="OrderInputPlane">
-        <group>
-          <x-address class="padding-address" title="省/市/区" :placeholder="placeholder" v-model="addressArea" raw-value :list="addressData" @on-hide="inputAddrChange"></x-address>
-          <x-textarea class="needsclick" :max="100" :placeholder="addressPlaceHolder" :show-counter="false" :rows="2" v-model="addressDetail" @on-blur="inputAddrDetailChange" autosize></x-textarea>
-        </group>
-        <!-- <div class="orderdetail-tips">添加紧急联系人（紧急联系人仅用于意外失联情况，请填写真实有效的联系人信息）</div>
-        <section v-if="isWzapp" class="mt15">
-          <group class="group-2">
-            <x-input class="padding-address" title="重要联系人" type="text" readonly :show-clear="false" placeholder="请选择联系人" text-align="left" v-model="emergencyApp1" @on-blur="inputNameChange" @on-change="inputChangeEvent">
-              <span slot="right" class="add-contact" @click="addContact(1)">添加</span>
-            </x-input>
-            <popup-picker ref="emergency1" class="padding-address" title="所属关系" :showName="true" :data="shipData" v-model="emergencyShip" :placeholder="placeholder" value-text-align="right" @on-hide="inputShipChange"></popup-picker>
-          </group>
-          <group class="group-2 contact2">
-            <x-input class="padding-address" title="其他联系人" type="text" readonly :show-clear="false" placeholder="请选择联系人" text-align="left" v-model="emergencyApp2" @on-blur="inputNameChange" @on-change="inputChangeEvent">
-              <span slot="right" class="add-contact" @click="addContact(2)">添加</span>
-            </x-input>
-            <popup-picker ref="emergency2" class="padding-address" title="所属关系" :showName="true" :data="shipData" v-model="emergencyShip2" :placeholder="placeholder" value-text-align="right" @on-hide="inputShipChange"></popup-picker>
-          </group>
-        </section>
-        <section v-else-if="isAlipayLife" class="mt15">
-          <group class="group-2">
-            <x-input class="padding-address" title="紧急联系人" type="text" readonly :show-clear="false" placeholder="请选择联系人" text-align="left" v-model="emergencyApp1" @on-blur="inputNameChange" @on-change="inputChangeEvent">
-              <span slot="right" class="add-contact" @click="addContact(3)">添加</span>
-            </x-input>
-          </group>
-        </section>
-        <section v-else class="">
-          <group class="group-2">
-            <x-input class="padding-address" title="重要联系人" type="text" :show-clear="false" placeholder="请填写重要联系人(必填)" text-align="left" v-model="emergencyName" @on-blur="inputNameChange" @on-change="inputChangeEvent"></x-input>
-            <x-input class="padding-address" title="联系人电话" type="tel" :show-clear="false" placeholder="请填写重要联系人电话" text-align="left" v-model="emergencyPhone" keyboard="number" is-type="china-mobile" @on-blur="inputPhoneChange" @on-change="inputChangeEvent"></x-input>
-            <popup-picker ref="emergency1" class="padding-address" title="所属关系" :showName="true" :data="shipData" v-model="emergencyShip" :placeholder="placeholder" value-text-align="right" @on-hide="inputShipChange"></popup-picker>
-          </group>
-          <group class="group-2 contact2">
-            <x-input class="padding-address" title="其他联系人" type="text" :show-clear="false" placeholder="请填写联系人(必填)" text-align="left" v-model="emergencyName2" @on-blur="inputNameChange" @on-change="inputChangeEvent"></x-input>
-            <x-input class="padding-address" title="联系人电话" type="tel" :show-clear="false" placeholder="请填写联系人电话" text-align="left" v-model="emergencyPhone2" keyboard="number" is-type="china-mobile" @on-blur="inputPhoneChange" @on-change="inputChangeEvent"></x-input>
-            <popup-picker ref="emergency2" class="padding-address" title="所属关系" :showName="true" :data="shipData" v-model="emergencyShip2" :placeholder="placeholder" value-text-align="right" @on-hide="inputShipChange"></popup-picker>
-          </group>
-        </section> -->
-      </div>
-    </div>
 
-    <!-- <div class="messageBoard">
-      <div class="feeCell mb13">
-        <div class="feeName">留言板</div>
-      </div>
-      <div class="messageDetail">
-        <x-textarea class="needsclick messageText" :max="100" :placeholder="messageHolder" :show-counter="false" v-model="leaveMessage" @on-blur="inputMessageChange" autosize></x-textarea>
-      </div>
-    </div> -->
+      <!-- <div class="messageBoard">
+        <div class="feeCell mb13">
+          <div class="feeName">留言板</div>
+        </div>
+        <div class="messageDetail">
+          <x-textarea class="needsclick messageText" :max="100" :placeholder="messageHolder" :show-counter="false" v-model="leaveMessage" @on-blur="inputMessageChange" autosize></x-textarea>
+        </div>
+      </div> -->
 
-    <!--用户协议部分-->
-    <div class="protocolPlane">
-      <div v-bind:class="agreementClass" @click="agreementClick"></div>
-      <p>
-        <span class="protocolPlane_normal">我已阅读并同意</span>
-        <span class="protocolPlane_protocol" v-for="(protocolItem, protocolIndex) in pdfFileList" :key="protocolIndex" @click="protocolClick(protocolIndex, protocolItem)">{{ protocolItem }}</span>
-      </p>
+      <!--用户协议部分-->
+      <div class="protocolPlane">
+        <div v-bind:class="agreementClass" @click="agreementClick"></div>
+        <p>
+          <span class="protocolPlane_normal">我已阅读并同意</span>
+          <span class="protocolPlane_protocol" v-for="(protocolItem, protocolIndex) in pdfFileList" :key="protocolIndex" @click="protocolClick(protocolIndex, protocolItem)">{{ protocolItem }}</span>
+        </p>
+      </div>
+      <!--用户点击提交按钮部分-->
+      <!-- <div class="submitPlane">
+        <x-button @click.native="subOrderClick">提交资料</x-button>
+      </div> -->
+
+      <!--用来显示协议部分插件-->
+      <html-pannel :showScrollBox="potocolShow" :protocolTitle="potocolTitle" :url="potocolUrl" @sureBtnClick="potocolSureClick"></html-pannel>
+      <!--Toast展示对应的结果-->
+      <alert v-model="alertShow" :title="alertTitle" :content="alertContent"></alert>
+      <toast v-model="showToast" type="text" width="20em">{{ toastContent }}</toast>
     </div>
-    <!--用户点击提交按钮部分-->
-    <!-- <div class="submitPlane">
-      <x-button @click.native="subOrderClick">提交资料</x-button>
-    </div> -->
-
     <div class="bottomBlock">
       <div class="leftBlock">
         <div class="bottomDeposit">商品押金：
           <div class="bottomDepositAmt">￥{{ deposit | moneyFormat}}
           </div>
         </div>
-        <div class="bottomTips">{{ bottomTips }}</div>
+        <div v-if="isAlipayLife" class="bottomTips">租金将按月从押金中自动扣除</div>
+        <div v-else class="bottomTips">{{ bottomTips }}</div>
       </div>
-      <div class="rightBlock" @click="submitClick"> {{ processType === '1' ? '提交订单' : '提交资料'}}</div>
+      <div v-if="isAlipayLife" class="rightBlock" @click="subOrderClick">立即减免</div>
+      <div v-else class="rightBlock" @click="submitClick"> {{ processType === '1' ? '提交订单' : '提交资料'}}</div>
     </div>
-    <!--用来显示协议部分插件-->
-    <html-pannel :showScrollBox="potocolShow" :protocolTitle="potocolTitle" :url="potocolUrl" @sureBtnClick="potocolSureClick"></html-pannel>
-    <!--Toast展示对应的结果-->
-    <alert v-model="alertShow" :title="alertTitle" :content="alertContent"></alert>
-    <toast v-model="showToast" type="text" width="20em">{{ toastContent }}</toast>
   </div>
 </template>
 
@@ -174,6 +189,7 @@ import {
 } from 'vux';
 import feeTrialTable from './../FeeItemSubView/FeeTrialTable';
 import './../../util/category.js';
+import Config from './../../util/config';
 import {
   GetLocation,
   GetWXLocation,
@@ -183,7 +199,8 @@ import {
   // AliLifeLogin,
   isAlipayLife,
   piwikTrackEvent,
-  unionLogin
+  unionLogin,
+  uploadThirdInterfaceLog
 } from './../../util/utils';
 import userLeaseServiceAgreements from './../Potocol/UserLeaseServiceAgreements';
 import feeDescAlert from './../FeeItemSubView/FeeDescAlert';
@@ -239,6 +256,18 @@ export default {
           {
             type: 'delivery', // 收货地址详细地址修改次数
             times: 0
+          },
+          {
+            type: 'contactname', // 紧急联系人修改次数
+            times: 0
+          },
+          {
+            type: 'contactphone', // 紧急联系人电话修改次数
+            times: 0
+          },
+          {
+            type: 'contactrelationship', // 紧急联系人关系修改次数
+            times: 0
           }
         ],
         contactInfo: [] // 通讯录
@@ -266,7 +295,7 @@ export default {
       phoneNum: '',
       hasPhoneNum: false,
       certId: '',
-      hasCertId: '',
+      hasCertId: false,
       emergencyName: '', // 紧急联系人姓名
       emergencyPhone: '', // 紧急联系人电话
       emergencyName2: '', // 紧急联系人2姓名
@@ -347,7 +376,6 @@ export default {
       }
     }
     this.getCacheData(() => {
-      // this.getShipData();
       if (this.isAlipayLife) {
         this.emergencyName = '';
         this.emergencyPhone = '';
@@ -434,8 +462,8 @@ export default {
       switch (type) {
         case 1:
           this.$vux.alert.show({
-            title: '信用免押',
-            content: '根据您的芝麻信用，可获取相应额度的免押服务。<br> 点击页面下方“免押授权”按钮，查看免押额度。'
+            title: '商家减免押金',
+            content: '减免押金：为减少用户冻结押金使用的花呗额度，商家可减免部分押金。点击下方“立即减免”按钮进行授权查看'
           });
           break;
         case 2:
@@ -446,7 +474,7 @@ export default {
           break;
         case 3:
           this.$vux.alert.show({
-            title: '支付宝授权',
+            title: '支付宝预授权',
             content: '租金将每月定期从您支付宝账户中自动代扣。优先从已冻结押金中扣款。'
           });
           break;
@@ -465,6 +493,27 @@ export default {
         that.latitude = lat;
         that.getLocationAlready = true;
       }
+    },
+    inputShipChange(res) {
+      if (res) {
+        this.brisk.edittimes[4].times++;
+      }
+    },
+    // 紧急联系人电话修改次数
+    inputPhoneChange() {
+      if (this.inputChangeFlag) {
+        this.brisk.edittimes[3].times++;
+        this.inputChangeFlag = false;
+      }
+      this.setWindowSize();
+    },
+    // 紧急联系人修改次数
+    inputNameChange() {
+      if (this.inputChangeFlag) {
+        this.brisk.edittimes[2].times++;
+        this.inputChangeFlag = false;
+      }
+      this.setWindowSize();
     },
     // 收货地址详细地址修改次数
     inputAddrDetailChange() {
@@ -608,7 +657,7 @@ export default {
       this.userChooseFeeList = userChooseFeeInfoList;
       // 紧急联系人相关信息 phoneRepertoryVO
       // 如果是app环境，则不回填联系人信息，每次都要选择  tapd:1000886
-      if (!isWzapp(this)) {
+      if (!this.isWzapp) {
         let phoneRepertoryVO = data && data['phoneRepertoryVO'];
         if (phoneRepertoryVO) {
           if (phoneRepertoryVO[0]) {
@@ -694,11 +743,83 @@ export default {
     agreementClick() {
       this.agreementChoose = !this.agreementChoose;
     },
+    // 检查身份证
+    checkIDCardName(name) {
+      if (!name) {
+        this.showToastWithMessage('请输入正确的姓名');
+        return false;
+      }
+      let reg = /^[\u2E80-\uFE4F·]{2,12}$/i;
+      let result = reg.test(name);
+      if (!result) {
+        this.showToastWithMessage('请输入正确的姓名，仅包含汉字和·，长度至少为2位');
+        return false;
+      }
+      return true;
+    },
+    // 检查 身份证
+    checkIDCard(id) {
+      if (!id) {
+        this.showToastWithMessage('请输入正确的身份证号码');
+        return false;
+      }
+      // 身份证号码为15位或者18位，15位时全为数字，18位前17位为数字，最后一位是校验位，可能为数字或字符X
+      let reg = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
+      let result = reg.test(id);
+      if (!result) {
+        this.showToastWithMessage('请输入正确的身份证号码');
+        // this.$vux.alert.show({
+        //   title: '身份信息错误',
+        //   content: '请输入正确的姓名与身份证号码'
+        // });
+        return false;
+      }
+      return true;
+    },
+    checkAliInfo() {
+      console.log('emergency', this.emergencyPhone, this.emergencyName);
+      if (!this.hasUserName && !this.checkIDCardName(this.userName)) {
+        return false;
+      }
+      if (!this.hasPhoneNum && !isPhoneAvailable(this.phoneNum)) {
+        this.showToastWithMessage('手机号码格式错误(仅11位数字)或为不支持的号段，请检查');
+        return false;
+      }
+      if (!this.hasCertId && !this.checkIDCard(this.certId)) {
+        return false;
+      }
+      if (this.addressArea && this.addressArea.length === 0) {
+        this.showToastWithMessage('请选择您收货的省市区信息');
+        return false;
+      }
+      if (this.addressDetail && this.addressDetail.length === 0) {
+        this.showToastWithMessage('请输入您的收货详细地址');
+        return false;
+      }
+      if (this.checkAddressAvailable() === false) {
+        return false;
+      }
+      if (!this.checkName(this.emergencyName)) {
+        return false;
+      }
+      if (!this.checkPhone(this.emergencyPhone)) {
+        return false;
+      }
+      if (!this.agreementChoose) {
+        this.showToastWithMessage('请先阅读并同意协议');
+        return false;
+      }
+      return true;
+    },
     // 判断下是否需要弹框 如果信息不完善弹出对应的提示
     // 返回是否OK  OK 就直接返回  true
     checkInfo() {
       // 姓名
-      if (!this.hasUserName && !this.checkName(this.userName)) {
+      if (!this.hasUserName && !this.checkIDCardName(this.userName)) {
+        return false;
+      }
+      if (!this.hasPhoneNum && !isPhoneAvailable(this.phoneNum)) {
+        this.showToastWithMessage('手机号码格式错误(仅11位数字)或为不支持的号段，请检查');
         return false;
       }
       if (this.addressArea && this.addressArea.length === 0) {
@@ -721,13 +842,18 @@ export default {
     checkName(name) {
       console.log('checkName name = ' + name);
       if (!name) {
-        this.showToastWithMessage('请输入您的姓名');
+        this.showToastWithMessage('请输入您的联系人信息');
         return false;
       } else {
         // 姓名仅包含汉字和·
         let reg = /^[\u4e00-\u9fa5·]{2,12}$/i;
         if (!reg.test(name)) {
           this.showToastWithMessage('请输入正确的姓名，仅包含汉字和·，长度至少为2位');
+          return false;
+        }
+        // 紧急联系人姓名不能与本人相同
+        if (name === this.userName) {
+          this.showToastWithMessage('联系人不能填写本人姓名');
           return false;
         }
       }
@@ -945,10 +1071,10 @@ export default {
               if (!rememberMobile || rememberMobile === 'null') {
                 this.$router.push({ name: 'CheckMobile' });
               } else {
-                this.$router.push({ name: 'OrderSubmitPage' });
+                this.$router.push({ name: 'OrderSubmitPageNew' });
               }
             } else {
-              this.$router.push({ name: 'OrderSubmitPage' });
+              this.$router.push({ name: 'OrderSubmitPageNew' });
             }
             break;
           case 'EMERGENCY':
@@ -1100,6 +1226,169 @@ export default {
         }
       });
     },
+    // 阿里预授权
+    async aliOrderSubmit() {
+      this.$store.commit('updateLoadingStatus', { isLoading: true });
+      let _this = this;
+      let address = this.getAddressArray(this.addressArea);
+      let addressArray = address.split(' ');
+      let provice = addressArray[0];
+      let city = addressArray[1];
+      let county = addressArray[2];
+      // 将对应的费用列表进行处理
+      let tempFeeList = this.getHttpFeeList();
+      // 获取联系人关系
+      let emergencyShipIndex = parseInt(this.emergencyShip[0]);
+      let emergencyShipIndex2 = parseInt(this.emergencyShip2[0]);
+      let _brickSessionStore = this.serviceAgreet.getSessionStore();
+      let byno = _brickSessionStore.byno; // 分控埋点的号码
+      let platform = this.$store.state.platformCode;
+      // 请求的参数
+      let param = {
+        payWay: 0, // 花呗分期
+        continueFlag: this.$store.state.continueFlag,
+        applySerialNo: this.applySerialNo,
+        channelNo: this.$store.state.channelNo,
+        commodityNo: this.userChooseGood.commodityNo,
+        consigneeDetailAddr: this.addressDetail,
+        listPhoneReper: [
+          {
+            emergencyContact: this.emergencyName,
+            emergencyContactNo: this.emergencyPhone,
+            emergencyContactRelation: emergencyShipIndex
+          },
+          {
+            emergencyContact: this.emergencyName2,
+            emergencyContactNo: this.emergencyPhone2,
+            emergencyContactRelation: emergencyShipIndex2
+          }
+        ],
+        feeList: tempFeeList,
+        gpsLatitude: this.gpsLatitude,
+        gpsLongitude: this.gpsLongitude,
+        name: this.userName,
+        loginMobile: this.phoneNumber,
+        certId: this.certId,
+        openId: this.$store.state.othersOpenID,
+        provice: provice,
+        city: city,
+        county: county,
+        productNo: this.userChooseFinancialProduct.productNo,
+        recommCode: this.$store.state.recommeCode, // 邀请码 -// -
+        byno: byno, // 风控埋点
+        contactInfo: JSON.stringify(this.brisk.contactInfo),
+        platformCode: platform // 客户端平台
+      };
+      let aliUrl = '/wuzhu/aliPayLifeNumController/createAliLifeNumOrder';
+      try {
+        let res = await this.$http.post(aliUrl, param);
+        this.$store.commit('updateLoadingStatus', { isLoading: false });
+        if (res.code === '00') {
+          console.log('orderStr success');
+          console.log('res.data.orderStr = ' + res.data.orderStr);
+          piwikTrackEvent('aliLifeTradePay', 'type', 'start');
+          this.updateOrderNo({ orderNo: res.data.orderNo });
+          let _orderStr = res.data.orderStr;
+          // eslint-disable-next-line
+          ap.tradePay(
+            {
+              orderStr: res.data.orderStr
+            },
+            res => {
+              let params = {
+                uniqueIdenty: 'ap.tradePay',
+                type: '12',
+                requestParam: _orderStr,
+                responseParam: JSON.stringify(res),
+                status: ((res && res.resultCode === '9000') ? '1' : '2'), // 状态：1成功2失败
+                logSource: '0'  // 请求发起来源 0:前端发起；1=后端发起
+              }
+              uploadThirdInterfaceLog(params);
+              console.log('resultcode = ' + res.resultCode);
+              piwikTrackEvent('aliLifeTradePay', 'type', res.resultCode);
+              let fail = {};
+              switch (res.resultCode) {
+                case '9000':
+                  this.goPayResult();
+                  break;
+                case '8000':
+                  fail = {
+                    failCode: '8000',
+                    failReason: '后台获取支付结果超时，暂时未拿到支付结果'
+                  };
+                  this.goPayResult(fail);
+                  break;
+                case '7001':
+                  fail = {
+                    failCode: '7001',
+                    failReason: '钱包中止快捷支付'
+                  };
+                  this.goPayResult(fail);
+                  break;
+                case '6004':
+                  fail = {
+                    failCode: '6004',
+                    failReason: '支付过程中网络出错， 暂时未拿到支付结果'
+                  };
+                  this.goPayResult(fail);
+                  break;
+                case '4000':
+                  fail = {
+                    failCode: '4000',
+                    failReason: '订单支付失败'
+                  };
+                  this.goPayResult(fail);
+                  break;
+                case '6001':
+                  this.$vux.alert.show({
+                    content: '支付失败，请重新下单',
+                    onHide() {
+                      _this.$router.replace({ name: 'HomePage' });
+                    }
+                  });
+                  break;
+                case '6002':
+                  fail = {
+                    failCode: '6002',
+                    failReason: '普通网络出错'
+                  };
+                  this.goPayResult(fail);
+                  break;
+                case '99':
+                  this.$vux.alert.show({
+                    content: '支付失败，请重新下单',
+                    onHide() {
+                      _this.$router.replace({ name: 'HomePage' });
+                    }
+                  });
+                  break;
+                default:
+                  fail = {
+                    failCode: res.resultCode,
+                    failReason: '其他异常'
+                  };
+                  this.goPayResult(fail);
+                  break;
+              }
+            }
+          );
+        } else if (res.code === '1001') {
+          this.beforeJumpToLoginPage();
+          unionLogin(this, this.aliOrderSubmit);
+        } else {
+          this.alertShow = true;
+          this.alertTitle = '提示';
+          this.alertContent = res.msg;
+          // this.$vux.toast.text(res.msg);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    // 阿里预授权后去支付结果页
+    goPayResult(obj) {
+      this.$router.replace({ name: 'WXPaySuccess', params: obj });
+    },
     // 费用详情部分的页面
     // 费用的显示逻辑<支付方式，费用名称，费用计算基数>
     feeItemItemDesc(feeItem) {
@@ -1111,26 +1400,28 @@ export default {
       // console.log(protocolIndex);
       // console.log(protocolItem);
       // console.log('>>> 点击对应的协议列表的展示');
-      this.potocolShow = true;
+      // this.potocolShow = true;
       this.potocolTitle = protocolItem;
       this.potocolChooseIndex = protocolIndex;
-      let currentPath = window.location.href.split('/dist')[0];
-      let nowDate = new Date().getDate();
+      // let currentPath = window.location.href.split('/dist')[0];
+      let currentPath = Config._hoststr;
+      let random = '?_r=' + Math.random();
       if (protocolIndex === 0) {
         if (this.isAlipayLife) {
-          this.potocolUrl = currentPath + '/doc/alipaylife/user_lease_agreement.htm' + '?t=' + nowDate;
+          this.potocolUrl = currentPath + '/doc/alipaylife/user_lease_agreement.htm' + random;
         } else {
-          this.potocolUrl = currentPath + '/doc/wx/user_lease_agreement.htm' + '?t=' + nowDate;
+          this.potocolUrl = currentPath + '/doc/wx/user_lease_agreement.htm' + random;
         }
-        this.serviceAgreet.refreshPagein();
+        // this.serviceAgreet.refreshPagein();
       } else if (protocolIndex === 1) {
         if (this.isAlipayLife) {
-          this.potocolUrl = currentPath + '/doc/alipaylife/user_lease_supplementary_agreement.htm' + '?t=' + nowDate;
+          this.potocolUrl = currentPath + '/doc/alipaylife/user_lease_supplementary_agreement.htm' + random;
         } else {
-          this.potocolUrl = currentPath + '/doc/wx/user_lease_supplementary_agreement.htm' + '?t=' + nowDate;
+          this.potocolUrl = currentPath + '/doc/wx/user_lease_supplementary_agreement.htm' + random;
         }
-        this.additionalAgreet.refreshPagein();
       }
+      // this.additionalAgreet.refreshPagein();
+      location.href = this.potocolUrl;
     },
     // 确认协议的按钮被点击
     potocolSureClick() {
@@ -1195,18 +1486,39 @@ export default {
   background: @bg;
   font-family: 'PingFang SC';
   position: relative;
-  overflow-x: hidden;
+  overflow: hidden;
+  height: 100%;
+  .OrderSubmitPageContent {
+    overflow: scroll;
+    overflow-x: hidden;
+    position: absolute;
+    top: 0;
+    bottom: 48px;
+    left: 0;
+    right: 0;
+  }
   .feeCell {
     font-size: 16px;
     color: #222222;
-    margin: 15px 0px;
+    padding: 15px 0px;
     display: flex;
     justify-content: space-between;
     .xiaobai {
       color: rgba(255, 196, 0, 1);
     }
   }
+  .feeCellSmall {
+    font-size: 14px;
+    height: 28px;
+    line-height: 28px;
+    color: #888888;
+    // padding: 15px 0px;
+    // margin: 15px 0px;
+    display: flex;
+    justify-content: space-between;
+  }
   .gray {
+    font-size: 14px;
     color: #888888;
   }
   .xiaobai-row {
@@ -1229,22 +1541,23 @@ export default {
       padding: 15px 15px 5px 15px;
       // margin-bottom: 15px;
       .goodsImgDiv {
-        width: 90px;
-        flex: 0 0 90px;
+        width: 72px;
+        flex: 0 0 72px;
         .goodsImage {
-          width: 90px;
-          height: 90px;
+          width: 72px;
+          height: 72px;
         }
       }
       .goodsInfoPlane {
         flex: 1;
         margin-left: 10px;
         .fullName {
+          max-height: 40px;
           font-size: 16px;
           color: #222222;
           letter-spacing: 0;
-          line-height: 22px;
-          margin-bottom: 10px;
+          line-height: 20px;
+          margin-bottom: 5px;
         }
         .markPrice {
           font-size: 11px;
@@ -1272,7 +1585,7 @@ export default {
     }
     .feePlane {
       // .border-1px();
-      padding: 0 15px 0px 15px;
+      padding: 0 15px 15px 15px;
       &:after {
         left: 18px;
         border-bottom: 1px solid #ddd;
@@ -1284,11 +1597,14 @@ export default {
       letter-spacing: 0;
       color: #888888;
       .feeTips {
-        font-size: 12px;
+        // padding-top: 10px;
+        height: 28px;
+        line-height: 28px;
+        font-size: 14px;
         color: #888888;
       }
       .feeTipsBold {
-        font-size: 12px;
+        font-size: 14px;
         color: #222222;
       }
     }
@@ -1342,9 +1658,17 @@ export default {
     }
   }
   .orderdetail-tips {
-    font-size: 14px;
-    color: rgba(0, 0, 0, 0.45);
-    margin: 15px auto 7px 15px;
+    background-color: #ffffff;
+    height: 50px;
+    line-height: 50px;
+    font-size: 16px;
+    color: #222222;
+    padding: 0px 15px;
+    // margin: 15px auto 7px 15px;
+  }
+  .bb1 {
+    border-bottom: 1px solid #eeeeee;
+    // border-bottom: 1px solid rgba(217, 217, 217, 0.56);
   }
   /*// 需要用户确认的表单信息*/
   .orderInfoPlane {
@@ -1353,7 +1677,10 @@ export default {
     .orderSubmit-flexBox {
       display: flex;
       font-size: 16px;
-      color: #000000;
+      color: #222222;
+      padding: 12px 15px 12px 0;
+      margin: 0;
+      margin-left: 15px;
       .flexBox-left {
         width: 95px;
         margin-right: 10px;
@@ -1365,6 +1692,9 @@ export default {
         .weui-cells:after {
           border-bottom: 0;
         }
+        .weui-input {
+          font-size: 16px !important;
+        }
       }
     }
     .weui-cells {
@@ -1374,14 +1704,14 @@ export default {
     .weui-cells:before {
       border-top: none;
     }
-    .orderInfoBase {
-      .bb1 {
-        border-bottom: 1px solid rgba(217, 217, 217, 0.56);
-        padding: 12px 15px 12px 0;
-        margin: 0;
-        margin-left: 15px;
-      }
-    }
+    // .orderInfoBase {
+      // .bb1 {
+        // border-bottom: 1px solid rgba(217, 217, 217, 0.56);
+        // padding: 12px 15px 12px 0;
+        // margin: 0;
+        // margin-left: 15px;
+      // }
+    // }
     .OrderInputPlane {
       background: @bg;
       .weui-cells {
@@ -1481,20 +1811,19 @@ export default {
 
   /*// 用户协议部分*/
   .protocolPlane {
-    margin: 20px 18px 58px 18px;
+    margin: 15px 15px 30px 15px;
     display:-webkit-box;
     p {
       margin: 0 15px 0 5px;
       line-height: 20px;
+      font-size: 12px;
       // padding: 2px;
     }
     .protocolPlane_normal {
-      font-size: 14px;
       color: #111111;
       // letter-spacing: 0;
     }
     .protocolPlane_protocol {
-      font-size: 14px;
       color: #2878fe;
       // letter-spacing: 0;
     }
@@ -1513,7 +1842,7 @@ export default {
   }
 
   .bottomBlock {
-    position: fixed;
+    position: absolute;
     left: 0;
     bottom: 0;
     display: flex;
@@ -1528,12 +1857,11 @@ export default {
         display: flex;
         height:20px;
         font-size:14px;
-        font-family:PingFangSC-Regular;
-        font-weight:400;
+        font-weight:bold;
         color:rgba(34,34,34,1);
         line-height:20px;
         .bottomDepositAmt {
-          color:#FF4754;
+          color:#F5222D;
         }
       }
       .bottomTips {

@@ -183,7 +183,8 @@ import {
   // AliLifeLogin,
   isAlipayLife,
   piwikTrackEvent,
-  unionLogin
+  unionLogin,
+  uploadThirdInterfaceLog
 } from './../../util/utils';
 import userLeaseServiceAgreements from './../Potocol/UserLeaseServiceAgreements';
 import feeDescAlert from './../FeeItemSubView/FeeDescAlert';
@@ -1167,12 +1168,22 @@ export default {
           console.log('res.data.orderStr = ' + res.data.orderStr);
           piwikTrackEvent('aliLifeTradePay', 'type', 'start');
           this.updateOrderNo({ orderNo: res.data.orderNo });
+          let _orderStr = res.data.orderStr;
           // eslint-disable-next-line
           ap.tradePay(
             {
               orderStr: res.data.orderStr
             },
             res => {
+              let params = {
+                uniqueIdenty: 'ap.tradePay',
+                type: '12',
+                requestParam: _orderStr,
+                responseParam: JSON.stringify(res),
+                status: ((res && res.resultCode === '9000') ? '1' : '2'), // 状态：1成功2失败
+                logSource: '0'  // 请求发起来源 0:前端发起；1=后端发起
+              }
+              uploadThirdInterfaceLog(params);
               console.log('resultcode = ' + res.resultCode);
               piwikTrackEvent('aliLifeTradePay', 'type', res.resultCode);
               let fail = {};
@@ -1528,6 +1539,9 @@ export default {
         }
         .weui-cells:after {
           border-bottom: 0;
+        }
+        .weui-input {
+          font-size: 16px !important;
         }
       }
     }

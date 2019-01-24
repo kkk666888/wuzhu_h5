@@ -192,7 +192,8 @@ export class ParseData {
             specName: item.specName,
             Array: sunArray,
             SelectedItem: {},
-            recommendNo: item.recommendNo
+            recommendNo: item.recommendNo,
+            typeAttrNo: item.typeAttrNo
           });
         }
       }

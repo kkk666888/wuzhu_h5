@@ -10,7 +10,7 @@
         </swiper>
       </div>
       <!-- 购买流程 -->
-      <div v-if="switchConfig && switchConfig.rentFlowSwitch === 'Y'" class="rent_progress vux-1px-b">
+      <div v-if="switchConfig && switchConfig.rentFlowSwitch === 'Y' && rentProcessImg" class="rent_progress vux-1px-b">
         <img :src="rentProcessImg">
       </div>
       <!-- 分类 -->

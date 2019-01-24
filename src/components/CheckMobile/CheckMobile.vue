@@ -8,7 +8,7 @@
         <x-input class="input_login" :max="20" v-if="!phoneReadOnly" placeholder="请输入手机号" v-model="phoneNum" title="手机号" type="tel" @on-blur="inputPhoneChange"></x-input>
         <x-input class="input_login" v-else readonly :show-clear="false" v-model="phoneNum" title="手机号" type="tel"></x-input>
         <!-- placeholder-align="right" -->
-        <x-input class="input_login xinput_verify" :max="10" placeholder="请输入验证码" v-model="authCode" title="验证码" type="tel" @on-blur="inputCodeChange">
+        <x-input class="input_login xinput_verify" :max="6" placeholder="请输入验证码" v-model="authCode" title="验证码" type="tel" @on-blur="inputCodeChange">
           <span ref="getCodeCtrl" :class="['get-code', flag ? 'active' : '']" slot="right" v-on:click="flag && getVerificationCode()">获取验证码</span>
         </x-input>
       </group>
@@ -68,7 +68,7 @@ export default {
         latitude: this.$store.state.lat,
         longitude: this.$store.state.lng
       },
-      nextPage: 'OrderSubmitPage', // 默认跳订单提交页面
+      nextPage: 'OrderSubmitPageNew', // 默认跳订单提交页面
       phoneNum: '',
       phoneReadOnly: false,
       authCode: '', // 验证码

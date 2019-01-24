@@ -87,6 +87,9 @@
     }
   }
 }
+/*
+* 右边框1px
+*/
 .border-r-1px(@color: #D2D2D2) {
   position: relative;
   &:after {
@@ -250,8 +253,8 @@
 // 商品列表tag 1px border
 .border-r1(@col) {
   position: relative;
-  border:none;
-  &:after{
+  border: none;
+  &:after {
     content: '';
     position: absolute;
     top: 0;
@@ -268,7 +271,7 @@
     transform-origin: left top;
   }
   @media (-webkit-min-device-pixel-ratio: 2), (min-device-pixel-ratio: 2) {
-    &:after{
+    &:after {
       content: '';
       position: absolute;
       top: 0;
@@ -286,7 +289,7 @@
     }
   }
   @media (-webkit-min-device-pixel-ratio: 3), (min-device-pixel-ratio: 3) {
-    &:after{
+    &:after {
       content: '';
       position: absolute;
       top: 0;

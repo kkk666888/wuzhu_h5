@@ -696,3 +696,17 @@ export function unionLogin(that, resolve, reject) {
       break;
   }
 }
+
+export function uploadThirdInterfaceLog(params) {
+  return new Promise(function(resolve, reject) {
+    Http.post('/wuzhu/commonRecord/saveParty', params)
+      .then(res => {
+        console.log('uploadInterfaceLog res = ' + JSON.stringify(res));
+        resolve(res);
+      })
+      .catch(err => {
+        console.log('uploadInterfaceLog err = ' + JSON.stringify(err));
+        reject(err);
+      });
+  });
+}

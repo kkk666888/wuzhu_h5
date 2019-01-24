@@ -161,7 +161,8 @@
         this.$router.push({name: 'WXPayCashing'})
       },
       protocolClick() {
-        this.potocolShow = true;
+        location.href = this.potocolUrl;
+        // this.potocolShow = true;
       },
       potocolSureClick() {
         console.log('>>> 确认协议的按钮被点击');

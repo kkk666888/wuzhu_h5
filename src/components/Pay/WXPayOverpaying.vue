@@ -2,7 +2,8 @@
   <div class="WXPayOverpaying">
     <div class="box-goods">
       <div class="box-ticket-number">
-        <p class="ticket-number-text">订单编号:
+        <p class="ticket-number-text">
+          订单编号:
           <span>{{ dataOrderBillPayInfos.orderNo }}</span>
         </p>
       </div>
@@ -16,7 +17,11 @@
         <div class="box-goodsDetail">
           <p class="goods-name">{{ dataOrderBillPayInfos.shortName }}</p>
           <p class="goods-labels">
-            <span class="label" v-for="(item,index) in dataOrderBillPayInfos.specContentList.split(',')" :key="index"> {{ item }} </span>
+            <span
+              class="label"
+              v-for="(item,index) in dataOrderBillPayInfos.specContentList.split(',')"
+              :key="index"
+            >{{ item }}</span>
           </p>
         </div>
       </div>
@@ -25,13 +30,14 @@
     <ul class="clearFix">
       <li v-for="(item,index) in dataOrderBillPayInfos.rentBillList" :key="index">
         <div class="box-ticket">
-
           <div class="box-pay-ticket box-ticket-one-line clearFix">
             <div class="box-pay-first">
               <p class="box-pay-first-p">{{ item.term }}/{{ dataOrderBillPayInfos.totalTerm }}账单</p>
             </div>
             <div class="box-pay-amount">
-              <p class="box-pay-amount-p-right">{{ item.startDate ? item.startDate.split(' ')[0].replace(/-/g, '.') : '' }}－{{ item.endDate ? item.endDate.split(' ')[0].replace(/-/g, '.') : '' }}</p>
+              <p
+                class="box-pay-amount-p-right"
+              >{{ item.startDate ? item.startDate.split(' ')[0].replace(/-/g, '.') : '' }}－{{ item.endDate ? item.endDate.split(' ')[0].replace(/-/g, '.') : '' }}</p>
             </div>
           </div>
 
@@ -42,7 +48,8 @@
               <p class="box-pay-first-p2">支付金额</p>
             </div>
             <div class="box-pay-amount">
-              <p class="box-pay-amount-p2">¥{{ Number(item.totalPayAmt).toFixed(2) }}
+              <p class="box-pay-amount-p2">
+                ¥{{ Number(item.totalPayAmt).toFixed(2) }}
                 <!-- <span v-show="!item.isDown" class="icon iconfont icon-xia" @click="downTicket(index)"></span> -->
                 <!-- <span v-show="item.isDown" class="icon iconfont icon-shang" @click="downTicket(index)"></span>  -->
               </p>
@@ -62,7 +69,6 @@
               </div>
             </div>
           </div>
-
         </div>
       </li>
     </ul>
@@ -73,8 +79,7 @@
 			<cell title="使用优惠劵" is-link></cell>
 			<cell title="提前支付优惠" value="-60.00"></cell>
 		</group>
-		</div> -->
-
+    </div>-->
     <div>
       <group gutter="18px">
         <cell class="amount-descount" title="物主卡抵扣" :value="cashOffsetIntegralAmtChar"></cell>
@@ -84,13 +89,26 @@
     </div>
 
     <div class="box-button">
-      <x-button class="button-toPay" :text="payButton" :gradients="['#FFDA29', '#FFDA29']" @click.native="toPayCash"></x-button>
+      <x-button
+        class="button-toPay"
+        :text="payButton"
+        :gradients="['#FFDA29', '#FFDA29']"
+        @click.native="toPayCash"
+      ></x-button>
     </div>
   </div>
 </template>
 
 <script>
-import { XHeader, Group, Cell, Radio, PopupRadio, Scroller, XButton } from 'vux';
+import {
+  XHeader,
+  Group,
+  Cell,
+  Radio,
+  PopupRadio,
+  Scroller,
+  XButton
+} from 'vux';
 export default {
   name: 'WXPayOverpaying',
   components: {
@@ -280,16 +298,32 @@ export default {
       console.log('month === ' + dateStart.getMonth());
       let date = dateStart.getDate() + delayDate;
       dateStart.setDate(date);
-      return dateStart.getFullYear() + '/' + (dateStart.getMonth() + 1) + '/' + dateStart.getDate();
+      return (
+        dateStart.getFullYear() +
+        '/' +
+        (dateStart.getMonth() + 1) +
+        '/' +
+        dateStart.getDate()
+      );
     },
     toPayCash() {
       console.log('toPayCash');
       this.$store.commit('payStyleMemory', { payStyle: '2' });
-      this.$store.commit('updateOrderNo', { orderNo: this.dataOrderBillPayInfos.orderNo });
-      this.$store.commit('updatePayAmount', { payAmount: this.dataOrderBillPayInfos.sumAmt });
-      this.$store.commit('updateCashOffsetAmt', { cashOffsetAmt: this.dataOrderBillPayInfos.cashOffsetIntegralAmt });
-      this.$store.commit('updateDeductionAmount', { deductionAmount: this.dataOrderBillPayInfos.cashIntegralAmt });
-      this.$store.commit('updateRouteSource', { routeSource: 'WXPayOverpaying' });
+      this.$store.commit('updateOrderNo', {
+        orderNo: this.dataOrderBillPayInfos.orderNo
+      });
+      this.$store.commit('updatePayAmount', {
+        payAmount: this.dataOrderBillPayInfos.sumAmt
+      });
+      this.$store.commit('updateCashOffsetAmt', {
+        cashOffsetAmt: this.dataOrderBillPayInfos.cashOffsetIntegralAmt
+      });
+      this.$store.commit('updateDeductionAmount', {
+        deductionAmount: this.dataOrderBillPayInfos.cashIntegralAmt
+      });
+      this.$store.commit('updateRouteSource', {
+        routeSource: 'WXPayOverpaying'
+      });
       this.$router.replace({ name: 'WXPayCashing' });
     },
     downTicket(index) {
@@ -301,41 +335,49 @@ export default {
     getOrderBillPayInfos(orderNo) {
       console.log('getOrderBillPayInfos');
       this.$store.commit('updateLoadingStatus', { isLoading: true });
-      // let fuben = '/src/components/Pay/bill.json'
+      // let fuben = '/src/components/Pay/bill.json';
       // this.$http.get(fuben).then(res => {
-      this.$http.get('/wuzhu/order/getOrderBillPayInfos?orderNo=' + orderNo).then(res => {
-        console.log('res ===> ' + JSON.stringify(res));
-        this.$store.commit('updateLoadingStatus', { isLoading: false });
-        if (res.code === '00') {
-          console.log('getOrderPayInfo success');
-          this.dataOrderBillPayInfos = res.data; // 增加是否展开箭头自断,不能直接赋值
-          this.dataOrderBillPayInfos.sumAmtChar = `￥${Number(this.dataOrderBillPayInfos.sumAmt).toFixed(2)}`;
-          this.cashIntegralAmtChar = `￥${Number(this.dataOrderBillPayInfos.cashIntegralAmt).toFixed(2)}`;
-          this.cashOffsetIntegralAmtChar = `￥${Number(this.dataOrderBillPayInfos.cashOffsetIntegralAmt).toFixed(2)}`;
-          if (this.dataOrderBillPayInfos.rentBillList) {
-            // 为账单插入是否展开字段
-            this.dataOrderBillPayInfos.rentBillList.forEach(function(item) {
-              item.isDown = false;
-            });
-            console.log('this.dataOrderBillPayInfos.rentBillList ok');
-            // 账期排序
-            this.dataOrderBillPayInfos.rentBillList.sort(function(el1, el2) {
-              return parseInt(el1.term) - parseInt(el2.term); // 升序
+      this.$http
+        .get('/wuzhu/order/getOrderBillPayInfos?orderNo=' + orderNo)
+        .then(res => {
+          console.log('res ===> ' + JSON.stringify(res));
+          this.$store.commit('updateLoadingStatus', { isLoading: false });
+          if (res.code === '00') {
+            console.log('getOrderPayInfo success');
+            this.dataOrderBillPayInfos = res.data; // 增加是否展开箭头自断,不能直接赋值
+            this.dataOrderBillPayInfos.sumAmtChar = `￥${Number(
+              this.dataOrderBillPayInfos.sumAmt
+            ).toFixed(2)}`;
+            this.cashIntegralAmtChar = `￥${Number(
+              this.dataOrderBillPayInfos.cashIntegralAmt
+            ).toFixed(2)}`;
+            this.cashOffsetIntegralAmtChar = `￥${Number(
+              this.dataOrderBillPayInfos.cashOffsetIntegralAmt
+            ).toFixed(2)}`;
+            if (this.dataOrderBillPayInfos.rentBillList) {
+              // 为账单插入是否展开字段
+              this.dataOrderBillPayInfos.rentBillList.forEach(function(item) {
+                item.isDown = false;
+              });
+              console.log('this.dataOrderBillPayInfos.rentBillList ok');
+              // 账期排序
+              this.dataOrderBillPayInfos.rentBillList.sort(function(el1, el2) {
+                return parseInt(el1.term) - parseInt(el2.term); // 升序
+              });
+            } else {
+              console.log('this.dataOrderBillPayInfos.rentBillList failed');
+            }
+          } else if (res.code === '1001') {
+            this.$vux.alert.show({
+              content: res.msg
             });
           } else {
-            console.log('this.dataOrderBillPayInfos.rentBillList failed');
+            console.log('code === ' + res.code + ',getOrderPayInfo failed');
+            this.$vux.alert.show({
+              content: res.msg
+            });
           }
-        } else if (res.code === '1001') {
-          this.$vux.alert.show({
-            content: res.msg
-          });
-        } else {
-          console.log('code === ' + res.code + ',getOrderPayInfo failed');
-          this.$vux.alert.show({
-            content: res.msg
-          });
-        }
-      });
+        });
     }
   },
   mounted() {
@@ -381,7 +423,7 @@ export default {
   }
 
   .box-goodsImg {
-    float: left;
+    // float: left;
     width: 90px;
     height: 90px;
     margin-right: 12px;
@@ -398,7 +440,7 @@ export default {
   }
 
   .box-goods-more {
-    // height: 90px;
+    overflow: hidden;
     display: flex;
     padding: 18px;
   }
@@ -743,7 +785,7 @@ export default {
 
   .clearFix:after {
     clear: both;
-    content: '.';
+    content: ".";
     height: 0;
     display: block;
     visibility: hidden;
