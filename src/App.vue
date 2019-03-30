@@ -38,7 +38,6 @@ export default {
     }
     let channelNo = this.$store.state.channelNo;
     console.log('app created channelNo = ' + channelNo);
-    // alert('app created channelNo = ' + channelNo);
     if (channelNo === '003') {
       this.JDLogin();
     } else if (channelNo === '004') {
@@ -56,6 +55,7 @@ export default {
     initData() {
       // 取platformCode，保存到store中
       Utils.getPlatformCode();
+      this.jsBridge.init();
       this.jsBridge.getDeviceInfo();
       // 设置loadText
       this.$store.commit('updateLoadingText', { loadText: '加载中' });

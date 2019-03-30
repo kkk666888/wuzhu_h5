@@ -2,65 +2,83 @@
   <div id="buyout">
     <div class="buyout-content" v-show="commodityInfo">
       <div class="header bg-white">
-        <img class="header-img" :src="commodityInfo.commodityUrl" alt="">
+        <img class="header-img" :src="buyoutProductInfo.commodityUrl" alt="">
         <div class="header-right">
-          <div class="header-title">{{commodityInfo.commodityShortName}}</div>
+          <div class="header-title">{{buyoutProductInfo.commodityShortName}}</div>
           <div class="header-des f12 gray">市场价：￥{{commodityInfo.marketPrice | moneyFormat}}</div>
           <div class="header-tag f12" >
-            <span class="tag gb-gray" v-for="item in commodityCategory">{{item}}</span>
+            <span class="tag gb-gray" v-for="(item, index) in commodityCategory" :key="index">{{item}}</span>
           </div>
         </div>
       </div>
       <section class="mt18 bg-white">
-        <div class="item lh22 f16">
+        <div class="item lh22 f14 gray">
           <span class="item-left">买断价</span>
           <span class="item-right">￥{{commodityInfo.buyOutPrice | moneyFormat}}</span>
         </div>
-        <div class="item lh28 gray pt8">
+        <div class="item lh22 mt10 f14 gray pb15">
+          <span class="item-left">累计支付租金</span>
+          <span class="item-right">￥{{commodityInfo.paidRentAmt | moneyFormat}} </span>
+        </div>
+        <div class="item lh22 f16 pb15 bbt">
+          <span class="item-left mt10">需补交买断金</span>
+          <span class="item-right mt10">￥{{commodityInfo.buyoutAmt | moneyFormat}}</span>
+        </div>
+        <!-- <div class="item lh28 gray pt8">
           <span class="item-left">本款买断系数</span>
           <span class="item-right">{{commodityInfo.buyOutRadio}}%</span>
         </div>
         <div class="item lh28 gray pb15">
           <span class="item-left">买断价格说明</span>
           <span class="item-right">{{commodityInfo.buyOutDescrpition}}</span>
-        </div>
+        </div> -->
       </section>
-      <section class="mt18 bg-white pt12" v-show="commodityInfo.countFee">
-        <div class="item lh28 gray">
-          <span class="item-left">滞纳金</span>
-          <span class="item-right">￥{{commodityInfo.overdualAmt | moneyFormat}}</span>
+      <section class="mt18 bg-white pt12" v-show="commodityInfo.buyoutFeeInfoList && commodityInfo.buyoutFeeInfoList.length > 0">
+        <div v-for="(item, index) in commodityInfo.buyoutFeeInfoList" :key="index">
+          <div class="item lh28 gray f14">
+            <span class="item-left">{{item.feeName}}</span>
+            <span class="item-right">￥{{item.feeAmt | moneyFormat}}</span>
+          </div>
         </div>
-        <div class="item lh28 gray pb8 bb1">
+        <!-- <div class="item lh28 gray pb8 bb1">
           <span class="item-left">违约金</span>
           <span class="item-right">￥{{commodityInfo.breachAmt | moneyFormat}}</span>
-        </div>
-        <div class="item h48">
-          <span class="item-left f16 l-h48">累计</span>
-          <span class="item-right red f16 l-h48">￥{{commodityInfo.countFee | moneyFormat}}</span>
+        </div> -->
+        <div class="item h48 bbt">
+          <span class="item-left f16 l-h48">小计</span>
+          <span class="item-right f16 l-h48">￥{{commodityInfo.totalFeeInfoAmt | moneyFormat}}</span>
         </div>
       </section>
-      <section class="mt18 bg-white pt12">
-        <div class="item lh28 gray">
-          <span class="item-left">已支付租金</span>
-          <span class="item-right">￥{{commodityInfo.payRentAmt | moneyFormat}} </span>
+      <!-- <section class="mt18 bg-white pt12">
+        <div class="item lh28 gray pb12">
+          <span class="item-left">商品原押金</span>
+          <span class="item-right">￥{{commodityInfo.productDepositAmt | moneyFormat}}</span>
         </div>
         <div class="item lh28 gray pb12">
+          <span class="item-left">信用免押</span>
+          <span class="item-right">￥{{commodityInfo.creditDepositAmt | moneyFormat}}</span>
+        </div>
+        <div class="item lh22 f16 pb15">
           <span class="item-left">已支付押金</span>
-          <span class="item-right">￥{{commodityInfo.payDepositAmt | moneyFormat}}</span>
+          <span class="item-right">￥{{commodityInfo.actualPayDepositAmt | moneyFormat}}</span>
         </div>
-      </section>
+      </section> -->
       <section class="mt18 bg-white">
-        <div class="item f16 l-h22">
+        <div class="item mt10 f14 l-h22 gray" v-if="commodityInfo.cashDeductionAmt">
+          <span class="item-left">个人账户抵扣</span>
+          <span class="item-right gray">-￥{{commodityInfo.cashDeductionAmt | moneyFormat}}</span>
+        </div>
+        <div class="item mt10 f14 l-h22 gray" v-if="commodityInfo.cashOffsetAmt">
           <span class="item-left">物主卡抵扣</span>
-          <span class="item-right gray">￥{{commodityInfo.cashOffsetAmt | moneyFormat}}</span>
+          <span class="item-right gray">-￥{{commodityInfo.cashOffsetAmt | moneyFormat}}</span>
         </div>
-        <div class="item mt10 f16 l-h22">
-          <span class="item-left">账户抵扣</span>
-          <span class="item-right gray">￥{{commodityInfo.cashDeductionAmt | moneyFormat}}</span>
+        <div class="item mt10 f14 l-h22 gray" v-if="commodityInfo.depositDeductionAmt">
+          <span class="item-left">押金抵扣</span>
+          <span class="item-right gray">-￥{{commodityInfo.depositDeductionAmt | moneyFormat}}</span>
         </div>
-        <div class="item mt10 l-h22 pb15">
-          <span class="item-left f16 ">实际应付款</span>
-          <span class="item-right red f16">￥{{commodityInfo.actualPayAmt | moneyFormat}}</span>
+        <div :class="finalAmtClass">
+          <span class="item-left f16 mt10">实际应付</span>
+          <span class="item-right red f16 mt10">￥{{commodityInfo.finalActualPayAmt | moneyFormat}}</span>
         </div>
       </section>
     </div>
@@ -86,8 +104,10 @@
         potocolShow: false, // 显示协议
         potocolUrl: '',
         commodityInfo: {},
+        buyoutProductInfo: {},
         commodityCategory: [],
-        isFinish: false
+        isFinish: false,
+        finalAmtClass: 'item l-h22 pb15'
       }
     },
     created() {
@@ -102,10 +122,17 @@
         let params = {
           orderNo: this.orderNo
         }
-        that.$http.get('/wuzhu/order/buyOut/calculate', params).then(res => {
+        that.$http.get('/wuzhu/order/buyOut/calculate/V2', params).then(res => {
           if (res.code === '00') {
             that.commodityInfo = res.data
-            that.commodityCategory = res.data.commodityCategory.split(',')
+            if (that.commodityInfo &&
+              (that.commodityInfo.cashDeductionAmt ||
+                that.commodityInfo.cashOffsetAmt ||
+                that.commodityInfo.depositDeductionAmt)) {
+              that.finalAmtClass = 'item l-h22 pb15 mt10 bbt';
+            }
+            that.buyoutProductInfo = res.data.buyoutProductInfo
+            that.commodityCategory = that.buyoutProductInfo && that.buyoutProductInfo.commodityCategory.split(',')
             if (res.data.isFinish === 'Y') {
               that.isFinish = true // 去支付成功页面
             } else {
@@ -131,7 +158,7 @@
         let that = this
         let params = {
           orderNo: this.orderNo,
-          buyOutType: this.commodityInfo.buyOutType
+          buyOutType: this.buyoutProductInfo.buyOutType
         }
         that.$http.post('/wuzhu/order/buyOut/settlte', params).then(res => {
           this.$store.commit('updateLoadingStatus', { isLoading: false });
@@ -154,7 +181,7 @@
       goPay() {
         // this.$store.commit('updateOrderNo', {orderNo: this.orderNo})
         this.$store.commit('payStyleMemory', { payStyle: '4' })
-        this.$store.commit('updatePayAmount', { payAmount: this.commodityInfo.actualPayAmt })
+        this.$store.commit('updatePayAmount', { payAmount: this.commodityInfo.finalActualPayAmt })
         this.$store.commit('updateCashOffsetAmt', {cashOffsetAmt: this.commodityInfo.cashOffsetAmt})
         this.$store.commit('updateDeductionAmount', {deductionAmount: this.commodityInfo.cashDeductionAmt})
         this.$store.commit('updateRouteSource', {routeSource: 'Buyout'})
@@ -262,6 +289,9 @@
     }
     .p-r{
       position: relative;
+    }
+    .bbt{
+      border-top: 1px solid #dddddd;
     }
     .header{
       display: flex;

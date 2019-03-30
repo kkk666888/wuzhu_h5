@@ -286,6 +286,7 @@ export default {
             that.waitTime = 0; // 跳转下一步时,停止倒计时
             that.$store.commit('tokenMemory', { token: res.data.Token });
             that.$store.commit('updatePhone', { phone: res.data.moblile });
+            that.jsBridge.setLoginToken(res.data.Token);
             // 此处是自己的邀请码，不保存到store中，以免与通过别人的邀请二维码进入时保存的邀请码冲突
             // that.$store.commit('updateRecommeCode', {phone: res.data.recommeCode})
             // 埋点数据上报
@@ -298,7 +299,17 @@ export default {
             }
             that.$reporter.dataReport(that.brisk);
             // 跳转下一步`
-            that.$router.replace({ name: that.nextPage });
+            console.log('login ok, that.nextPage = ' + that.nextPage);
+
+            // 如果nextPage为空，尝试从store中取loginNextPage
+            if (!that.nextPage) {
+              that.nextPage = that.$store.state.loginNextPage;
+            }
+            if (that.nextPage) {
+              that.$router.replace({ name: that.nextPage });
+            } else {
+              that.jsBridge.closeWebView();
+            }
           } else if (res.code === '804') {
             // 804 openid 为空
             that.$vux.confirm.show({

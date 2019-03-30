@@ -21,6 +21,7 @@
 
 <script>
 import { XButton, Msg, Flexbox, FlexboxItem } from 'vux';
+import { isWzapp, goHome } from './../../util/utils';
 export default {
   name: 'OrderSubSuccessPage',
   components: {
@@ -34,7 +35,8 @@ export default {
       menuList: ['返回首页', '查看订单'],
       orderNo: '',
       processType: sessionStorage.getItem('processType'),
-      resultTips: ''
+      resultTips: '',
+      isWzapp: isWzapp()
     };
   },
   created() {
@@ -48,7 +50,11 @@ export default {
   // 路由部分的处理，离开页面和进入页面的处理
   beforeRouteLeave(to, from, next) {
     if (to.name === 'OrderSubmitPage' || to.name === 'OrderSubmitPageNew') {
-      next({ name: 'HomePage' });
+      if (this.isWzapp) {
+        this.jsBridge.closeWebView();
+      } else {
+        next({ name: 'HomePage' });
+      }
     } else {
       next();
     }
@@ -56,7 +62,8 @@ export default {
   methods: {
     menuButtonClick(menuTtem) {
       if (menuTtem === '返回首页') {
-        this.$router.push({ name: 'HomePage' });
+        goHome(this, true);
+        // this.$router.push({ name: 'HomePage' });
       } else if (menuTtem === '查看订单') {
         let item = {
           orderNo: this.orderNo

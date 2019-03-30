@@ -75,7 +75,8 @@ const store = new Vuex.Store({
       orderDetailCount: 0 // 用于统计用户进入的页面层数，方便返回
     },
     deviceInfo: '', // 设备信息，仅限wzapp
-    deviceId: '' // 设备id，仅限wzapp
+    deviceId: '', // 设备id，仅限wzapp
+    loginNextPage: '' // 登录后跳转的页面
   },
   getters: {
     selectedIndex: state => {
@@ -243,6 +244,10 @@ const store = new Vuex.Store({
     deviceIdMemory(state, payload) {
       // 设备id，仅限wzapp
       state.deviceId = payload.deviceId;
+    },
+    loginNextPage(state, payload) {
+      // 设备id，仅限wzapp
+      state.loginNextPage = payload.loginNextPage;
     }
   },
   plugins: [vuexLocal.plugin]

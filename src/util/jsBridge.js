@@ -35,20 +35,22 @@ function callhandler(name, data, callback) {
   }
 }
 
-// function registerhandler(name, callback) {
-//   console.log('registerhandler isWzapp = ' + isWzapp())
-//   if (isWzapp()) {
-//     console.log('registerhandler name = ' + name + ', callback = ' + callback)
-//     setupWebViewJavascriptBridge(function(bridge) {
-//       bridge.registerHandler(name, function(data, responseCallback) {
-//         console.log('registerhandler data = ' + data + ', responseCallback = ' + responseCallback)
-//         callback(data, responseCallback)
-//       })
-//     })
-//   }
-// }
+function registerhandler(name, callback) {
+  console.log('registerhandler isWzapp = ' + isWzapp())
+  if (isWzapp()) {
+    console.log('registerhandler name = ' + name + ', callback = ' + callback)
+    setupWebViewJavascriptBridge(function(bridge) {
+      bridge.registerHandler(name, function(data, responseCallback) {
+        console.log('registerhandler data = ' + data + ', responseCallback = ' + responseCallback)
+        callback(data, responseCallback)
+      })
+    })
+  }
+}
 
 export default {
+  // ---以下接口由H5调用
+  // 获取设备信息
   getDeviceInfo() {
     let applist = '0' // 是否获取已安装应用列表，1-获取，0-不获取
     callhandler('getDeviceInfo', applist, function(data) {
@@ -64,13 +66,16 @@ export default {
       }
     })
   },
+  // 获取指定数量的联系人
   getContactInfo(callback) {
     let contactCount = '0' // 获取联系人数目，0则为全部获取, -1为不获取，其他获取对应数目的联系人
     callhandler('getContactInfo', contactCount, callback)
   },
+  // 选择一个联系人
   getOneContact(callback) {
     callhandler('getOneContact', '', callback)
   },
+  // 获取gps
   getGps(callback) {
     callhandler('getGps', '', callback)
   },
@@ -83,5 +88,64 @@ export default {
         console.log('setCameraBanList data = ' + data)
       })
     }
+  },
+  // 登录后保存token到app
+  setLoginToken(token) {
+    console.log('setLoginToken token = ' + token);
+    callhandler('setLoginToken', token, function(data) {
+      console.log('setLoginToken data = ' + data)
+    })
+  },
+  // 启动Alipay
+  startAlipay(orderInfo, callback) {
+    console.log('startAlipay orderInfo = ' + orderInfo);
+    callhandler('startAlipay', orderInfo, function(data) {
+      console.log('startAlipay data = ' + data);
+      if (callback) {
+        callback(data);
+      }
+    })
+  },
+  // 关闭webview
+  closeWebView() {
+    console.log('closeWebView start');
+    callhandler('closeWebView', '', function(data) {
+      console.log('closeWebView end data = ' + data)
+    })
+  },
+  // ******************************************************* //
+  // --- 以下接口提供给原生调用
+  // 设置某个存储在H5中的值
+  // {“key”: “value”}
+  // key说明如下：
+  // loginToken:登录的token；
+  // nextPage: 登录后要跳转的页面，在打开登录页面之后调用。页面名称
+  // -----OrderListPage // 订单列表
+  // -----IDverify //身份信息
+  // -----App // 返回App
+  setStoreValueImpl(data, responseCallback) {
+    console.log('setStoreValueImpl data = ' + data);
+    let jData = JSON.parse(data);
+    if (jData) {
+      for (let key in jData) {
+        let value = jData[key];
+        console.log('jData key = ' + key + ', value = ' + value);
+        switch (key) {
+          case 'loginToken':
+            if (!value) {
+              Store.commit('tokenMemory', { token: '' });
+            }
+            break;
+          case 'nextPage':
+            Store.commit('loginNextPage', { loginNextPage: value });
+            break;
+          default:
+            break;
+        }
+      }
+    }
+  },
+  init() {
+    registerhandler('setStoreValue', this.setStoreValueImpl);
   }
 }

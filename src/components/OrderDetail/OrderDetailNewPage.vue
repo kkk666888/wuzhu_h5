@@ -14,45 +14,55 @@
       <div class="buyoutPlane" v-show="buyoutPlaneShow">
         <div class="buyoutTitle">买断信息</div>
         <div class="buyout-flexBox">
-          <div class="buyout-flexleft">买断支付</div>
-          <div class="buyout-flexright">￥{{ orderBuyOutRecord.actualPayAmt }}</div>
+          <div class="buyout-flexleft" >买断支付</div>
+          <!-- <div class="buyout-flexleft" v-else>待支付</div> -->
+          <div class="buyout-flexright">￥{{ orderBuyOutRecord.actualPayAmt | moneyFormat}}</div>
         </div>
         <div class="buyout-detail" @click="buyOutDetailClick">
-          查看明细
+          {{ buyoutDetailShowText }}
         </div>
         <div class="buyout-detail-plane" v-show="buyoutDetailShow">
           <div class="detailwrap">
             <div class="detailflex">
               <div class="detailflex-left">买断价</div>
-              <div class="detailflex-right">￥{{ orderBuyOutRecord.buyOutPrice }}</div>
+            <div class="detailflex-right">￥{{ orderBuyOutRecord.buyOutPrice | moneyFormat}}</div>
             </div>
             <div class="detailflex">
               <div class="detailflex-left">已支付租金</div>
-              <div class="detailflex-right">￥{{ orderBuyOutRecord.payRentAmt }}</div>
+              <div class="detailflex-right">-￥{{ orderBuyOutRecord.payRentAmt | moneyFormat}}</div>
             </div>
-            <div class="detailflex">
-              <div class="detailflex-left">已支付押金</div>
-              <div class="detailflex-right">￥{{ orderBuyOutRecord.payDepositAmt }}</div>
+            <div v-show="orderBuyOutRecord.buyoutFeeInfos && orderBuyOutRecord.buyoutFeeInfos.length > 0">
+              <div v-for="(item, index) in orderBuyOutRecord.buyoutFeeInfos" :key="index">
+                <div class="detailflex">
+                  <span class="detailflex-left">{{item.feeName}}</span>
+                  <span class="detailflex-right">￥{{item.feeAmt | moneyFormat}}</span>
+                </div>
+              </div>
             </div>
-            <div class="detailflex" v-show="orderBuyOutRecord.overdualAmt !== 0">
+            <!-- <div class="detailflex" v-show="orderBuyOutRecord.overdualAmt !== 0">
               <div class="detailflex-left">滞纳金</div>
               <div class="detailflex-right">￥{{ orderBuyOutRecord.overdualAmt }}</div>
             </div>
             <div class="detailflex" v-show="orderBuyOutRecord.breachAmt !== 0">
               <div class="detailflex-left">违约金</div>
               <div class="detailflex-right">￥{{ orderBuyOutRecord.breachAmt }}</div>
-            </div>
-            <div class="detailflex">
+            </div> -->
+            <div class="detailflex" v-if="orderBuyOutRecord.cashOffsetAmt">
               <div class="detailflex-left">物主卡抵扣</div>
-              <div class="detailflex-right">￥{{ orderBuyOutRecord.cashOffsetAmt }}</div>
+              <div class="detailflex-right">-￥{{ orderBuyOutRecord.cashOffsetAmt | moneyFormat}}</div>
             </div>
-            <div class="detailflex">
+            <div class="detailflex" v-if="orderBuyOutRecord.cashDeductionAmt">
               <div class="detailflex-left">账户抵扣</div>
-              <div class="detailflex-right">￥{{ orderBuyOutRecord.cashDeductionAmt }}</div>
+              <div class="detailflex-right">-￥{{ orderBuyOutRecord.cashDeductionAmt | moneyFormat}}</div>
+            </div>
+            <div class="detailflex" v-if="orderBuyOutRecord.depositDeductionAmt">
+              <div class="detailflex-left">押金抵扣</div>
+              <div class="detailflex-right">-￥{{ orderBuyOutRecord.depositDeductionAmt | moneyFormat}}</div>
             </div>
             <div class="detailflex">
-              <div class="detailflex-left">实际支付</div>
-              <div class="detailflex-right">￥{{ orderBuyOutRecord.actualPayAmt }}</div>
+              <div class="buyout-flexleft" >买断支付</div>
+              <!-- <div class="buyout-flexleft" v-else>待支付</div> -->
+              <div class="detailflex-right">￥{{ orderBuyOutRecord.actualPayAmt | moneyFormat}}</div>
             </div>
           </div>
         </div>
@@ -92,7 +102,13 @@
             <div>
               <div class="order-flexBox" v-for="(serviceFeeItem, index) in goodsDetail.serviceFeeList" :key="index">
                 <div class="order-flexBox-left">{{ serviceFeeItem.itemName }}</div>
-                <div class="order-flexBox-right line-limit-length">{{ serviceFeeItem.itemValue }}</div>
+                <!-- <div class="order-flexBox-right line-limit-length">{{ serviceFeeItem.itemValue }}</div> -->
+                <div class="order-flexBox-right line-limit-length" v-if="buyoutPlaneShow && orderBuyOutRecord.insureEndTime && serviceFeeItem.feeTypeCode === 'FWFYYWBZ'">
+                  {{ serviceFeeItem.itemValue }}(实际缴纳至{{ orderBuyOutRecord.insureEndTime }})
+                </div>
+                <div class="order-flexBox-right line-limit-length" v-else>
+                  {{ serviceFeeItem.itemValue }}
+                </div>
               </div>
             </div>
             <div class="order-flexBox">
@@ -101,7 +117,7 @@
             </div>
 
             <!-- 支付宝生活号新增字段 -->
-            <div v-if="isAlipayLife">
+            <div v-if="isAliFund">
               <div class="order-flexBox">
                 <div class="order-flexBox-left">商品原押金</div>
                 <div class="order-flexBox-right line-limit-length">￥{{ billInfo.orderDepositAmt }}</div>
@@ -149,7 +165,7 @@
           </div>
           <div class="order-flexBox">
             <div class="order-flexBox-left">支付方式</div>
-            <!-- <div v-if="isAlipayLife" class="order-flexBox-right line-limit-length">支付宝预授权  <i class="icon iconfont icon-help1" style="color: #007AFF; font-size: 14px" @click="showAlipayFundTips"></i></div> -->
+            <!-- <div v-if="isAliFund" class="order-flexBox-right line-limit-length">支付宝预授权  <i class="icon iconfont icon-help1" style="color: #007AFF; font-size: 14px" @click="showAlipayFundTips"></i></div> -->
             <div class="order-flexBox-right line-limit-length">{{ orderDetail.payStyleStr }}</div>
           </div>
           <div class="order-flexBox">
@@ -177,7 +193,7 @@
         <div v-show="orderPlanIndex===0">
           <!--待确认部分-->
           <div class="orderBillInfo" v-show="canShowSureOrderView">
-            <div class="topSection bottom1pxline" v-if="!isAlipayLife">
+            <div class="topSection bottom1pxline" v-if="!isAliFund">
               <div class="BillflexBox top2line">
                 <div class="BillflexBoxleft">原商品押金</div>
                 <div class="BillflexBoxright">￥{{waitForConfirmedObject.orderDepositAmt}}</div>
@@ -207,7 +223,7 @@
                 <div class="BillflexBoxleft">租期</div>
                 <div class="BillflexBoxright">{{ firstBillInfo.termDays }}天</div>
               </div>
-              <div class="BillflexBox top2line" v-if="isAlipayLife">
+              <div class="BillflexBox top2line" v-if="isAliFund">
                 <div class="BillflexBoxleft">支付方式</div>
                 <!-- <div class="BillflexBoxright">支付宝预授权</div> -->
                 <div class="BillflexBoxright flexBoxRightLast3line">支付宝预授权 <i class="icon iconfont icon-help1" style="color: #007AFF; font-size: 14px" @click="showAlipayFundTips"></i></div>
@@ -435,7 +451,7 @@ import {
   getTimerDotStrWithTimeStr
 } from './../../wuzhuUtil/wuzhuUtil';
 import htmlPannel from './../FeeItemSubView/HtmlPannel';
-import { isAlipayLife } from './../../util/utils';
+import { isAlipayLife, isWzapp } from './../../util/utils';
 // 常用状态的枚举
 // 还款计划的枚举
 let repaymentStatus = {};
@@ -745,7 +761,9 @@ class OrderDetail {
         if (this.detailStatus === '99005') {
           // 如果是买断完成，增加买断完成展示的内容
           // staturTitle = '买断完结'
-          statusDesc = '您的商品已经收货完成，尽情享用吧！';
+          statusDesc = '您的订单已成功买断。';
+        } else if (this.detailStatus === '99008') {
+          statusDesc = '你的订单按照合同约定已变更为买断状态，请保证你的账户内余额充足，扣款失败将导致违约';
         }
         break;
       }
@@ -874,7 +892,8 @@ class OrderDetail {
         let feeDesc = getFeeDescStr(feeItem);
         serviceFeeList.push({
           itemName: feeItem.feeName,
-          itemValue: feeDesc
+          itemValue: feeDesc,
+          feeTypeCode: feeItem.feeTypeCode
         });
       }
     }
@@ -935,8 +954,9 @@ class OrderDetail {
     let feeArray = [];
     // 加入押金部分的展示
     let orderDepositAmt = this.orderDepositAmt;
+    // added by hf 2019-1-21 app同生活号
     // 支付宝生活号不展示押金和信用免押,注意this和that
-    if (!isAlipayLife()) {
+    if (!isAlipayLife() || !isWzapp()) {
       feeArray.push({
         feeName: '原商品押金',
         payAmt: '<span style="text-decoration: line-through">' + '￥' + orderDepositAmt + '</span>'
@@ -1023,8 +1043,9 @@ class OrderDetail {
         }
         let firstFeeList = that.firstFeeList;
         let feeArray = [];
+        // added by hf 2019-1-21 app同生活号
         // 支付宝生活号不展示押金和信用免押,注意this和that
-        if (!isAlipayLife()) {
+        if (!isAlipayLife() || !isWzapp()) {
           // 开始压入对应的 押金， 实际支付的押金  当前租金
           feeArray.push({
             feeName: '原商品押金',
@@ -1369,8 +1390,10 @@ export default {
       // 是否是买断状态
       buyoutPlaneShow: false,
       buyoutDetailShow: false,
+      buyoutDetailShowText: '查看明细',
       billInfo: {},
-      isAlipayLife: isAlipayLife() // 当前是否支付宝生活号渠道
+      isAlipayLife: isAlipayLife(), // 当前是否支付宝生活号渠道
+      isAliFund: (isWzapp() || isAlipayLife())  // 是否支付宝预授权流程
     };
   },
   created() {
@@ -1389,9 +1412,20 @@ export default {
       that.orderNo = tempParam.orderNo;
       that.$store.commit('updateOrderNo', { orderNo: that.orderNo });
     }
-    // for test
-    // this.orderNo = '00320181204M031332522531';
-
+    // TODO 测试
+    // that.orderNo = '00120180711M000164967891';  // 可买断
+    // that.orderNo = '00120181009M030752570304';  // 买断完成
+    // that.orderNo = '00120180918M030717790120';  // 可买断
+    // that.orderNo = '00220181018M000150214600';  // 可买断
+    // that.orderNo = '00120181031M030611959704';  // 买断完成
+    // TODO 正式测试的时候，必须将该行注释 为了方便调试
+    // let currentUrl = window.location.origin
+    // if (currentUrl.indexOf('localhost') !== -1) {
+    //   // 如果找不到就说明本地环境<修改Store里面的openID>  00120180518000000149408539 租赁中
+    //   // 待支付 00120180525000000160086678  00120180525000000101022356 00120180528M000473167061  00120180711M000228173852
+    //   that.orderNo = '00120180719M000161080955'   // 00120180709M000150555323   00120180706M000113848108 00120180710M000537551197
+    //   that.$store.commit('updateOrderNo', {orderNo: that.orderNo})
+    // }
     if (that.orderNo !== '') {
       this.getHttpOrderDetail(that.orderNo);
     } else {
@@ -1659,6 +1693,11 @@ export default {
     },
     // 买断的详细部分被点击
     buyOutDetailClick: function() {
+      if (this.buyoutDetailShow) {
+        this.buyoutDetailShowText = '查看明细'
+      } else {
+        this.buyoutDetailShowText = '收起明细'
+      }
       this.buyoutDetailShow = !this.buyoutDetailShow;
     },
     // 跳转至原订单
@@ -1676,7 +1715,7 @@ export default {
     // 逾期支付的跳转
     overDuePayClick: function() {
       // 生活号暂没有账单支付
-      if (!isAlipayLife) {
+      if (!this.isAliFund) {
         this.menuButtonClick('支付');
       }
     },
@@ -1743,8 +1782,9 @@ export default {
               that.buyOutBtnStr = '提前买断';
             }
           }
-          // 判断下是否需要展示买断面板<买断中 或者处于 买断完结>
-          if (that.orderDetail.status === orderStatus.BuyOuting || that.detailStatus === '99005') {
+          // 判断下是否需要展示买断面板<买断中 或者处于 买断完结 ,买断-扣款中不显示>
+          if (that.detailStatus === '99005' || that.detailStatus === '99008' || that.detailStatus === '99012' ||
+            that.detailStatus === '99013' || that.detailStatus === '99014') {
             that.buyoutPlaneShow = true;
           }
 
@@ -1862,7 +1902,7 @@ export default {
     //   repaymentStatus.Overdue = 4             // 逾期
     billPaymentStausDesc(termItem) {
       if (termItem.paymentStatus === repaymentStatus.AlreadyPayment) {
-        if (this.isAlipayLife) {
+        if (this.isAliFund) {
           return '待支付';
         } else {
           return '已支付';

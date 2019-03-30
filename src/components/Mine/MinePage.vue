@@ -27,21 +27,33 @@
           <flexbox class="flex_order_rental" orient="horizontal">
             <flexbox-item @click.native="goPage(0)">
               <div class="flex_order_running flex_order">
-                <img class="order-icon p-r" src="./user_order_running.png" srcset="./user_order_running.png 1x, ./user_order_running@2x.png 2x">
+                <img
+                  class="order-icon p-r"
+                  src="./user_order_running.png"
+                  srcset="./user_order_running.png 1x, ./user_order_running@2x.png 2x"
+                >
                 <span class="p-r vux-reddot count" v-show="this.repaymentingCount > 0"></span>
                 <p>进行中</p>
               </div>
             </flexbox-item>
             <flexbox-item @click.native="goPage(1)">
               <div class="flex_order_finish flex_order">
-                <img class="order-icon p-r" src="./user_order_finish.png" srcset="./user_order_finish.png 1x, ./user_order_finish@2x.png 2x">
+                <img
+                  class="order-icon p-r"
+                  src="./user_order_finish.png"
+                  srcset="./user_order_finish.png 1x, ./user_order_finish@2x.png 2x"
+                >
                 <span class="p-r vux-reddot count" v-show="this.repaymentSuccessCount > 0"></span>
                 <p>已完成</p>
               </div>
             </flexbox-item>
             <flexbox-item @click.native="goPage(2)">
               <div class="flex-order_cancel flex_order">
-                <img class="order-icon p-r" src="./user_order_cancel.png" srcset="./user_order_cancel.png 1x, ./user_order_cancel@2x.png 2x">
+                <img
+                  class="order-icon p-r"
+                  src="./user_order_cancel.png"
+                  srcset="./user_order_cancel.png 1x, ./user_order_cancel@2x.png 2x"
+                >
                 <span class="p-r vux-reddot count" v-show="this.cancleCount > 0"></span>
                 <p>已取消</p>
               </div>
@@ -52,11 +64,23 @@
       <div class="d_user_manager">
         <group>
           <!--<cell @click.native="goPage(8)" class="cell_info" title="我的账户" is-link></cell>-->
-          <cell v-if="!isAlipayLife" @click.native="goPage(3)" class="cell_info" title="身份认证" is-link></cell>
+          <!-- <cell v-if="!isAlipayLife" @click.native="goPage(3)" class="cell_info" title="身份认证" is-link></cell> -->
           <!--<cell :link="{path:'/OrderList/OrderListPage'}" class="cell_info" title="地址管理" is-link></cell>-->
           <!-- <cell v-if="!isAlipayLife" @click.native="goPage(5)" class="cell_info" title="信用认证" is-link></cell> -->
-          <cell v-if="!_isWzapp && !isAlipayLife" @click.native="goPage(4)" class="cell_info" title="邀请好友" is-link></cell>
-          <cell v-if="!isAlipayLife" @click.native="goPage(7)" class="cell_info" title="关注物主公众号" is-link></cell>
+          <cell
+            v-if="!_isWzapp && !isAlipayLife"
+            @click.native="goPage(4)"
+            class="cell_info"
+            title="邀请好友"
+            is-link
+          ></cell>
+          <cell
+            v-if="!isAlipayLife"
+            @click.native="goPage(7)"
+            class="cell_info"
+            title="关注物主公众号"
+            is-link
+          ></cell>
           <cell @click.native="goPage(6)" class="cell_info" title="设置" is-link></cell>
         </group>
       </div>
@@ -171,7 +195,10 @@ export default {
           break;
         default:
           this.$store.commit('ORDER_STATE', { orderState: parseInt(index) });
-          this.$router.push({ name: 'OrderListPage', params: { orderState: parseInt(index) } });
+          this.$router.push({
+            name: 'OrderListPage',
+            params: { orderState: parseInt(index) }
+          });
       }
     },
     checkUserStatue() {
@@ -184,7 +211,9 @@ export default {
           }
         });
       } else {
-        this.$store.commit('accountStatusMemory', { accountStatus: this.accountStatus });
+        this.$store.commit('accountStatusMemory', {
+          accountStatus: this.accountStatus
+        });
         this.$router.push({ name: 'Credit' });
       }
     },
@@ -218,30 +247,32 @@ export default {
     },
     checkCustomerInfo() {
       this.$store.commit('updateLoadingStatus', { isLoading: true });
-      this.$http.get('/wuzhu/customerVerController/queryCustomerInfoAndEd').then(res => {
-        this.$store.commit('updateLoadingStatus', { isLoading: false });
-        console.log('checkCustomerInfo >>> queryCustomerInfoAndEd >>> ', res);
-        if (res.code === '00' && res.data) {
-          this.$store.commit('updateOcrMsgCheck', {
-            ocrMsgCheck: {
-              isCheckCustomer: res.data.isCheckCustomer, // 客户身份信息校验
-              isCheckEducation: res.data.isCheckEducation // 客户学信信息校验
+      this.$http
+        .get('/wuzhu/customerVerController/queryCustomerInfoAndEd')
+        .then(res => {
+          this.$store.commit('updateLoadingStatus', { isLoading: false });
+          console.log('checkCustomerInfo >>> queryCustomerInfoAndEd >>> ', res);
+          if (res.code === '00' && res.data) {
+            this.$store.commit('updateOcrMsgCheck', {
+              ocrMsgCheck: {
+                isCheckCustomer: res.data.isCheckCustomer, // 客户身份信息校验
+                isCheckEducation: res.data.isCheckEducation // 客户学信信息校验
+              }
+            });
+            this.exempt = { ...res.data };
+            if (!res.data.isNotOcrDeal && !res.data.isCheckCustomer) {
+              this.exempt.position = 'IDverify';
+              this.exempt.showVerifyBtn = true;
             }
-          });
-          this.exempt = { ...res.data };
-          if (!res.data.isNotOcrDeal && !res.data.isCheckCustomer) {
-            this.exempt.position = 'IDverify';
-            this.exempt.showVerifyBtn = true;
+            if (
+              (res.data.isNotOcrDeal || res.data.isCheckCustomer) &&
+              (!res.data.isCheckEducation && !res.data.isCheckWork)
+            ) {
+              this.exempt.position = 'Credit';
+              this.exempt.showVerifyBtn = true;
+            }
           }
-          if (
-            (res.data.isNotOcrDeal || res.data.isCheckCustomer) &&
-            (!res.data.isCheckEducation && !res.data.isCheckWork)
-          ) {
-            this.exempt.position = 'Credit';
-            this.exempt.showVerifyBtn = true;
-          }
-        }
-      });
+        });
     },
     exemptPage() {
       if (!this.isLogin) {
@@ -265,7 +296,7 @@ export default {
 </script>
 
 <style lang="less">
-@import '../../common/less/index.less';
+@import "../../common/less/index.less";
 .MinePage {
   position: absolute;
   top: 0;

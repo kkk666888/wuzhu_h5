@@ -18,6 +18,7 @@
 <script>
 import { XHeader, Msg, XButton } from 'vux';
 import { mapMutations } from 'vuex';
+import { isWzapp, isAlipayLife, goHome } from './../../util/utils';
 export default {
   name: 'WXPaySuccess',
   components: {
@@ -42,12 +43,13 @@ export default {
         bizStatusNo8: '8', // 即将到期
         bizStatusNo9: '99' // 已完成
       },
-      aliPayCount: 3
+      aliPayCount: 3,
+      isAliFund: (isWzapp() || isAlipayLife())  // 是否支付宝预授权流程
     };
   },
   mounted() {
     console.log('mounted');
-    if (this.$store.state.channelNo === '004') {
+    if (this.isAliFund) {
       this.queryAliPayResult();
       if (this.$route.params.failCode) {
         this.reportPayFail(this.$route.params);
@@ -147,7 +149,8 @@ export default {
     },
     menuButtonClick(menuTtem) {
       if (menuTtem === '返回首页') {
-        this.$router.replace({name: 'HomePage'})
+        goHome(this);
+        // this.$router.replace({name: 'HomePage'})
       } else if (menuTtem === '查看订单') {
         this.$router.replace({name: 'OrderListPage'})
       } else {

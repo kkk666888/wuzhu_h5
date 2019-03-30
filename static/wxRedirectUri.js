@@ -99,11 +99,11 @@
     console.log('isAlipay _channelNo = '+ _channelNo);
     _channelNo = '004'
   }
+  mainjsData.channelNo = _channelNo;
   var _isWeixin = isWeiXin();
   // console.info('>>> _isWeixin: ', _isWeixin);
   if (_channelNo === '003') {
     // 京东
-    mainjsData.channelNo = _channelNo;
     if (_getRequest('accessToken')) {
       mainjsData.accessToken = _getRequest('accessToken');
     }
@@ -112,16 +112,19 @@
     }
   } else if (_channelNo === '004') {
     // 生活号
-    mainjsData.channelNo = _channelNo;
-
     if (_getRequest('auth_code')) {
       mainjsData.accessToken = _getRequest('auth_code');
     }
     if (sessionStorage) {
       sessionStorage.setItem('mainjsData', JSON.stringify(mainjsData));
     }
+  } else if (_channelNo === '005' || _channelNo === '006'){
+    // app
+    console.log('>>> app ' + _channelNo);
+    if (sessionStorage) {
+      sessionStorage.setItem('mainjsData', JSON.stringify(mainjsData));
+    }
   } else {
-    // 非京东 -- 全部为 微信公众号
     mainjsData.channelNo = '001';
     mainjsData.accessToken = null;
   }
@@ -172,6 +175,7 @@
       }
     }
   } else {
+    console.log('wxRedirectUri end.');
     if (sessionStorage) {
       sessionStorage.setItem('mainjsData', JSON.stringify(mainjsData));
     }

@@ -1,5 +1,5 @@
 import store from '../store/store';
-import Http from './http';
+// import Http from './http';
 
 function getUrlName() {
   let $url = window.location.href;
@@ -49,13 +49,13 @@ const Reporter = {
       // {
       //   datagram: that.brisk
       // }
-      Http.post('/wuzhu/page/pageDatagram', that.brisk)
-        .then(res => {
-          resolve(res);
-        })
-        .catch(err => {
-          reject(err);
-        });
+      // Http.post('/wuzhu/page/pageDatagram', that.brisk)
+      //   .then(res => {
+      //     resolve(res);
+      //   })
+      //   .catch(err => {
+      //     reject(err);
+      //   });
     });
   },
   getSessionStore: function() {

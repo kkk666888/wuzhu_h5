@@ -1,5 +1,5 @@
 const Config = {
-  active: 'product',
+  active: 'test',
   test: {
     // 测试环境，对应公众号appid：wx261437e4488ec0ab（小主UAT）-- wuzhuRelease
     appid: 'wx261437e4488ec0ab',

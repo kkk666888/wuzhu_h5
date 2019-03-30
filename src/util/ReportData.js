@@ -1,5 +1,5 @@
 import store from '../store/store';
-import Http from './http';
+// import Http from './http';
 
 function getUrlName() {
   let $url = window.location.href;
@@ -97,13 +97,13 @@ export class ReportData {
       that.brisk.contactInfo = opt.contactInfo;
     }
     return new Promise(function(resolve, reject) {
-      Http.post('/wuzhu/page/pageDatagram', that.brisk)
-        .then(res => {
-          resolve(res);
-        })
-        .catch(err => {
-          reject(err);
-        });
+      // Http.post('/wuzhu/page/pageDatagram', that.brisk)
+      //   .then(res => {
+      //     resolve(res);
+      //   })
+      //   .catch(err => {
+      //     reject(err);
+      //   });
     });
   }
 }

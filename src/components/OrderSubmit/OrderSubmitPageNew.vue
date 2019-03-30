@@ -23,14 +23,14 @@
             <div class="feeName">租金</div>
             <div class="feeValue">￥{{ rentForOneDay }}/天    *{{ tenancyTerm }}天</div>
           </div>
-          <div v-if="!isAlipayLife" class="feeTips">*租金支持<span class="feeTipsBold">按月支付</span>或<span class="feeTipsBold">一次性支付</span>
+          <div v-if="!isAliFund" class="feeTips">*租金支持<span class="feeTipsBold">按月支付</span>或<span class="feeTipsBold">一次性支付</span>
           </div>
           <div class="feeCellSmall gray" v-for="(feeItem, feeIndex) in feeList" :key="feeIndex">
             <div class="feeName">{{ feeItem['feeName'] }}
             </div>
             <div class="feeValue">{{ feeItemItemDesc(feeItem) }}</div>
           </div>
-          <div v-if="isAlipayLife" class="feeCellSmall gray">
+          <div v-if="isAliFund" class="feeCellSmall gray">
             <div class="feeName">租金支付方式</div>
             <div class="feeValue">支付宝预授权
               <i class="icon iconfont icon-help1" @click="showDetail(3)" style="color: #007AFF; font-size: 14px"></i>
@@ -48,7 +48,7 @@
           <!-- <div class="feeCell">
             <div class="feeName">押金支付方式</div>
           </div> -->
-          <div v-if="isAlipayLife" class="depositDetail">
+          <div v-if="isAliFund" class="depositDetail">
             <div class="depositTitle">花呗额度冻结押金</div>
             <div class="depositDesc">商家提供押金减免，填写资料可减免押金</div>
           </div>
@@ -61,9 +61,9 @@
       <!-- 收货信息-->
       <div class="orderInfoPlane OrderDetail_Shadow">
         <div class="orderInfoBase">
-        <div class="orderSubmit-flexBox fw-b">{{ isAlipayLife ? '为确保正常收货，请填写本人真实收货信息' : '请确认收货地址'}}</div>
+        <div class="orderSubmit-flexBox fw-b">{{ isAliFund ? '为确保正常收货，请填写本人真实收货信息' : '请确认收货地址'}}</div>
           <div class="orderSubmit-flexBox bb1">
-            <div class="flexBox-left">{{isAlipayLife ? '真实姓名' : '姓名'}}</div>
+            <div class="flexBox-left">{{isAliFund ? '真实姓名' : '姓名'}}</div>
             <group class="customer-info">
               <x-input :max="20" class="info-input needsclick" :readonly="hasUserName" type="text" :show-clear="false" v-model="userName" ref="input01" @on-blur="setWindowSize" placeholder="请输入" @on-focus="focusName" @on-change="changeUserName"></x-input>
             </group>
@@ -74,7 +74,7 @@
               <x-input :max="20" class="info-input needsclick" type="text" v-model="phoneNum" :show-clear="false" :readonly="hasPhoneNum" @on-blur="setWindowSize" placeholder="请输入" keyboard="number" is-type="china-mobile"></x-input>
             </group>
           </div>
-          <div class="orderSubmit-flexBox bb1" v-if="isAlipayLife">
+          <div class="orderSubmit-flexBox bb1" v-if="isAliFund">
             <div class="flexBox-left">身份证号</div>
             <group class="customer-info">
               <x-input :max="30" class="info-input needsclick" type="text" v-model="certId" :readonly="hasCertId" :show-clear="false" @on-blur="setWindowSize" placeholder="请输入"></x-input>
@@ -86,21 +86,21 @@
             <x-address class="padding-address" title="省/市/区" :placeholder="placeholder" v-model="addressArea" raw-value :list="addressData" @on-hide="inputAddrChange"></x-address>
             <x-textarea class="needsclick" :max="100" :placeholder="addressPlaceHolder" :show-counter="false" :rows="2" v-model="addressDetail" @on-blur="inputAddrDetailChange" autosize></x-textarea>
           </group>
-          <!-- <section v-if="isWzapp" class="mt15">
+          <section v-if="isWzapp" class="mt15">
             <div class="orderdetail-tips">填写紧急联系人</div>
             <group class="group-2">
               <x-input :max="40" class="padding-address" title="重要联系人" type="text" readonly :show-clear="false" placeholder="请选择联系人" text-align="left" v-model="emergencyApp1" @on-blur="inputNameChange" @on-change="inputChangeEvent">
                 <span slot="right" class="add-contact" @click="addContact(1)">添加</span>
               </x-input>
-              <popup-picker ref="emergency1" class="padding-address" title="所属关系" :showName="true" :data="shipData" v-model="emergencyShip" :placeholder="placeholder" value-text-align="right" @on-hide="inputShipChange"></popup-picker>
+              <!-- <popup-picker ref="emergency1" class="padding-address" title="所属关系" :showName="true" :data="shipData" v-model="emergencyShip" :placeholder="placeholder" value-text-align="right" @on-hide="inputShipChange"></popup-picker> -->
             </group>
-            <group class="group-2 contact2">
+            <!-- <group class="group-2 contact2">
               <x-input :max="40" class="padding-address" title="其他联系人" type="text" readonly :show-clear="false" placeholder="请选择联系人" text-align="left" v-model="emergencyApp2" @on-blur="inputNameChange" @on-change="inputChangeEvent">
                 <span slot="right" class="add-contact" @click="addContact(2)">添加</span>
               </x-input>
               <popup-picker ref="emergency2" class="padding-address" title="所属关系" :showName="true" :data="shipData" v-model="emergencyShip2" :placeholder="placeholder" value-text-align="right" @on-hide="inputShipChange"></popup-picker>
-            </group>
-          </section> -->
+            </group> -->
+          </section>
           <section v-if="isAlipayLife" class="mt15">
             <div class="orderdetail-tips">填写紧急联系人</div>
             <group class="group-2">
@@ -159,10 +159,10 @@
           <div class="bottomDepositAmt">￥{{ deposit | moneyFormat}}
           </div>
         </div>
-        <div v-if="isAlipayLife" class="bottomTips">租金将按月从押金中自动扣除</div>
+        <div v-if="isAliFund" class="bottomTips">租金将按月从押金中自动扣除</div>
         <div v-else class="bottomTips">{{ bottomTips }}</div>
       </div>
-      <div v-if="isAlipayLife" class="rightBlock" @click="subOrderClick">立即减免</div>
+      <div v-if="isAliFund" class="rightBlock" @click="subOrderClick">立即减免</div>
       <div v-else class="rightBlock" @click="submitClick"> {{ processType === '1' ? '提交订单' : '提交资料'}}</div>
     </div>
   </div>
@@ -200,7 +200,8 @@ import {
   isAlipayLife,
   piwikTrackEvent,
   unionLogin,
-  uploadThirdInterfaceLog
+  uploadThirdInterfaceLog,
+  goHome
 } from './../../util/utils';
 import userLeaseServiceAgreements from './../Potocol/UserLeaseServiceAgreements';
 import feeDescAlert from './../FeeItemSubView/FeeDescAlert';
@@ -336,6 +337,7 @@ export default {
       platformCode: this.$store.state.platformCode, // 平台号
       isWzapp: isWzapp(),
       isAlipayLife: isAlipayLife(),
+      isAliFund: (isWzapp() || isAlipayLife()),  // 是否支付宝预授权流程
       leaveMessage: '',
       agreementChoose: true
     };
@@ -376,7 +378,7 @@ export default {
       }
     }
     this.getCacheData(() => {
-      if (this.isAlipayLife) {
+      if (this.isAliFund) {
         this.emergencyName = '';
         this.emergencyPhone = '';
       }
@@ -1103,7 +1105,7 @@ export default {
     // 提交订单按钮点击事件
     subOrderClick() {
       let stu = false;
-      if (this.isAlipayLife) {
+      if (this.isAliFund) {
         stu = this.checkAliInfo();
       } else {
         stu = this.checkInfo();
@@ -1130,7 +1132,7 @@ export default {
     },
     // 发送HTTP确认预约的服务
     confirmBook() {
-      if (this.isAlipayLife) {
+      if (this.isAliFund) {
         this.aliOrderSubmit();
         return;
       }
@@ -1220,7 +1222,8 @@ export default {
           that.$vux.alert.show({
             content: res.msg,
             onHide() {
-              that.$router.replace({ name: 'HomePage' });
+              goHome(that);
+              // that.$router.replace({ name: 'HomePage' });
             }
           });
         }
@@ -1289,89 +1292,31 @@ export default {
           piwikTrackEvent('aliLifeTradePay', 'type', 'start');
           this.updateOrderNo({ orderNo: res.data.orderNo });
           let _orderStr = res.data.orderStr;
+          if (_this.isWzapp) {
+            // 如果是app，则调用app的接口
+            _this.jsBridge.startAlipay(_orderStr, _this.apTradePayResult);
+          } else {
           // eslint-disable-next-line
-          ap.tradePay(
-            {
-              orderStr: res.data.orderStr
-            },
-            res => {
-              let params = {
-                uniqueIdenty: 'ap.tradePay',
-                type: '12',
-                requestParam: _orderStr,
-                responseParam: JSON.stringify(res),
-                status: ((res && res.resultCode === '9000') ? '1' : '2'), // 状态：1成功2失败
-                logSource: '0'  // 请求发起来源 0:前端发起；1=后端发起
+            ap.tradePay(
+              {
+                orderStr: res.data.orderStr
+              },
+              res => {
+                let params = {
+                  uniqueIdenty: 'ap.tradePay',
+                  type: '12',
+                  requestParam: _orderStr,
+                  responseParam: JSON.stringify(res),
+                  status: ((res && res.resultCode === '9000') ? '1' : '2'), // 状态：1成功2失败
+                  logSource: '0'  // 请求发起来源 0:前端发起；1=后端发起
+                }
+                uploadThirdInterfaceLog(params);
+                piwikTrackEvent('aliLifeTradePay', 'type', res.resultCode);
+                // console.log('resultcode = ' + res.resultCode);
+                _this.apTradePayResult(res);
               }
-              uploadThirdInterfaceLog(params);
-              console.log('resultcode = ' + res.resultCode);
-              piwikTrackEvent('aliLifeTradePay', 'type', res.resultCode);
-              let fail = {};
-              switch (res.resultCode) {
-                case '9000':
-                  this.goPayResult();
-                  break;
-                case '8000':
-                  fail = {
-                    failCode: '8000',
-                    failReason: '后台获取支付结果超时，暂时未拿到支付结果'
-                  };
-                  this.goPayResult(fail);
-                  break;
-                case '7001':
-                  fail = {
-                    failCode: '7001',
-                    failReason: '钱包中止快捷支付'
-                  };
-                  this.goPayResult(fail);
-                  break;
-                case '6004':
-                  fail = {
-                    failCode: '6004',
-                    failReason: '支付过程中网络出错， 暂时未拿到支付结果'
-                  };
-                  this.goPayResult(fail);
-                  break;
-                case '4000':
-                  fail = {
-                    failCode: '4000',
-                    failReason: '订单支付失败'
-                  };
-                  this.goPayResult(fail);
-                  break;
-                case '6001':
-                  this.$vux.alert.show({
-                    content: '支付失败，请重新下单',
-                    onHide() {
-                      _this.$router.replace({ name: 'HomePage' });
-                    }
-                  });
-                  break;
-                case '6002':
-                  fail = {
-                    failCode: '6002',
-                    failReason: '普通网络出错'
-                  };
-                  this.goPayResult(fail);
-                  break;
-                case '99':
-                  this.$vux.alert.show({
-                    content: '支付失败，请重新下单',
-                    onHide() {
-                      _this.$router.replace({ name: 'HomePage' });
-                    }
-                  });
-                  break;
-                default:
-                  fail = {
-                    failCode: res.resultCode,
-                    failReason: '其他异常'
-                  };
-                  this.goPayResult(fail);
-                  break;
-              }
-            }
-          );
+            );
+          }
         } else if (res.code === '1001') {
           this.beforeJumpToLoginPage();
           unionLogin(this, this.aliOrderSubmit);
@@ -1383,6 +1328,82 @@ export default {
         }
       } catch (error) {
         console.error(error);
+      }
+    },
+    // ap.tradePay结果处理
+    apTradePayResult(res) {
+      console.log('apTradePayResult res = ' + res);
+      let fail = {};
+      let code = '';
+      if (this.isWzapp) {
+        let _res = JSON.parse(res);
+        code = _res.resultStatus;
+      } else {
+        code = res.resultCode;
+      }
+      console.log('apTradePayResult resultcode = ' + code);
+      switch (code) {
+        case '9000':
+          this.goPayResult();
+          break;
+        case '8000':
+          fail = {
+            failCode: '8000',
+            failReason: '后台获取支付结果超时，暂时未拿到支付结果'
+          };
+          this.goPayResult(fail);
+          break;
+        case '7001':
+          fail = {
+            failCode: '7001',
+            failReason: '钱包中止快捷支付'
+          };
+          this.goPayResult(fail);
+          break;
+        case '6004':
+          fail = {
+            failCode: '6004',
+            failReason: '支付过程中网络出错， 暂时未拿到支付结果'
+          };
+          this.goPayResult(fail);
+          break;
+        case '4000':
+          fail = {
+            failCode: '4000',
+            failReason: '订单支付失败'
+          };
+          this.goPayResult(fail);
+          break;
+        case '6001':
+          this.$vux.alert.show({
+            content: '支付失败，请重新下单',
+            onHide() {
+              this.$router.replace({ name: 'HomePage' });
+            }
+          });
+          break;
+        case '6002':
+          fail = {
+            failCode: '6002',
+            failReason: '普通网络出错'
+          };
+          this.goPayResult(fail);
+          break;
+        case '99':
+          this.$vux.alert.show({
+            content: '支付失败，请重新下单',
+            onHide() {
+              this.$router.replace({ name: 'HomePage' });
+            }
+          });
+          break;
+        default:
+          fail = {
+            failCode: res.resultCode,
+            failReason: '其他异常'
+          };
+          this.goPayResult(fail);
+          break;
       }
     },
     // 阿里预授权后去支付结果页
@@ -1407,6 +1428,7 @@ export default {
       let currentPath = Config._hoststr;
       let random = '?_r=' + Math.random();
       if (protocolIndex === 0) {
+        // TODO app协议是公用微信还是单独的？
         if (this.isAlipayLife) {
           this.potocolUrl = currentPath + '/doc/alipaylife/user_lease_agreement.htm' + random;
         } else {
@@ -1414,6 +1436,7 @@ export default {
         }
         // this.serviceAgreet.refreshPagein();
       } else if (protocolIndex === 1) {
+        // TODO app协议是公用微信还是单独的？
         if (this.isAlipayLife) {
           this.potocolUrl = currentPath + '/doc/alipaylife/user_lease_supplementary_agreement.htm' + random;
         } else {

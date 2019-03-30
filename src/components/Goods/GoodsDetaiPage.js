@@ -15,7 +15,7 @@ import {
 import LeaseDescription from './LeaseDescription';
 import feeDescAlert from './../FeeItemSubView/FeeDescAlert';
 import rentalCacheTool from './../../cacheUtil/rentalCacheTool';
-import { GetLocation, isWeiXin, isAlipayLife, unionLogin } from './../../util/utils';
+import { GetLocation, isWeiXin, isAlipayLife, isWzapp, unionLogin, goHome } from './../../util/utils';
 import { mapMutations } from 'vuex';
 import { CategoryStatus, ParseData } from './GoodsCategoryTool';
 
@@ -93,6 +93,7 @@ export default {
       leastRentDay: '', // 商品详情日租金
       leastOriginalPrice: '', // 商品原价
       isAlipayLife: false, // 当前是否支付宝生活号渠道
+      isWzapp: false,
       detailTagUrl: '', // 图片tag
       detailTagUrlPosition: '', // 图片tag位置
       detailRentDescriptionUrl: '', // 租赁说明图片
@@ -114,8 +115,8 @@ export default {
   },
   created() {
     this.isAlipayLife = isAlipayLife();
+    this.isWzapp = isWzapp();
     this.getDetailData();
-    // this.isAlipayLife = true;
   },
   computed: {
     submitOrderBtnClass: function() {
@@ -631,7 +632,14 @@ export default {
         return;
       }
       // console.log('stock', this.stockEmpty);
-
+      // 【【风控业务调整】- 因风控业务调整，微信/京东渠道，暂停进件。】
+      // https://www.tapd.cn/22046201/prong/stories/view/1122046201001001494
+      // if (that.$store.state.channelNo === '001' || that.$store.state.channelNo === '003') {
+      //   that.$vux.alert.show({
+      //     content: '亲爱的客户：2/14-2/28店铺将进行升级，此期间打烊，暂停发货，给您造成的不便，请谅解。'
+      //   });
+      //   return;
+      // }
       // 开始检查库存
       // 如果是无货，直接返回，不能点击
       if (this.stockEmpty === true) {
@@ -713,6 +721,10 @@ export default {
     },
     // 开始下单的HTTP 请求 continueFlag 0-检查押金 1-不检查
     orderEventSubmitOld(continueFlag = 0) {
+      // unionLogin回调会把登录参数传递过来，这里需要处理
+      if (continueFlag !== 1) {
+        continueFlag = 0;
+      }
       if (continueFlag === 0) {
         localStorage.removeItem('payFullDeposit');
       } else {
@@ -759,7 +771,8 @@ export default {
           that.$vux.alert.show({
             content: res.msg,
             onHide() {
-              that.$router.push({ name: 'HomePage' });
+              goHome(that);
+              // that.$router.push({ name: 'HomePage' });
             }
           });
         } else if (code === '6032') {
@@ -779,8 +792,13 @@ export default {
     },
     // 2018-12-6 迭代2.12.0 新流程开始下单的HTTP 请求 continueFlag 0-检查押金 1-不检查
     orderEventSubmit(continueFlag = 0) {
+      // unionLogin回调会把登录参数传递过来，这里需要处理
+      if (continueFlag !== 1) {
+        continueFlag = 0;
+      }
+      // added by hf 2019-1-21 app也走预授权流程
       // 支付宝生活号还是走之前的流程
-      if (this.isAlipayLife) {
+      if (this.isAlipayLife || this.isWzapp) {
         this.orderEventSubmitOld(continueFlag);
         return;
       }
@@ -822,7 +840,8 @@ export default {
           that.$vux.alert.show({
             content: res.msg,
             onHide() {
-              that.$router.push({ name: 'HomePage' });
+              goHome(that);
+              // that.$router.push({ name: 'HomePage' });
             }
           });
         } else if (code === '6032') {

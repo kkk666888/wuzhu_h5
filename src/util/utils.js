@@ -1,6 +1,7 @@
 import Http from './http';
 import Config from './config';
 import Store from './../store/store';
+import jsBridge from './jsBridge';
 
 export function getWeChatSign(url) {
   return new Promise(function(resolve, reject) {
@@ -567,7 +568,7 @@ export function isAlipayLife() {
 export function isWzapp() {
   let channelNo = Store.state.channelNo;
   let platformCode = Store.state.platformCode;
-  if (channelNo === '001' && (platformCode === 'wzappandroid' || platformCode === 'wzappios')) {
+  if ((channelNo === '001' && platformCode === 'wzappandroid') || (channelNo === '005' && platformCode === 'wzappios')) {
     return true;
   } else {
     return false;
@@ -591,19 +592,19 @@ export const AliLifeLogin = that => {
   return new Promise((resolve, reject) => {
     let token = that.$store.state.accessToken;
     let _logDO = {
-      logNo: '12',
-      memebershipNo: '12',
-      loginDate: '12',
-      loginChannel: '12',
-      loginIp: '12',
-      deviceName: '12', // 登录设备名称
-      deviceId: '12', // 登录设备 ID
+      logNo: '',
+      memebershipNo: '',
+      loginDate: '',
+      loginChannel: '',
+      loginIp: '',
+      deviceName: '', // 登录设备名称
+      deviceId: '', // 登录设备 ID
       gpsLongitude: that.$store.state.lng, // 经度
       gpsLatitude: that.$store.state.lat, // 纬度
-      gpsAddress: '12', // 经纬度 地址
-      gpsProvince: '12', // 经纬度 省份
-      gpsCity: '12', // 经纬度 城市
-      gpsCounty: '12' // 经纬度 区县
+      gpsAddress: '', // 经纬度 地址
+      gpsProvince: '', // 经纬度 省份
+      gpsCity: '', // 经纬度 城市
+      gpsCounty: '' // 经纬度 区县
     };
     let params = {
       authCode: token,
@@ -665,9 +666,11 @@ export function unionLogin(that, resolve, reject) {
   console.log('unionLogin channelNo = ' + channelNo);
   switch (channelNo) {
     case '001':
+      // 微信
       that.$router.push({ name: 'InitLogin' });
       break;
     case '003':
+      // 京东
       let isJDLogin = sessionStorage.getItem('JDLoginStatus');
       if (isJDLogin !== 'true') {
         queryJDInfoAndLogin(that)
@@ -680,6 +683,7 @@ export function unionLogin(that, resolve, reject) {
       }
       break;
     case '004':
+      // 支付宝生活号
       let isAliLifeLogin = sessionStorage.getItem('AliLifeLoginStatus');
       if (isAliLifeLogin !== 'true') {
         // AliLifeLogin(that, resolve, reject);
@@ -691,6 +695,14 @@ export function unionLogin(that, resolve, reject) {
             reject(err);
           });
       }
+      break;
+    case '005':
+      // iOS App
+      that.$router.push({ name: 'InitLogin' });
+      break;
+    case '006':
+      // Android App
+      that.$router.push({ name: 'InitLogin' });
       break;
     default:
       break;
@@ -709,4 +721,16 @@ export function uploadThirdInterfaceLog(params) {
         reject(err);
       });
   });
+}
+
+export function goHome(that, isPush) {
+  if (isWzapp()) {
+    jsBridge.closeWebView();
+  } else {
+    if (isPush) {
+      that.$router.push({ name: 'HomePage' });
+    } else {
+      that.$router.replace({ name: 'HomePage' });
+    }
+  }
 }

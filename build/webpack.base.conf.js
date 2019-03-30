@@ -4,14 +4,14 @@ const utils = require('./utils');
 const config = require('../config');
 const vueLoaderConfig = require('./vue-loader.conf');
 const vuxLoader = require('vux-loader');
-// const HappyPack = require('happypack');  // 多线程打包，效果不明显
-// const os = require('os');
-// const happyThreadPool = HappyPack.ThreadPool({ size: 5 });
+// const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
+// const smp = new SpeedMeasurePlugin(); // 打包时间分析
 
 function resolve(dir) {
   return path.join(__dirname, '..', dir);
 }
 
+// let webpackConfig = smp.wrap({
 let webpackConfig = {
   context: path.resolve(__dirname, '../'),
   entry: {
@@ -31,6 +31,7 @@ let webpackConfig = {
     }
   },
   module: {
+    noParse: /node_modules\/(moment|chart\.js)/, // 无依赖的库不需要解析
     rules: [
       ...(config.dev.useEslint
         ? [
@@ -49,14 +50,14 @@ let webpackConfig = {
       {
         test: /\.vue$/,
         loader: 'vue-loader',
-        // loader: 'happypack/loader?id=1',
         options: vueLoaderConfig
       },
       {
         test: /\.js$/,
         loader: 'babel-loader',
         // loader: 'happypack/loader?id=js',
-        include: [resolve('src'), resolve('test')]
+        include: [resolve('src'), resolve('test')],
+        exclude: [/(.|_)min\.js$/] // 不处理压缩文件
       },
       // {
       //   test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
@@ -102,31 +103,9 @@ let webpackConfig = {
       }
     ]
   },
-  plugins: [
-    // new HappyPack({
-    //   // loaders is the only required parameter:
-    //   id: '1',
-    //   threadPool: happyThreadPool,
-    //   loaders: [
-    //     {
-    //       loader: 'vue-loader',
-    //       options: vueLoaderConfig
-    //     }
-    //   ]
-    // }),
-    // new HappyPack({
-    //   // loaders is the only required parameter:
-    //   id: 'js',
-    //   threadPool: happyThreadPool,
-    //   loaders: [
-    //     {
-    //       loader: 'babel-loader'
-    //       // options:
-    //     }
-    //   ]
-    // })
-  ]
+  plugins: []
 };
+// });
 
 module.exports = vuxLoader.merge(webpackConfig, {
   plugins: ['vux-ui', 'progress-bar', 'duplicate-style']
